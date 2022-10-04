@@ -71,7 +71,7 @@ class GattClientCallback(val model: BLEViewModel) : BluetoothGattCallback() {
         gatt: BluetoothGatt,
         characteristic: BluetoothGattCharacteristic,
     ) {
-        val bpm = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1)
+        val bpm = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1)
         Log.d(TAG, "BPM: $bpm")
         model.mBPM.postValue(bpm)
         Log.d(TAG, "heart rate is ${model.mBPM.value}")
