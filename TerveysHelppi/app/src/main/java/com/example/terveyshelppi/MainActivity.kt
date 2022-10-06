@@ -3,7 +3,6 @@ package com.example.terveyshelppi
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
-<<<<<<< HEAD
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.terveyshelppi.Components.*
 =======
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -46,6 +46,7 @@ import java.nio.file.Files.size
 
 class MainActivity : AppCompatActivity() {
     var model = ResultViewModel()
+    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                     NavHost(navController, startDestination = "landingPage") {
@@ -73,12 +75,16 @@ class MainActivity : AppCompatActivity() {
 =======
                     Greeting(model, activity = this)
 >>>>>>> 8c6dcce (implement function for get thumnails of youtube)
+=======
+                    Greeting(model)
+>>>>>>> 30ce88e (add title Youtube function)
                 }
             }
         }
     }
 }
 
+<<<<<<< HEAD
 sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: String) {
     object Home : BottomNavItem("Home", R.drawable.home, "home")
     object Fitness : BottomNavItem("Fitness", R.drawable.fitness, "fitness")
@@ -158,6 +164,11 @@ fun Greeting(model: ResultViewModel) {
 =======
 fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
 >>>>>>> 8c6dcce (implement function for get thumnails of youtube)
+=======
+@ExperimentalFoundationApi
+@Composable
+fun Greeting(model: ResultViewModel) {
+>>>>>>> 30ce88e (add title Youtube function)
 
     val TAG = "terveyshelppi"
     var input by remember { mutableStateOf("") }
@@ -173,7 +184,7 @@ fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
         }
         if (result != null) {
             Log.d(TAG, "Greeting: start to load video")
-                YoutubeScreen(videoId = result!!.map { it.id.videoId }, activity = activity)
+                YoutubeScreen(videoId = result!!.map { it.id.videoId })
 
         }
     }
