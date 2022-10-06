@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,21 +20,23 @@ import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 
 class MainActivity : AppCompatActivity() {
     var model = ResultViewModel()
+    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Greeting(model, activity = this)
+                    Greeting(model)
                 }
             }
         }
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
-fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
+fun Greeting(model: ResultViewModel) {
 
     val TAG = "terveyshelppi"
     var input by remember { mutableStateOf("") }
@@ -49,7 +52,7 @@ fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
         }
         if (result != null) {
             Log.d(TAG, "Greeting: start to load video")
-                YoutubeScreen(videoId = result!!.map { it.id.videoId }, activity = activity)
+                YoutubeScreen(videoId = result!!.map { it.id.videoId })
 
         }
     }
