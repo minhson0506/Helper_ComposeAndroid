@@ -1,5 +1,6 @@
 package com.example.terveyshelppi.Components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -12,11 +13,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
 
+@ExperimentalFoundationApi
 @Composable
-fun FitnessPage() {
+fun FitnessPage(model: ResultViewModel) {
     Box(
         modifier = Modifier
             .background(
@@ -29,23 +33,24 @@ fun FitnessPage() {
             )
             .fillMaxSize()
     ){
-        Column() {
-            Text(
-                stringResource(id = R.string.fitness),
-                color = Color.White,
-                modifier = Modifier.padding(top = 30.dp, start = 20.dp),
-                fontFamily = regular,
-                fontSize = 20.sp
-            )
-        }
+//        Column() {
+//            Text(
+//                stringResource(id = R.string.fitness),
+//                color = Color.White,
+//                modifier = Modifier.padding(top = 30.dp, start = 20.dp),
+//                fontFamily = regular,
+//                fontSize = 20.sp
+//            )
+//        }
+        YoutubeScreen(model = model)
     }
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun FitnessPreview() {
-    TerveysHelppiTheme {
-        FitnessPage()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun FitnessPreview() {
+//    TerveysHelppiTheme {
+//        FitnessPage()
+//    }
+//}

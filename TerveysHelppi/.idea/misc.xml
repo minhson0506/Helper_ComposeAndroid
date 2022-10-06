@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../../../../../../layout/compose-model-1664872349670.xml" value="0.4805194805194805" />
+        <entry key="../../../../../../../../../layout/compose-model-1664873365870.xml" value="1.0" />
+        <entry key="../../../../../../../../../layout/compose-model-1665085663077.xml" value="0.25844594594594594" />
+        <entry key="app/src/main/res/layout/fragment_youtube.xml" value="0.2890625" />
+        <entry key="app/src/main/res/layout/youtube_layout.xml" value="0.278125" />
+      </map>
+    </option>
+  </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

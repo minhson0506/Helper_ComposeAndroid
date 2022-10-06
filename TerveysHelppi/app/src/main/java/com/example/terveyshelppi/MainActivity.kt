@@ -1,35 +1,30 @@
 package com.example.terveyshelppi
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.terveyshelppi.Components.*
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
-import com.example.terveyshelppi.ui.theme.card
 import com.example.terveyshelppi.ui.theme.regular
-import com.example.terveyshelppi.ui.theme.semibold
-import java.nio.file.Files.size
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    var model = ResultViewModel()
+    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -45,10 +40,9 @@ class MainActivity : ComponentActivity() {
                             InfoLanding(navController = navController)
                         }
                         composable("main") {
-                            MainScreen()
+                            MainScreen(model = model)
                         }
                     }
-
                 }
             }
         }
@@ -62,11 +56,12 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 
 }
 
+@ExperimentalFoundationApi
 @Composable
-fun NavigationGraph(navController: NavHostController) {
+fun NavigationGraph(navController: NavHostController, model: ResultViewModel) {
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
-            FitnessPage()
+            FitnessPage(model = model)
         }
         composable(BottomNavItem.Home.screen_route) {
             MainPage()
@@ -117,13 +112,14 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
-fun MainScreen() {
+fun MainScreen(model: ResultViewModel) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         content = {
-            NavigationGraph(navController = navController)
+            NavigationGraph(navController = navController, model = model)
         }
     )
 }
