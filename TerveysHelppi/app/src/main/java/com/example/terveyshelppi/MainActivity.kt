@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
                             LandingPage(navController = navController)
@@ -69,6 +70,9 @@ class MainActivity : AppCompatActivity() {
 =======
                     Greeting(model)
 >>>>>>> f449e88 (basic Youtube service)
+=======
+                    Greeting(model, activity = this)
+>>>>>>> 8c6dcce (implement function for get thumnails of youtube)
                 }
             }
         }
@@ -83,6 +87,7 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 }
 
 @Composable
+<<<<<<< HEAD
 <<<<<<< HEAD
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
@@ -150,9 +155,11 @@ fun MainScreen() {
 }
 =======
 fun Greeting(model: ResultViewModel) {
+=======
+fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
+>>>>>>> 8c6dcce (implement function for get thumnails of youtube)
 
     val TAG = "terveyshelppi"
-    val api_key = BuildConfig.YOUTUBE_API_KEY
     var input by remember { mutableStateOf("") }
     val result: List<SearchResponse.Item>? by model.result.observeAsState(null)
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -164,10 +171,9 @@ fun Greeting(model: ResultViewModel) {
         }) {
             Text(text = "Search")
         }
-//        result?.forEach {
         if (result != null) {
             Log.d(TAG, "Greeting: start to load video")
-                YoutubeScreen(api_key = api_key, videoId = result!![0].id.videoId)
+                YoutubeScreen(videoId = result!!.map { it.id.videoId }, activity = activity)
 
         }
     }
