@@ -126,14 +126,40 @@ fun ProfilePage() {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                Column(modifier = Modifier.padding(bottom = 20.dp)) {
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
+                ) {
                     Text(
                         "Personal best", color = Color.White,
                         modifier = Modifier.padding(top = 15.dp, start = 10.dp),
                         fontFamily = semibold, fontSize = 14.sp
                     )
-                    Row() {
-                        
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                            .padding(top = 60.dp, start = 20.dp, end = 20.dp)
+                    ) {
+                        Image(
+                            painterResource(id = R.drawable.step),
+                            "",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Image(
+                            painterResource(id = R.drawable.cal),
+                            "",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Image(
+                            painterResource(id = R.drawable.clock),
+                            "",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                            .padding(top = 95.dp, start = 10.dp, end = 10.dp, bottom = 20.dp)
+                    ) {
+                        Text("100/600", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
+                        Text("52/250", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
+                        Text("15/120", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
                     }
                 }
             }
