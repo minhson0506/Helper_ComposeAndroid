@@ -125,7 +125,7 @@ fun MainPage() {
                         Image(
                             painterResource(id = R.drawable.walk),
                             "",
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(25.dp)
                         )
                     }
                     Button(
@@ -139,7 +139,7 @@ fun MainPage() {
                         Image(
                             painterResource(id = R.drawable.run),
                             "",
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(25.dp)
                         )
                     }
                     Button(
@@ -153,7 +153,7 @@ fun MainPage() {
                         Image(
                             painterResource(id = R.drawable.bike),
                             "",
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(25.dp)
                         )
                     }
                     Button(

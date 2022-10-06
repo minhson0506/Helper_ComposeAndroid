@@ -1,14 +1,15 @@
 package com.example.terveyshelppi.Components
 
+import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -24,9 +25,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.ui.theme.*
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfilePage() {
+    var mDisplayMenu by remember { mutableStateOf(false) }
+    val mContext = LocalContext.current
+
+
     Box(
         modifier = Modifier
             .background(
@@ -40,7 +52,52 @@ fun ProfilePage() {
             .fillMaxSize()
     ) {
         Column() {
-            Row(
+            // Creating a Top bar
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(id = R.string.profile), color = Color.White, fontFamily = regular)
+                }, backgroundColor = Color.Black,
+                actions = {
+                    // Creating Icon button for dropdown menu
+                    Image(
+                        painterResource(id = R.drawable.options),
+                        "",
+                        modifier = Modifier
+                            .padding(end = 20.dp)
+                            .size(25.dp)
+                            .clickable { mDisplayMenu = !mDisplayMenu }
+                    )
+
+                    // Creating a dropdown menu
+                    DropdownMenu(
+                        expanded = mDisplayMenu,
+                        onDismissRequest = { mDisplayMenu = false }
+                    ) {
+
+                        // Creating dropdown menu item, on click
+                        // would create a Toast message
+                        DropdownMenuItem(onClick = {
+                            Toast.makeText(
+                                mContext,
+                                "Edit profile",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }) {
+                            Text(text = "Edit profile")
+                        }
+
+                        // Creating dropdown menu item, on click
+                        // would create a Toast message
+                        DropdownMenuItem(onClick = {
+                            Toast.makeText(mContext, "Update goals", Toast.LENGTH_SHORT).show()
+                        }) {
+                            Text(text = "Update goals")
+                        }
+                    }
+                }
+            )
+            /*Row(
                 horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                     .padding(top = 30.dp)
                     .fillMaxWidth()
@@ -59,7 +116,7 @@ fun ProfilePage() {
                         .padding(end = 20.dp)
                         .size(25.dp)
                 )
-            }
+            }*/
 
             Image(
                 painterResource(id = R.drawable.dog),
@@ -78,7 +135,7 @@ fun ProfilePage() {
                 fontFamily = semibold,
                 modifier = Modifier
                     .align(CenterHorizontally)
-                    .padding(top = 10.dp),
+                    .padding(top = 10.dp, bottom = 10.dp),
                 fontSize = 16.sp
             )
             Card(
@@ -122,46 +179,110 @@ fun ProfilePage() {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 20.dp),
+                    .padding(start = 20.dp, end = 20.dp),
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
+                val text = listOf(
+                    "Most steps",
+                    "Most floors",
+                    "Duration",
+                    "Calories burnt",
+                    "Distance",
+                    "Elevation"
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp)
                 ) {
                     Text(
                         "Personal best", color = Color.White,
-                        modifier = Modifier.padding(top = 15.dp, start = 10.dp),
+                        modifier = Modifier.padding(top = 15.dp, start = 10.dp, bottom = 10.dp),
                         fontFamily = semibold, fontSize = 14.sp
                     )
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                            .padding(top = 60.dp, start = 20.dp, end = 20.dp)
+                    LazyVerticalGrid(
+                        cells = GridCells.Fixed(3)
                     ) {
-                        Image(
-                            painterResource(id = R.drawable.step),
-                            "",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Image(
-                            painterResource(id = R.drawable.cal),
-                            "",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Image(
-                            painterResource(id = R.drawable.clock),
-                            "",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                            .padding(top = 95.dp, start = 10.dp, end = 10.dp, bottom = 20.dp)
-                    ) {
-                        Text("100/600", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-                        Text("52/250", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-                        Text("15/120", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
+                        items(text) {
+                            Card(
+                                modifier = Modifier.padding(
+                                    start = 10.dp,
+                                    end = 10.dp,
+                                    top = 10.dp
+                                ),
+                                backgroundColor = button
+                            ) {
+                                Column(horizontalAlignment = CenterHorizontally) {
+                                    Image(
+                                        painterResource(id = R.drawable.step),
+                                        "",
+                                        modifier = Modifier
+                                            .padding(top = 10.dp)
+                                            .size(20.dp)
+                                    )
+                                    Text(
+                                        text = "20",
+                                        color = Color.White,
+                                        fontSize = 15.sp,
+                                        fontFamily = semibold,
+                                        modifier = Modifier.padding(top = 10.dp)
+                                    )
+                                    Text(
+                                        text = it,
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        fontFamily = regular,
+                                        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
+                                    )
+
+                                }
+                            }
+                        }
                     }
                 }
+
+//                Column(modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(bottom = 20.dp)
+//                ) {
+//                    Text(
+//                        "Personal best", color = Color.White,
+//                        modifier = Modifier.padding(top = 15.dp, start = 10.dp),
+//                        fontFamily = semibold, fontSize = 14.sp
+//                    )
+//                    Row(
+//                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+//                    ) {
+//                        Image(
+//                            painterResource(id = R.drawable.step),
+//                            "",
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                        Divider(modifier = Modifier.size(2.dp))
+//                        Image(
+//                            painterResource(id = R.drawable.cal),
+//                            "",
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                        Image(
+//                            painterResource(id = R.drawable.clock),
+//                            "",
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                    }
+//                    Row(
+//                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 20.dp)
+//                    ) {
+//                        Text("1427", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
+//                        Text("200", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
+//                        Text("60", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
+//                    }
+//                }
             }
         }
     }
