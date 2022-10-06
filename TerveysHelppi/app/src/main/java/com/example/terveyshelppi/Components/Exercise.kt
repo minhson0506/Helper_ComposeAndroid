@@ -1,4 +1,4 @@
-package com.example.terveyshelppi
+package com.example.terveyshelppi.Components
 
 class Exercise {
 }

@@ -2,9 +2,11 @@ package com.example.terveyshelppi.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.terveyshelppi.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -26,3 +28,8 @@ val Typography = Typography(
     )
     */
 )
+val bold = FontFamily(Font(R.font.opensans_bold))
+val light = FontFamily(Font(R.font.opensans_light))
+val medium = FontFamily(Font(R.font.opensans_medium))
+val regular = FontFamily(Font(R.font.opensans_regular))
+val semibold = FontFamily(Font(R.font.opensans_semibold))

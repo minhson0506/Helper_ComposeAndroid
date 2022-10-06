@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">TerveysHelppi</string>
+    <string name="begin">TerveysHelppi was created to help organize your important health information and make it easy to access in a central and secure place</string>
+    <string name="ready">Ready to start?</string>
+    <string name="goal">Set up goals?</string>
+    <string name="name">Name</string>
+    <string name="weight">Weight</string>
+    <string name="height">Height</string>
+    <string name="step">Steps/day</string>
+    <string name="cal">Cals/day</string>
+    <string name="hour">Active hours/day</string>
+    <string name="gm">Good morning</string>
+    <string name="username">User</string>
+    <string name="daily">Daily activity</string>
+    <string name="exercise">Exercise</string>
+    <string name="body">Body composition</string>
+    <string name="heart">Heart rate</string>
+    <string name="record">Record</string>
+    <string name="kg">kg</string>
+    <string name="cm">cm</string>
+    <string name="bpm">BPM</string>
+    <string name="fitness">Fitness</string>
+    <string name="profile">Profile</string>
+    <string name="weekly">Weekly summary</string>
+    <string name="date">September 18 – 24</string>
+    <string name="average">Average active time</string>
+    <string name="time">29</string>
+    <string name="min">mins</string>
 </resources>
