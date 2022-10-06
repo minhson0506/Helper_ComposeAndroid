@@ -2,22 +2,18 @@ package com.example.terveyshelppi.Service.YouTubeService
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ResultViewModel: ViewModel() {
+    val TAG = "terveyshelppi"
     // store data of searching
     val result = MutableLiveData<List<SearchResponse.Item>>(null)
 
     //store data of title
-    private val repository: TitleYoutubeApi.WebServiceRepository = TitleYoutubeApi.WebServiceRepository()
-    val title = MutableLiveData<String>()
+    val title = MutableLiveData<String>(null)
+    val title1 = MutableLiveData<String>(null)
+    val title2= MutableLiveData<String>(null)
+    val title3 = MutableLiveData<String>(null)
+    val title4 = MutableLiveData<String>(null)
 
-    fun getTitle(id: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val titleSearch = repository.search(id)
-            title.postValue(titleSearch.title)
-        }
-    }
+
 }

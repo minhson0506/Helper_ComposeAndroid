@@ -1,7 +1,6 @@
 package com.example.terveyshelppi
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,18 +25,16 @@ import com.example.terveyshelppi.Components.*
 =======
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
-import com.example.terveyshelppi.Service.YouTubeService.SearchResponse
 import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
+<<<<<<< HEAD
 import com.example.terveyshelppi.Service.YouTubeService.searchOnYoutube
 >>>>>>> f449e88 (basic Youtube service)
+=======
+>>>>>>> ab4fc48 (change endpoint and query for get title from api, add title in youtube screen)
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.card
 import com.example.terveyshelppi.ui.theme.regular
@@ -54,6 +51,7 @@ class MainActivity : AppCompatActivity() {
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -78,6 +76,9 @@ class MainActivity : AppCompatActivity() {
 =======
                     Greeting(model)
 >>>>>>> 30ce88e (add title Youtube function)
+=======
+                    YoutubeScreen(model)
+>>>>>>> ab4fc48 (change endpoint and query for get title from api, add title in youtube screen)
                 }
             }
         }
@@ -168,6 +169,7 @@ fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
 @ExperimentalFoundationApi
 @Composable
 fun Greeting(model: ResultViewModel) {
+<<<<<<< HEAD
 >>>>>>> 30ce88e (add title Youtube function)
 
     val TAG = "terveyshelppi"
@@ -189,6 +191,8 @@ fun Greeting(model: ResultViewModel) {
         }
     }
 
+=======
+>>>>>>> ab4fc48 (change endpoint and query for get title from api, add title in youtube screen)
 }
 
 >>>>>>> f449e88 (basic Youtube service)
