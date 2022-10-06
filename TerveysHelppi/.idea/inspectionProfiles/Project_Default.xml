@@ -17,10 +17,13 @@
       <option name="previewFile" value="true" />
     </inspection_tool>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <inspection_tool class="PreviewPickerAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="previewFile" value="true" />
     </inspection_tool>
 =======
 >>>>>>> f449e88 (basic Youtube service)
+=======
+>>>>>>> ab4fc48c05285481e3ebcdd1f9d731712941f188
   </profile>
 </component>

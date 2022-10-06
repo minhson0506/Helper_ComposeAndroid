@@ -2,6 +2,7 @@ package com.example.terveyshelppi
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+<<<<<<< HEAD
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.terveyshelppi.Components.*
 =======
+=======
+>>>>>>> ab4fc48c05285481e3ebcdd1f9d731712941f188
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
@@ -31,10 +34,13 @@ import androidx.compose.runtime.Composable
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.example.terveyshelppi.Service.YouTubeService.searchOnYoutube
 >>>>>>> f449e88 (basic Youtube service)
 =======
 >>>>>>> ab4fc48 (change endpoint and query for get title from api, add title in youtube screen)
+=======
+>>>>>>> ab4fc48c05285481e3ebcdd1f9d731712941f188
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.card
 import com.example.terveyshelppi.ui.theme.regular
@@ -51,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -79,12 +86,16 @@ class MainActivity : AppCompatActivity() {
 =======
                     YoutubeScreen(model)
 >>>>>>> ab4fc48 (change endpoint and query for get title from api, add title in youtube screen)
+=======
+                    YoutubeScreen(model)
+>>>>>>> ab4fc48c05285481e3ebcdd1f9d731712941f188
                 }
             }
         }
     }
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: String) {
     object Home : BottomNavItem("Home", R.drawable.home, "home")
@@ -196,3 +207,10 @@ fun Greeting(model: ResultViewModel) {
 }
 
 >>>>>>> f449e88 (basic Youtube service)
+=======
+@ExperimentalFoundationApi
+@Composable
+fun Greeting(model: ResultViewModel) {
+}
+
+>>>>>>> ab4fc48c05285481e3ebcdd1f9d731712941f188

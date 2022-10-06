@@ -21,12 +21,16 @@ out/
 .gradle/
 build/
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 /TerveysHelppi/gradle.properties
 /gradle.properties
 =======
 /TerveysHelppi/gradle.properties
 >>>>>>> be964b6 (update gitignore)
+=======
+/TerveysHelppi/gradle.properties
+>>>>>>> ab4fc48c05285481e3ebcdd1f9d731712941f188
 
 # Local configuration file (sdk path, etc)
 local.properties
