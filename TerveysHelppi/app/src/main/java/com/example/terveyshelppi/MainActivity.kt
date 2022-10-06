@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Greeting(model)
+                    Greeting(model, activity = this)
                 }
             }
         }
@@ -33,10 +33,9 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun Greeting(model: ResultViewModel) {
+fun Greeting(model: ResultViewModel, activity: AppCompatActivity) {
 
     val TAG = "terveyshelppi"
-    val api_key = BuildConfig.YOUTUBE_API_KEY
     var input by remember { mutableStateOf("") }
     val result: List<SearchResponse.Item>? by model.result.observeAsState(null)
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -48,10 +47,9 @@ fun Greeting(model: ResultViewModel) {
         }) {
             Text(text = "Search")
         }
-//        result?.forEach {
         if (result != null) {
             Log.d(TAG, "Greeting: start to load video")
-                YoutubeScreen(api_key = api_key, videoId = result!![0].id.videoId)
+                YoutubeScreen(videoId = result!!.map { it.id.videoId }, activity = activity)
 
         }
     }
