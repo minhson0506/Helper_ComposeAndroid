@@ -2,10 +2,18 @@ package com.example.terveyshelppi.Service
 
 import android.bluetooth.*
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import java.lang.Integer.min
 import java.util.*
+import kotlin.math.max
+import com.github.mikephil.charting.data.Entry
 
-class GattClientCallback(val model: BLEViewModel) : BluetoothGattCallback() {
+class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
     val TAG = "terveyshelppi"
+    var index = 0
 
     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
@@ -73,7 +81,13 @@ class GattClientCallback(val model: BLEViewModel) : BluetoothGattCallback() {
     ) {
         val bpm = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1)
         Log.d(TAG, "BPM: $bpm")
-        model.mBPM.postValue(bpm)
-        Log.d(TAG, "heart rate is ${model.mBPM.value}")
+        if (bpm != null) {
+            model.mBPM.postValue(bpm)
+            if (model.highmBPM.value?.compareTo(bpm) ?: -1 < 0) model.highmBPM.postValue(bpm)
+            if (model.lowmBPM.value?.compareTo(bpm) ?: 1 > 0) model.lowmBPM.postValue(bpm)
+            Log.d(TAG, "heart rate is ${model.mBPM.value}")
+            model.graph.value?.add(Entry(index.toFloat(), bpm.toFloat()))
+            index++
+        }
     }
 }

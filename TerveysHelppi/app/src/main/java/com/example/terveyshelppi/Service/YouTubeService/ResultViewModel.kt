@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import com.github.mikephil.charting.data.Entry
 
 class ResultViewModel(application: Application): AndroidViewModel(application) {
     val TAG = "terveyshelppi"
@@ -30,6 +31,12 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     private val roomDB = RoomDB.getInstance(application)
     private val viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Default)
+    
+    // store heart rate
+    val mBPM = MutableLiveData(0)
+    val highmBPM = MutableLiveData(0)
+    val lowmBPM = MutableLiveData(300)
+    val graph = MutableLiveData(mutableListOf<Entry>())
 
     //get user info
     fun getInfo(): LiveData<UserData> = roomDB.userDao().getAll()
