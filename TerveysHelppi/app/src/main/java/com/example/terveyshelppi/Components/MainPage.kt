@@ -3,7 +3,6 @@ package com.example.terveyshelppi.Components
 import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import com.example.terveyshelppi.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
