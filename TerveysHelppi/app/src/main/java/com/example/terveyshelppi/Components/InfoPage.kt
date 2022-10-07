@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.SemanticsProperties.EditableText
@@ -47,13 +48,13 @@ fun InfoLanding(navController: NavController) {
             )
             .fillMaxSize()
     ) {
-        Column() {
+        Column(modifier = Modifier.fillMaxSize()) {
             Text(
                 stringResource(id = R.string.ready),
                 color = Color.White,
                 fontSize = 18.sp,
                 fontFamily = semibold,
-                modifier = Modifier.padding(top = 60.dp, start = 30.dp)
+                modifier = Modifier.padding(top = 30.dp, start = 30.dp)
             )
             TextField(
                 value = name,
@@ -96,7 +97,7 @@ fun InfoLanding(navController: NavController) {
                 color = Color.White,
                 fontSize = 18.sp,
                 fontFamily = semibold,
-                modifier = Modifier.padding(top = 80.dp, start = 30.dp)
+                modifier = Modifier.padding(top = 50.dp, start = 30.dp)
             )
             TextField(
                 value = height.toString(),

@@ -26,4 +26,6 @@
     <string name="average">Average active time</string>
     <string name="time">29</string>
     <string name="min">mins</string>
+    <string name="search">Search ...</string>
+    <string name="pb">Personal best</string>
 </resources>

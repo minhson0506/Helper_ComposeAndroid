@@ -1,10 +1,7 @@
 package com.example.terveyshelppi.Components
 
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -38,7 +35,6 @@ fun ProfilePage() {
     var mDisplayMenu by remember { mutableStateOf(false) }
     val mContext = LocalContext.current
 
-
     Box(
         modifier = Modifier
             .background(
@@ -51,73 +47,57 @@ fun ProfilePage() {
             )
             .fillMaxSize()
     ) {
-        Column() {
-            // Creating a Top bar
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(id = R.string.profile), color = Color.White, fontFamily = regular)
-                }, backgroundColor = Color.Black,
-                actions = {
-                    // Creating Icon button for dropdown menu
-                    Image(
-                        painterResource(id = R.drawable.options),
-                        "",
-                        modifier = Modifier
-                            .padding(end = 20.dp)
-                            .size(25.dp)
-                            .clickable { mDisplayMenu = !mDisplayMenu }
-                    )
-
-                    // Creating a dropdown menu
-                    DropdownMenu(
-                        expanded = mDisplayMenu,
-                        onDismissRequest = { mDisplayMenu = false }
-                    ) {
-
-                        // Creating dropdown menu item, on click
-                        // would create a Toast message
-                        DropdownMenuItem(onClick = {
-                            Toast.makeText(
-                                mContext,
-                                "Edit profile",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }) {
-                            Text(text = "Edit profile")
-                        }
-
-                        // Creating dropdown menu item, on click
-                        // would create a Toast message
-                        DropdownMenuItem(onClick = {
-                            Toast.makeText(mContext, "Update goals", Toast.LENGTH_SHORT).show()
-                        }) {
-                            Text(text = "Update goals")
-                        }
-                    }
-                }
-            )
-            /*Row(
-                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                    .padding(top = 30.dp)
-                    .fillMaxWidth()
-            ) {
+        TopAppBar(
+            title = {
                 Text(
                     stringResource(id = R.string.profile),
                     color = Color.White,
-                    modifier = Modifier.padding(start = 20.dp),
-                    fontFamily = regular,
-                    fontSize = 20.sp
+                    fontFamily = regular
                 )
+            }, backgroundColor = Color.Black,
+            actions = {
+                // Creating Icon button for dropdown menu
                 Image(
                     painterResource(id = R.drawable.options),
                     "",
                     modifier = Modifier
                         .padding(end = 20.dp)
                         .size(25.dp)
+                        .clickable { mDisplayMenu = !mDisplayMenu }
                 )
-            }*/
 
+                // Creating a dropdown menu
+                DropdownMenu(
+                    expanded = mDisplayMenu,
+                    onDismissRequest = { mDisplayMenu = false }
+                ) {
+
+                    // Creating dropdown menu item, on click
+                    // would create a Toast message
+                    DropdownMenuItem(onClick = {
+                        Toast.makeText(
+                            mContext,
+                            "Edit profile",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }) {
+                        Text(text = "Edit profile")
+                    }
+
+                    // Creating dropdown menu item, on click
+                    // would create a Toast message
+                    DropdownMenuItem(onClick = {
+                        Toast.makeText(mContext, "Update goals", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Text(text = "Update goals")
+                    }
+                }
+            }
+        )
+        Column(modifier = Modifier
+            .padding(top = 30.dp, bottom = 20.dp)
+            .fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
+            // Creating a Top bar
             Image(
                 painterResource(id = R.drawable.dog),
                 contentDescription = "dog",
@@ -136,7 +116,7 @@ fun ProfilePage() {
                 modifier = Modifier
                     .align(CenterHorizontally)
                     .padding(top = 10.dp, bottom = 10.dp),
-                fontSize = 16.sp
+                fontSize = 18.sp
             )
             Card(
                 modifier = Modifier
@@ -149,29 +129,35 @@ fun ProfilePage() {
                     Text(
                         stringResource(id = R.string.weekly), color = Color.White,
                         modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-                        fontFamily = semibold, fontSize = 14.sp
+                        fontFamily = semibold, fontSize = 16.sp
                     )
                     Text(
                         stringResource(id = R.string.date), color = smallText,
                         modifier = Modifier.padding(top = 10.dp, start = 10.dp),
                         fontFamily = light, fontSize = 12.sp
                     )
-                    Row(modifier = Modifier.padding(top = 20.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 20.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Text(
                             stringResource(id = R.string.average), color = Color.White,
                             modifier = Modifier.padding(start = 10.dp),
                             fontFamily = regular, fontSize = 14.sp
                         )
-                        Text(
-                            stringResource(id = R.string.time), color = Color.White,
-                            modifier = Modifier.padding(start = 140.dp),
-                            fontFamily = semibold, fontSize = 14.sp
-                        )
-                        Text(
-                            stringResource(id = R.string.min), color = Color.White,
-                            modifier = Modifier.padding(start = 5.dp),
-                            fontFamily = light, fontSize = 14.sp
-                        )
+                        Row() {
+                            Text(
+                                stringResource(id = R.string.time), color = Color.White,
+                                fontFamily = semibold, fontSize = 14.sp
+                            )
+                            Text(
+                                stringResource(id = R.string.min), color = Color.White,
+                                modifier = Modifier.padding(start = 5.dp, end = 10.dp),
+                                fontFamily = light, fontSize = 14.sp
+                            )
+                        }
                     }
 
                 }
@@ -183,13 +169,14 @@ fun ProfilePage() {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                val text = listOf(
-                    "Most steps",
-                    "Most floors",
-                    "Duration",
-                    "Calories burnt",
-                    "Distance",
-                    "Elevation"
+                val textArray = listOf(
+                    Triple(R.drawable.step, 2000, "Most steps"),
+                    Triple(R.drawable.floor, 3, "Most floors"),
+                    Triple(R.drawable.clock, 50, "Duration"),
+                    Triple(R.drawable.cal, 100, "Calories burnt"),
+                    Triple(R.drawable.distance, 2, "Distance"),
+                    Triple(R.drawable.elevation, 20, "Elevation"),
+                    Triple(R.drawable.speed, 20, "Speed")
                 )
                 Column(
                     modifier = Modifier
@@ -197,14 +184,14 @@ fun ProfilePage() {
                         .padding(bottom = 20.dp)
                 ) {
                     Text(
-                        "Personal best", color = Color.White,
-                        modifier = Modifier.padding(top = 15.dp, start = 10.dp, bottom = 10.dp),
-                        fontFamily = semibold, fontSize = 14.sp
+                        stringResource(id = R.string.pb), color = Color.White,
+                        modifier = Modifier.padding(top = 15.dp, start = 10.dp, bottom = 20.dp),
+                        fontFamily = semibold, fontSize = 16.sp
                     )
                     LazyVerticalGrid(
                         cells = GridCells.Fixed(3)
                     ) {
-                        items(text) {
+                        items(textArray) {
                             Card(
                                 modifier = Modifier.padding(
                                     start = 10.dp,
@@ -215,21 +202,21 @@ fun ProfilePage() {
                             ) {
                                 Column(horizontalAlignment = CenterHorizontally) {
                                     Image(
-                                        painterResource(id = R.drawable.step),
+                                        painterResource(id = it.first),
                                         "",
                                         modifier = Modifier
                                             .padding(top = 10.dp)
                                             .size(20.dp)
                                     )
                                     Text(
-                                        text = "20",
+                                        text = it.second.toString(),
                                         color = Color.White,
                                         fontSize = 15.sp,
                                         fontFamily = semibold,
                                         modifier = Modifier.padding(top = 10.dp)
                                     )
                                     Text(
-                                        text = it,
+                                        text = it.third,
                                         color = Color.White,
                                         fontSize = 12.sp,
                                         fontFamily = regular,
@@ -241,48 +228,6 @@ fun ProfilePage() {
                         }
                     }
                 }
-
-//                Column(modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(bottom = 20.dp)
-//                ) {
-//                    Text(
-//                        "Personal best", color = Color.White,
-//                        modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-//                        fontFamily = semibold, fontSize = 14.sp
-//                    )
-//                    Row(
-//                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 20.dp, start = 20.dp, end = 20.dp)
-//                    ) {
-//                        Image(
-//                            painterResource(id = R.drawable.step),
-//                            "",
-//                            modifier = Modifier.size(20.dp)
-//                        )
-//                        Divider(modifier = Modifier.size(2.dp))
-//                        Image(
-//                            painterResource(id = R.drawable.cal),
-//                            "",
-//                            modifier = Modifier.size(20.dp)
-//                        )
-//                        Image(
-//                            painterResource(id = R.drawable.clock),
-//                            "",
-//                            modifier = Modifier.size(20.dp)
-//                        )
-//                    }
-//                    Row(
-//                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 20.dp)
-//                    ) {
-//                        Text("1427", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-//                        Text("200", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-//                        Text("60", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-//                    }
-//                }
             }
         }
     }

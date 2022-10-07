@@ -5,6 +5,8 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -118,8 +120,10 @@ fun MainScreen(model: ResultViewModel) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
-        content = {
-            NavigationGraph(navController = navController, model = model)
+        content = { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                NavigationGraph(navController = navController, model = model)
+            }
         }
     )
 }
