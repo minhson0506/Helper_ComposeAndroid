@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
-                            LandingPage(navController = navController)
+                            LandingPage(navController = navController, application)
                         }
                         composable("details") {
                             InfoLanding(navController = navController, application)

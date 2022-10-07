@@ -1,11 +1,14 @@
 package com.example.terveyshelppi.Components
 
+import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -22,10 +25,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun LandingPage(navController: NavController) {
+fun LandingPage(navController: NavController, application: Application) {
+    val TAG = "terveyshelppi"
+
+    var user by remember { mutableStateOf("") }
+
+    val viewModel = ResultViewModel(application)
+    val data = viewModel.getInfo().observeAsState()
+
+    if (data.value != null) {
+        user = data.value?.name.toString()
+    }
+
+    Log.d(TAG, "LandingPage: $user")
+
     Box(
         modifier = Modifier
             .background(
@@ -86,19 +103,10 @@ fun LandingPage(navController: NavController) {
                     .padding(top = 20.dp)
                     .size(50.dp)
                     .clickable(onClick = {
-                        navController.navigate("details")
+                        if (user != "") navController.navigate("main") else navController.navigate("details")
                     }),
                 alignment = Alignment.Center
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TerveysHelppiTheme {
-        val navController = rememberNavController()
-        LandingPage(navController)
     }
 }

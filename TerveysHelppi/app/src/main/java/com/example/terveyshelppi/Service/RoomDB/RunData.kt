@@ -8,7 +8,7 @@ import java.util.*
 data class RunData(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-    val timeStart: Int,
+    val timeStart: String,
     val distance: Int,
     val duration: Int,
     val averageSpeed: Int,
