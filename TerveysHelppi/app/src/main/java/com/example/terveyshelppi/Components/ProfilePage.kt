@@ -170,13 +170,13 @@ fun ProfilePage() {
                 elevation = 4.dp
             ) {
                 val textArray = listOf(
-                    Triple(R.drawable.step, 2000, "Most steps"),
-                    Triple(R.drawable.floor, 3, "Most floors"),
-                    Triple(R.drawable.clock, 50, "Duration"),
-                    Triple(R.drawable.cal, 100, "Calories burnt"),
-                    Triple(R.drawable.distance, 2, "Distance"),
-                    Triple(R.drawable.elevation, 20, "Elevation"),
-                    Triple(R.drawable.speed, 20, "Speed")
+                    Triple(R.drawable.step, 2000, Pair("steps", "Most steps")),
+                    Triple(R.drawable.floor, 3, Pair("floors", "Most floors")),
+                    Triple(R.drawable.clock, 50, Pair("minutes", "Duration")),
+                    Triple(R.drawable.cal, 100, Pair("Cals", "Calories burnt")),
+                    Triple(R.drawable.distance, 2, Pair("km", "Distance")),
+                    Triple(R.drawable.elevation, 20, Pair("m", "Elevation")),
+                    Triple(R.drawable.speed, 20, Pair("km/h", "Speed"))
                 )
                 Column(
                     modifier = Modifier
@@ -216,7 +216,14 @@ fun ProfilePage() {
                                         modifier = Modifier.padding(top = 10.dp)
                                     )
                                     Text(
-                                        text = it.third,
+                                        text = it.third.first,
+                                        color = Color.White,
+                                        fontSize = 10.sp,
+                                        fontFamily = light,
+                                        modifier = Modifier.padding(top = 5.dp)
+                                    )
+                                    Text(
+                                        text = it.third.second,
                                         color = Color.White,
                                         fontSize = 12.sp,
                                         fontFamily = regular,

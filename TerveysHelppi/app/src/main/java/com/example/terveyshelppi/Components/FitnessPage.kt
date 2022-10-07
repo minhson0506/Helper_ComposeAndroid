@@ -54,13 +54,3 @@ fun FitnessPage(model: ResultViewModel) {
         }
     }
 }
-
-@OptIn(ExperimentalFoundationApi::class)
-@Preview(showBackground = true)
-@Composable
-fun FitnessPreview() {
-    TerveysHelppiTheme {
-        val model = ResultViewModel()
-        FitnessPage(model)
-    }
-}

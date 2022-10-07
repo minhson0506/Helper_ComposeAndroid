@@ -1,5 +1,6 @@
 package com.example.terveyshelppi
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -25,12 +26,16 @@ import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
 
 class MainActivity : AppCompatActivity() {
-    var model = ResultViewModel()
+    companion object {
+        private lateinit var model: ResultViewModel
+    }
+
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            model = ResultViewModel(application)
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
@@ -39,11 +44,12 @@ class MainActivity : AppCompatActivity() {
                             LandingPage(navController = navController)
                         }
                         composable("details") {
-                            InfoLanding(navController = navController)
+                            InfoLanding(navController = navController, application)
                         }
                         composable("main") {
-                            MainScreen(model = model)
+                            MainScreen(model = model, application)
                         }
+
                     }
                 }
             }
@@ -60,16 +66,19 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 
 @ExperimentalFoundationApi
 @Composable
-fun NavigationGraph(navController: NavHostController, model: ResultViewModel) {
+fun NavigationGraph(navController: NavHostController, model: ResultViewModel, application: Application) {
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
             FitnessPage(model = model)
         }
         composable(BottomNavItem.Home.screen_route) {
-            MainPage()
+            MainPage(application, navController)
         }
         composable(BottomNavItem.Profile.screen_route) {
             ProfilePage()
+        }
+        composable("exercise") {
+            Exercise(navController)
         }
     }
 }
@@ -116,13 +125,13 @@ fun BottomNavigationBar(navController: NavController) {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen(model: ResultViewModel) {
+fun MainScreen(model: ResultViewModel, application: Application) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
-                NavigationGraph(navController = navController, model = model)
+                NavigationGraph(navController = navController, model = model, application)
             }
         }
     )

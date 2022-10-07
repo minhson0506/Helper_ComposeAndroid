@@ -1,5 +1,7 @@
 package com.example.terveyshelppi.Components
 
+import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import com.example.terveyshelppi.R
 import androidx.compose.foundation.Image
@@ -7,7 +9,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -18,10 +21,35 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun MainPage() {
+fun MainPage(application: Application, navController: NavController) {
+    val TAG = "terveyshelppi"
+
+    var user by remember { mutableStateOf("") }
+    var totalSteps by remember { mutableStateOf("") }
+    var totalCalories by remember { mutableStateOf("") }
+    var totalHours by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+
+    val viewModel = ResultViewModel(application)
+    val data = viewModel.getInfo().observeAsState()
+
+    if (data.value != null) {
+        user = data.value?.name.toString()
+        totalSteps = data.value!!.totalSteps.toString()
+        totalCalories = data.value!!.totalCalories.toString()
+        totalHours = data.value!!.totalHours.toString()
+        weight = data.value!!.weight.toString()
+        height = data.value!!.height.toString()
+    }
+
+    Log.d(TAG, "MainPage: userinfo $data")
+
     Box(
         modifier = Modifier
             .background(
@@ -43,7 +71,7 @@ fun MainPage() {
                     fontSize = 20.sp
                 )
                 Text(
-                    stringResource(id = R.string.username),
+                    if (user != "") user else stringResource(id = R.string.username),
                     color = Color.White,
                     modifier = Modifier.padding(start = 5.dp),
                     fontFamily = semibold,
@@ -100,19 +128,19 @@ fun MainPage() {
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                "100/600",
+                                totalSteps,
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontFamily = semibold
                             )
                             Text(
-                                "52/250",
+                                totalCalories,
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontFamily = semibold
                             )
                             Text(
-                                "15/120",
+                                totalHours,
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontFamily = semibold
@@ -140,6 +168,7 @@ fun MainPage() {
                         ) {
                             Button(
                                 onClick = {
+                                    navController.navigate("exercise")
                                 },
                                 modifier = Modifier.size(45.dp),
                                 shape = CircleShape,
@@ -218,11 +247,15 @@ fun MainPage() {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "-- " + stringResource(id = R.string.kg), color = Color.White,
+                                if (weight != "") weight + " " + stringResource(id = R.string.kg) else "-- " + stringResource(
+                                    id = R.string.kg
+                                ), color = Color.White,
                                 fontFamily = semibold, fontSize = 14.sp
                             )
                             Text(
-                                "-- " + stringResource(id = R.string.cm), color = Color.White,
+                                if (height != "") height + " " + stringResource(id = R.string.cm) else "-- " + stringResource(
+                                    id = R.string.cm
+                                ), color = Color.White,
                                 fontFamily = semibold, fontSize = 14.sp
                             )
                             Button(
@@ -248,7 +281,7 @@ fun MainPage() {
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
-                    Column(modifier = Modifier.padding( start = 10.dp, top = 15.dp, end = 10.dp)) {
+                    Column(modifier = Modifier.padding(start = 10.dp, top = 15.dp, end = 10.dp)) {
                         Text(
                             stringResource(id = R.string.heart), color = Color.White,
                             fontFamily = semibold, fontSize = 16.sp
@@ -290,13 +323,5 @@ fun MainPage() {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainPagePreview() {
-    TerveysHelppiTheme {
-        MainPage()
     }
 }
