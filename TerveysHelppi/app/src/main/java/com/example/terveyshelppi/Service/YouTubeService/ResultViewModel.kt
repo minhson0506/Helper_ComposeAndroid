@@ -2,6 +2,7 @@ package com.example.terveyshelppi.Service.YouTubeService
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.github.mikephil.charting.data.Entry
 
 class ResultViewModel: ViewModel() {
     val TAG = "terveyshelppi"
@@ -15,5 +16,10 @@ class ResultViewModel: ViewModel() {
     val title3 = MutableLiveData<String>(null)
     val title4 = MutableLiveData<String>(null)
 
+    // store heart rate
+    val mBPM = MutableLiveData(0)
+    val highmBPM = MutableLiveData(0)
+    val lowmBPM = MutableLiveData(300)
+    val graph = MutableLiveData(mutableListOf<Entry>())
 
 }

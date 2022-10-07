@@ -1,26 +1,35 @@
 package com.example.terveyshelppi.Components
 
-import androidx.compose.foundation.BorderStroke
-import com.example.terveyshelppi.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun MainPage() {
+fun MainPage(model: ResultViewModel) {
+    val heartRate by model.mBPM.observeAsState()
+    val highHeartRate by model.highmBPM.observeAsState()
+    val lowHeartRate by model.lowmBPM.observeAsState()
+
     Box(
         modifier = Modifier
             .background(
@@ -33,7 +42,7 @@ fun MainPage() {
             )
             .fillMaxSize()
     ) {
-        Column() {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Row() {
                 Text(
                     stringResource(id = R.string.gm),
@@ -205,7 +214,7 @@ fun MainPage() {
                             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                     ) {
                         Text(
-                            stringResource(id = R.string.record),
+                            stringResource(id = R.string.Reset),
                             color = Color.White,
                             fontFamily = regular,
                             fontSize = 12.sp,
@@ -230,38 +239,72 @@ fun MainPage() {
                         .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                 ) {
                     Text(
-                        "95 " + stringResource(id = R.string.bpm), color = Color.White,
-                        fontFamily = semibold, fontSize = 14.sp
+                        heartRate.toString() + stringResource(id = R.string.bpm),
+                        color = Color.White,
+                        fontFamily = semibold,
+                        fontSize = 14.sp
                     )
                     Text(
-                        "15:30", color = Color.White,
-                        fontFamily = light, fontSize = 10.sp, modifier = Modifier.padding(5.dp)
+                        text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
+                        color = Color.White,
+                        fontFamily = light,
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(5.dp)
+                    )
+                    Text(
+                        text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
+                        color = Color.White,
+                        fontFamily = light,
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(5.dp)
                     )
                     Button(
                         onClick = {
+                            model.highmBPM.postValue(0)
+                            model.lowmBPM.postValue(300)
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                         contentPadding = PaddingValues(7.dp),
-                        modifier = Modifier.padding(start = 165.dp)
+                        modifier = Modifier
+                            .padding(start = 165.dp)
                             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                     ) {
                         Text(
-                            stringResource(id = R.string.record),
+                            stringResource(id = R.string.Reset),
                             color = Color.White,
                             fontFamily = regular,
                             fontSize = 12.sp,
                         )
                     }
+                    Button(
+                        onClick = {
+
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                        contentPadding = PaddingValues(7.dp),
+                        modifier = Modifier
+                            .padding(start = 165.dp)
+                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                    ) {
+                        Text(
+                            stringResource(id = R.string.graph),
+                            color = Color.White,
+                            fontFamily = regular,
+                            fontSize = 12.sp,
+                        )
+                    }
+
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MainPagePreview() {
-    TerveysHelppiTheme {
-        MainPage()
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun MainPagePreview() {
+//    TerveysHelppiTheme {
+//        MainPage()
+//    }
+//}
