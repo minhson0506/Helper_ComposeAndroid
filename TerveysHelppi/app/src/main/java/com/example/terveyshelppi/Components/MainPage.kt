@@ -59,7 +59,7 @@ fun MainPage(application: Application, navController: NavController, model: Resu
         height = data.value!!.height.toString()
     }
 
-    Log.d(TAG, "MainPage: userinfo $data")    
+    Log.d(TAG, "MainPage: userinfo $data")
 
     Box(
         modifier = Modifier
@@ -247,7 +247,7 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                 ) {
                     Column(modifier = Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp)) {
                         Text(
-                            stringResource(id = R.string.Reset),
+                            stringResource(id = R.string.body),
                             color = Color.White,
                             fontFamily = regular,
                             fontSize = 12.sp,
@@ -295,94 +295,71 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                     elevation = 4.dp
                 ) {
                     Text(
-                        heartRate.toString() + stringResource(id = R.string.bpm),
-                        color = Color.White,
-                        fontFamily = semibold,
-                        fontSize = 14.sp
+                        stringResource(id = R.string.heart), color = Color.White,
+                        modifier = Modifier.padding(top = 15.dp, start = 10.dp),
+                        fontFamily = semibold, fontSize = 14.sp
                     )
-                    Text(
-                        text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
-                        color = Color.White,
-                        fontFamily = light,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(5.dp)
-                    )
-                    Text(
-                        text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
-                        color = Color.White,
-                        fontFamily = light,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(5.dp)
-                    )
-                    Button(
-                        onClick = {
-                            model.highmBPM.postValue(0)
-                            model.lowmBPM.postValue(300)
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                        contentPadding = PaddingValues(7.dp),
+                    Row(
                         modifier = Modifier
-                            .padding(start = 165.dp)
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                            .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                     ) {
                         Text(
-                            stringResource(id = R.string.Reset),
+                            heartRate.toString() + stringResource(id = R.string.bpm),
                             color = Color.White,
-                            fontFamily = regular,
-                            fontSize = 12.sp,
+                            fontFamily = semibold,
+                            fontSize = 14.sp
                         )
-                        Row(
+                        Text(
+                            text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
+                            color = Color.White,
+                            fontFamily = light,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                        Text(
+                            text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
+                            color = Color.White,
+                            fontFamily = light,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                        Button(
+                            onClick = {
+                                model.highmBPM.postValue(0)
+                                model.lowmBPM.postValue(300)
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                            contentPadding = PaddingValues(7.dp),
                             modifier = Modifier
-                                .padding(top = 20.dp, bottom = 20.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .padding(start = 165.dp)
+                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                         ) {
-                            Row() {
-                                Text(
-                                    "95 " + stringResource(id = R.string.bpm), color = Color.White,
-                                    fontFamily = semibold, fontSize = 14.sp
-                                )
-                                Text(
-                                    "15:30",
-                                    color = Color.White,
-                                    fontFamily = light,
-                                    fontSize = 10.sp,
-                                    modifier = Modifier.padding(5.dp)
-                                )
-                            }
-                            Button(
-                                onClick = {
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                            ) {
-                                Text(
-                                    stringResource(id = R.string.record),
-                                    color = Color.White,
-                                    fontFamily = regular,
-                                    fontSize = 14.sp,
-                                )
-                            }
+                            Text(
+                                stringResource(id = R.string.Reset),
+                                color = Color.White,
+                                fontFamily = regular,
+                                fontSize = 12.sp,
+                            )
+                        }
+                        //click to show graph
+                        Button(
+                            onClick = {
+
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                            contentPadding = PaddingValues(7.dp),
+                            modifier = Modifier
+                                .padding(start = 165.dp)
+                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                        ) {
+                            Text(
+                                stringResource(id = R.string.graph),
+                                color = Color.White,
+                                fontFamily = regular,
+                                fontSize = 12.sp,
+                            )
                         }
                     }
-                    Button(
-                        onClick = {
-
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                        contentPadding = PaddingValues(7.dp),
-                        modifier = Modifier
-                            .padding(start = 165.dp)
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                    ) {
-                        Text(
-                            stringResource(id = R.string.graph),
-                            color = Color.White,
-                            fontFamily = regular,
-                            fontSize = 12.sp,
-                        )
-                    }
-
                 }
             }
         }

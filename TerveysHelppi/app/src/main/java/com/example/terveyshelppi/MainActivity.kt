@@ -2,12 +2,14 @@ package com.example.terveyshelppi
 
 import android.app.Application
 import android.Manifest
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -44,11 +46,20 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
+        hasPermissions(bluetoothAdapter = bluetoothAdapter!!, activity = this)
         // check heart rate sensor and connect
-
+        if (androidx.core.app.ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.BLUETOOTH_CONNECT
+            ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 1)
+        }
             for (btDev in bluetoothAdapter?.bondedDevices!!) {
                 Log.d(TAG, "bluetooth device bonded is: : ${btDev.name}")
                 if (btDev.name.startsWith("Polar")) {
@@ -60,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         setContent {
-            hasPermissions(bluetoothAdapter = bluetoothAdapter!!, activity = this)
+
             val navController = rememberNavController()
             model = ResultViewModel(application)
             TerveysHelppiTheme {
@@ -74,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                             InfoLanding(navController = navController, application)
                         }
                         composable("main") {
-                            MainScreen(model = model, application)
+                            MainScreen(model = model, application, this@MainActivity)
                         }
 
                     }
@@ -118,10 +129,10 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 
 @ExperimentalFoundationApi
 @Composable
-fun NavigationGraph(navController: NavHostController, model: ResultViewModel, application: Application) {
+fun NavigationGraph(navController: NavHostController, model: ResultViewModel, application: Application, activity: AppCompatActivity) {
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
-            FitnessPage(model = model)
+            FitnessPage(model = model, activity = activity)
         }
         composable(BottomNavItem.Home.screen_route) {
             MainPage(application, navController, model)
@@ -177,13 +188,13 @@ fun BottomNavigationBar(navController: NavController) {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen(model: ResultViewModel, application: Application) {
+fun MainScreen(model: ResultViewModel, application: Application, activity: AppCompatActivity) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
-                NavigationGraph(navController = navController, model = model, application)
+                NavigationGraph(navController = navController, model = model, application = application, activity = activity)
             }
         }
     )

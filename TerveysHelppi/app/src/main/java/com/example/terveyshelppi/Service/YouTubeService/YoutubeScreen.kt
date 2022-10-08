@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import coil.compose.rememberAsyncImagePainter
@@ -58,12 +59,14 @@ fun searchOnYoutube(keywords: String, model: ResultViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-fun YoutubeScreen(model: ResultViewModel) {
+fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
     val TAG = "terveyshelppi"
     Log.d(TAG, "YoutubeScreen: start to find video from videoid")
 
     var displayYoutube by remember { mutableStateOf(false) }
+
     var id by remember { mutableStateOf("") }
+
     val title: String? by model.title.observeAsState(null)
     val title1: String? by model.title1.observeAsState(null)
     val title2: String? by model.title2.observeAsState(null)
@@ -78,7 +81,7 @@ fun YoutubeScreen(model: ResultViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp, start = 20.dp, ), verticalAlignment = Alignment.CenterVertically
+            .padding(top = 20.dp, start = 20.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
             value = input,
@@ -107,7 +110,7 @@ fun YoutubeScreen(model: ResultViewModel) {
         Button(
             onClick = {
                 displayYoutube = false
-                searchOnYoutube(input, model)
+                searchOnYoutube (input, model)
                 input = ""
                 bool = false
                 Log.d(TAG, "Greeting: ${result.toString()}")
@@ -175,7 +178,15 @@ fun YoutubeScreen(model: ResultViewModel) {
 
         Log.d(TAG, "start to load video")
 
-        if (displayYoutube) playVideo(videoId = id)
+        //play youtube video
+        if (displayYoutube) playVideo(videoId = id) else {
+            val fragment: Fragment? =
+                activity.supportFragmentManager.findFragmentById(R.id.ytPlayer)
+            if (fragment != null)
+                activity.supportFragmentManager.beginTransaction().remove(fragment).commit();
+        }
+
+
         for (i in 0..4) {
             if (videoId != null) {
                 Image(
@@ -260,6 +271,7 @@ fun playVideo(videoId: String) {
     val context = LocalContext.current
     val api_key = BuildConfig.YOUTUBE_API_KEY
     Log.d(TAG, "playVideo: with id $videoId")
+
     AndroidView(factory = {
         val fm = (context as AppCompatActivity).supportFragmentManager
         val view = FragmentContainerView(it).apply {
@@ -282,8 +294,9 @@ fun playVideo(videoId: String) {
                         wasRestored: Boolean,
                     ) {
                         Log.d(TAG, "onInitializationSuccess: string 0")
+
                         if (!wasRestored) {
-                            player.cueVideo(videoId)
+                            player.loadVideo(videoId)
                         }
                     }
                 })
@@ -294,4 +307,5 @@ fun playVideo(videoId: String) {
         }
         view
     })
+
 }

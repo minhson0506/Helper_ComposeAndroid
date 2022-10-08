@@ -1,5 +1,6 @@
 package com.example.terveyshelppi.Components
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,7 +25,7 @@ import com.example.terveyshelppi.ui.theme.regular
 
 @ExperimentalFoundationApi
 @Composable
-fun FitnessPage(model: ResultViewModel) {
+fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
     Box(
         modifier = Modifier
             .background(
@@ -50,7 +51,7 @@ fun FitnessPage(model: ResultViewModel) {
 //                fontFamily = regular,
 //                fontSize = 20.sp
 //            )
-            YoutubeScreen(model = model)
+            YoutubeScreen(model = model, activity)
         }
     }
 }
