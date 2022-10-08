@@ -1,10 +1,17 @@
 package com.example.terveyshelppi.Components
 
+import android.app.Application
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -20,15 +27,39 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun MainPage(model: ResultViewModel) {
+fun MainPage(application: Application, navController: NavController, model: ResultViewModel) {
+    val TAG = "terveyshelppi"
+
+    var user by remember { mutableStateOf("") }
+    var totalSteps by remember { mutableStateOf("") }
+    var totalCalories by remember { mutableStateOf("") }
+    var totalHours by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+
+    val viewModel = ResultViewModel(application)
+    val data = viewModel.getInfo().observeAsState()
+
     val heartRate by model.mBPM.observeAsState()
     val highHeartRate by model.highmBPM.observeAsState()
     val lowHeartRate by model.lowmBPM.observeAsState()
+
+    if (data.value != null) {
+        user = data.value?.name.toString()
+        totalSteps = data.value!!.totalSteps.toString()
+        totalCalories = data.value!!.totalCalories.toString()
+        totalHours = data.value!!.totalHours.toString()
+        weight = data.value!!.weight.toString()
+        height = data.value!!.height.toString()
+    }
+
+    Log.d(TAG, "MainPage: userinfo $data")
 
     Box(
         modifier = Modifier
@@ -43,18 +74,17 @@ fun MainPage(model: ResultViewModel) {
             .fillMaxSize()
     ) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            Row() {
+            Row(modifier = Modifier.padding(top = 30.dp, start = 20.dp, bottom = 15.dp)) {
                 Text(
                     stringResource(id = R.string.gm),
                     color = Color.White,
-                    modifier = Modifier.padding(top = 30.dp, start = 20.dp),
                     fontFamily = regular,
                     fontSize = 20.sp
                 )
                 Text(
-                    stringResource(id = R.string.username),
+                    if (user != "") user else stringResource(id = R.string.username),
                     color = Color.White,
-                    modifier = Modifier.padding(top = 30.dp, start = 5.dp),
+                    modifier = Modifier.padding(start = 5.dp),
                     fontFamily = semibold,
                     fontSize = 20.sp
                 )
@@ -62,249 +92,276 @@ fun MainPage(model: ResultViewModel) {
                     painterResource(id = R.drawable.sun),
                     "",
                     modifier = Modifier
-                        .padding(top = 35.dp, start = 10.dp)
+                        .padding(top = 5.dp, start = 10.dp)
                         .size(20.dp)
                 )
             }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 20.dp),
-                backgroundColor = card,
-                elevation = 4.dp
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    stringResource(id = R.string.daily), color = Color.White,
-                    modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-                    fontFamily = semibold, fontSize = 14.sp
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                        .padding(top = 60.dp, start = 20.dp, end = 20.dp)
-                ) {
-                    Image(
-                        painterResource(id = R.drawable.step),
-                        "",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Image(
-                        painterResource(id = R.drawable.cal),
-                        "",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Image(
-                        painterResource(id = R.drawable.clock),
-                        "",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                        .padding(top = 95.dp, start = 10.dp, end = 10.dp, bottom = 20.dp)
-                ) {
-                    Text("100/600", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-                    Text("52/250", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-                    Text("15/120", color = Color.White, fontSize = 15.sp, fontFamily = semibold)
-                }
-            }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 20.dp),
-                backgroundColor = card,
-                elevation = 4.dp
-            ) {
-                Text(
-                    stringResource(id = R.string.exercise), color = Color.White,
-                    modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-                    fontFamily = semibold, fontSize = 14.sp
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                        .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
-                ) {
-                    Button(
-                        onClick = {
-                        },
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button),
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.walk),
-                            "",
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-                    Button(
-                        onClick = {
-                        },
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button),
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.run),
-                            "",
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-                    Button(
-                        onClick = {
-                        },
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button),
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.bike),
-                            "",
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-                    Button(
-                        onClick = {
-                        },
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button),
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.menu),
-                            "",
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-            }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 20.dp),
-                backgroundColor = card,
-                elevation = 4.dp
-            ) {
-                Text(
-                    stringResource(id = R.string.body), color = Color.White,
-                    modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-                    fontFamily = semibold, fontSize = 14.sp
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                        .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
-                ) {
-                    Text(
-                        "-- " + stringResource(id = R.string.kg), color = Color.White,
-                        fontFamily = semibold, fontSize = 14.sp
-                    )
-                    Text(
-                        "-- " + stringResource(id = R.string.cm), color = Color.White,
-                        fontFamily = semibold, fontSize = 14.sp
-                    )
-                    Button(
-                        onClick = {
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                        contentPadding = PaddingValues(7.dp),
-                        modifier = Modifier
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                    ) {
-                        Text(
-                            stringResource(id = R.string.Reset),
-                            color = Color.White,
-                            fontFamily = regular,
-                            fontSize = 12.sp,
-                        )
-                    }
-                }
-            }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 20.dp),
-                backgroundColor = card,
-                elevation = 4.dp
-            ) {
-                Text(
-                    stringResource(id = R.string.heart), color = Color.White,
-                    modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-                    fontFamily = semibold, fontSize = 14.sp
-                )
-                Row(
+                Card(
                     modifier = Modifier
-                        .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+                    backgroundColor = card,
+                    elevation = 4.dp
+                ) {
+                    Column(modifier = Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp)) {
+                        Text(
+                            stringResource(id = R.string.daily), color = Color.White,
+                            fontFamily = semibold, fontSize = 16.sp
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                                .padding(top = 20.dp, bottom = 10.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.step),
+                                "",
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Image(
+                                painterResource(id = R.drawable.cal),
+                                "",
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Image(
+                                painterResource(id = R.drawable.clock),
+                                "",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                                .padding(bottom = 20.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                totalSteps,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                fontFamily = semibold
+                            )
+                            Text(
+                                totalCalories,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                fontFamily = semibold
+                            )
+                            Text(
+                                totalHours,
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                fontFamily = semibold
+                            )
+                        }
+                    }
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp),
+                    backgroundColor = card,
+                    elevation = 4.dp
+                ) {
+                    Column(modifier = Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp)) {
+                        Text(
+                            stringResource(id = R.string.exercise), color = Color.White,
+                            fontFamily = semibold, fontSize = 16.sp
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .padding(top = 20.dp, bottom = 20.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = {
+                                    navController.navigate("exercise")
+                                },
+                                modifier = Modifier.size(45.dp),
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                            ) {
+                                Image(
+                                    painterResource(id = R.drawable.walk),
+                                    "",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                },
+                                modifier = Modifier.size(45.dp),
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                            ) {
+                                Image(
+                                    painterResource(id = R.drawable.run),
+                                    "",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                },
+                                modifier = Modifier.size(45.dp),
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                            ) {
+                                Image(
+                                    painterResource(id = R.drawable.bike),
+                                    "",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                },
+                                modifier = Modifier.size(45.dp),
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                            ) {
+                                Image(
+                                    painterResource(id = R.drawable.menu),
+                                    "",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp),
+                    backgroundColor = card,
+                    elevation = 4.dp
+                ) {
+                    Column(modifier = Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp)) {
+                        Text(
+                            stringResource(id = R.string.body),
+                            color = Color.White,
+                            fontFamily = regular,
+                            fontSize = 12.sp,
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .padding(top = 20.dp, bottom = 20.dp, start = 10.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                if (weight != "") weight + " " + stringResource(id = R.string.kg) else "-- " + stringResource(
+                                    id = R.string.kg
+                                ), color = Color.White,
+                                fontFamily = semibold, fontSize = 14.sp
+                            )
+                            Text(
+                                if (height != "") height + " " + stringResource(id = R.string.cm) else "-- " + stringResource(
+                                    id = R.string.cm
+                                ), color = Color.White,
+                                fontFamily = semibold, fontSize = 14.sp
+                            )
+                            Button(
+                                onClick = {
+                                },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.record),
+                                    color = Color.White,
+                                    fontFamily = regular,
+                                    fontSize = 14.sp,
+                                )
+                            }
+                        }
+                    }
+
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp),
+                    backgroundColor = card,
+                    elevation = 4.dp
                 ) {
                     Text(
-                        heartRate.toString() + stringResource(id = R.string.bpm),
-                        color = Color.White,
-                        fontFamily = semibold,
-                        fontSize = 14.sp
+                        stringResource(id = R.string.heart), color = Color.White,
+                        modifier = Modifier.padding(top = 15.dp, start = 10.dp),
+                        fontFamily = semibold, fontSize = 14.sp
                     )
-                    Text(
-                        text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
-                        color = Color.White,
-                        fontFamily = light,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(5.dp)
-                    )
-                    Text(
-                        text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
-                        color = Color.White,
-                        fontFamily = light,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(5.dp)
-                    )
-                    Button(
-                        onClick = {
-                            model.highmBPM.postValue(0)
-                            model.lowmBPM.postValue(300)
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                        contentPadding = PaddingValues(7.dp),
+                    Row(
                         modifier = Modifier
-                            .padding(start = 165.dp)
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                            .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                     ) {
                         Text(
-                            stringResource(id = R.string.Reset),
+                            heartRate.toString() + stringResource(id = R.string.bpm),
                             color = Color.White,
-                            fontFamily = regular,
-                            fontSize = 12.sp,
+                            fontFamily = semibold,
+                            fontSize = 14.sp
                         )
-                    }
-                    Button(
-                        onClick = {
-
-                        },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                        contentPadding = PaddingValues(7.dp),
-                        modifier = Modifier
-                            .padding(start = 165.dp)
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                    ) {
                         Text(
-                            stringResource(id = R.string.graph),
+                            text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
                             color = Color.White,
-                            fontFamily = regular,
-                            fontSize = 12.sp,
+                            fontFamily = light,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(5.dp)
                         )
-                    }
+                        Text(
+                            text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
+                            color = Color.White,
+                            fontFamily = light,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(5.dp)
+                        )
+                        Button(
+                            onClick = {
+                                model.highmBPM.postValue(0)
+                                model.lowmBPM.postValue(300)
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                            contentPadding = PaddingValues(7.dp),
+                            modifier = Modifier
+                                .padding(start = 165.dp)
+                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                        ) {
+                            Text(
+                                stringResource(id = R.string.Reset),
+                                color = Color.White,
+                                fontFamily = regular,
+                                fontSize = 12.sp,
+                            )
+                        }
+                        //click to show graph
+                        Button(
+                            onClick = {
 
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                            contentPadding = PaddingValues(7.dp),
+                            modifier = Modifier
+                                .padding(start = 165.dp)
+                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                        ) {
+                            Text(
+                                stringResource(id = R.string.graph),
+                                color = Color.White,
+                                fontFamily = regular,
+                                fontSize = 12.sp,
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun MainPagePreview() {
-//    TerveysHelppiTheme {
-//        MainPage()
-//    }
-//}

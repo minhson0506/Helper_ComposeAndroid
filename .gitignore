@@ -55,6 +55,7 @@ captures/
 .idea/navEditor.xml
 
 /TerveysHelppi/.idea/*
+/TerveysHelppi/.idea/
 .DS_Store
 
 # Keystore files

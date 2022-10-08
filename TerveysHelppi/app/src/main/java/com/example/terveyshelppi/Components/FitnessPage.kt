@@ -1,10 +1,15 @@
 package com.example.terveyshelppi.Components
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -20,7 +25,7 @@ import com.example.terveyshelppi.ui.theme.regular
 
 @ExperimentalFoundationApi
 @Composable
-fun FitnessPage(model: ResultViewModel) {
+fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
     Box(
         modifier = Modifier
             .background(
@@ -32,8 +37,13 @@ fun FitnessPage(model: ResultViewModel) {
                 )
             )
             .fillMaxSize()
-    ){
-//        Column() {
+    ) {
+        TopAppBar(
+            title = {
+                Text(
+                    stringResource(id = R.string.fitness), color = Color.White, fontFamily = regular)
+            }, backgroundColor = Color.Black)
+        Column(modifier = Modifier.padding(top = 50.dp)) {
 //            Text(
 //                stringResource(id = R.string.fitness),
 //                color = Color.White,
@@ -41,16 +51,7 @@ fun FitnessPage(model: ResultViewModel) {
 //                fontFamily = regular,
 //                fontSize = 20.sp
 //            )
-//        }
-        YoutubeScreen(model = model)
+            YoutubeScreen(model = model, activity)
+        }
     }
-
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun FitnessPreview() {
-//    TerveysHelppiTheme {
-//        FitnessPage()
-//    }
-//}

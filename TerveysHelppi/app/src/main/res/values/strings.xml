@@ -26,5 +26,14 @@
     <string name="average">Average active time</string>
     <string name="time">29</string>
     <string name="min">mins</string>
+    <string name="search">Search ...</string>
+    <string name="pb">Personal best</string>
+    <string name="walking">Walking</string>
+    <string name="running">Running</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
+    <string name="finish">Finish</string>
+    <string name="start">Start</string>
     <string name="graph">Graph</string>
+    <string name="record">Record</string>
 </resources>
