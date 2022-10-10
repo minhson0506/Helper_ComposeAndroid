@@ -1,4 +1,8 @@
 package com.example.terveyshelppi.Components
 
-class DailyActivities {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun DailyActivity() {
+
 }

@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -232,6 +234,8 @@ fun NavigationGraph(
     activity: AppCompatActivity,
     sensorViewModel: SensorViewModel
 ) {
+    val heartRate by model.graph.observeAsState()
+
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
             FitnessPage(model = model, activity = activity)
@@ -244,6 +248,12 @@ fun NavigationGraph(
         }
         composable("exercise") {
             Exercise(navController)
+        }
+        composable("graph-heartRate") {
+            heartRate?.let { it1 -> Graph(it1) }
+        }
+        composable("daily") {
+            DailyActivity()
         }
     }
 }

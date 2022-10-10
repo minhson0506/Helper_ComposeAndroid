@@ -2,17 +2,13 @@ package com.example.terveyshelppi.Components
 
 import android.app.Application
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -34,7 +30,12 @@ import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun MainPage(application: Application, navController: NavController, model: ResultViewModel, sensorViewModel: SensorViewModel) {
+fun MainPage(
+    application: Application,
+    navController: NavController,
+    model: ResultViewModel,
+    sensorViewModel: SensorViewModel
+) {
     val TAG = "terveyshelppi"
 
     var user by remember { mutableStateOf("") }
@@ -82,8 +83,11 @@ fun MainPage(application: Application, navController: NavController, model: Resu
             )
             .fillMaxSize()
     ) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            Row(modifier = Modifier.padding(top = 30.dp, start = 20.dp, bottom = 15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Column(verticalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier.padding(top = 30.dp, start = 20.dp, bottom = 15.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Row() {
                     Text(
                         stringResource(id = R.string.gm),
@@ -123,7 +127,10 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                        .clickable {
+                            navController.navigate("daily")
+                        },
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
@@ -269,13 +276,12 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                         Text(
                             stringResource(id = R.string.body),
                             color = Color.White,
-                            fontFamily = regular,
-                            fontSize = 12.sp,
+                            fontFamily = semibold,
+                            fontSize = 16.sp,
                         )
                         Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
-                                .padding(top = 20.dp, bottom = 20.dp, start = 10.dp)
+                                .padding(top = 20.dp, bottom = 20.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -289,20 +295,10 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                                 if (height != "") height + " " + stringResource(id = R.string.cm) else "-- " + stringResource(
                                     id = R.string.cm
                                 ), color = Color.White,
-                                fontFamily = semibold, fontSize = 14.sp
+                                fontFamily = semibold, fontSize = 14.sp,
+                                modifier = Modifier
+                                    .padding(start = 40.dp)
                             )
-                            Button(
-                                onClick = {
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                            ) {
-                                Text(
-                                    stringResource(id = R.string.record),
-                                    color = Color.White,
-                                    fontFamily = regular,
-                                    fontSize = 14.sp,
-                                )
-                            }
                         }
                     }
 
@@ -310,75 +306,72 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp),
+                        .padding(start = 20.dp, end = 20.dp)
+                        .clickable {
+                            navController.navigate("graph-heartRate")
+                        },
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
-                    Text(
-                        stringResource(id = R.string.heart), color = Color.White,
-                        modifier = Modifier.padding(top = 15.dp, start = 10.dp),
-                        fontFamily = semibold, fontSize = 14.sp
-                    )
-                    Row(
+                    Column(
                         modifier = Modifier
-                            .padding(top = 60.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
+                            .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
                     ) {
                         Text(
-                            heartRate.toString() + stringResource(id = R.string.bpm),
-                            color = Color.White,
-                            fontFamily = semibold,
-                            fontSize = 14.sp
+                            stringResource(id = R.string.heart), color = Color.White,
+                            modifier = Modifier.padding(top = 20.dp),
+                            fontFamily = semibold, fontSize = 16.sp
                         )
-                        Text(
-                            text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
-                            color = Color.White,
-                            fontFamily = light,
-                            fontSize = 10.sp,
-                            modifier = Modifier.padding(5.dp)
-                        )
-                        Text(
-                            text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
-                            color = Color.White,
-                            fontFamily = light,
-                            fontSize = 10.sp,
-                            modifier = Modifier.padding(5.dp)
-                        )
-                        Button(
-                            onClick = {
-                                model.highmBPM.postValue(0)
-                                model.lowmBPM.postValue(300)
-                            },
-                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                            contentPadding = PaddingValues(7.dp),
+                        Row(
                             modifier = Modifier
-                                .padding(start = 165.dp)
-                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                                .padding(top = 20.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                stringResource(id = R.string.Reset),
-                                color = Color.White,
-                                fontFamily = regular,
-                                fontSize = 12.sp,
-                            )
+                            Row() {
+                                Text(
+                                    heartRate.toString() + stringResource(id = R.string.bpm),
+                                    color = Color.White,
+                                    fontFamily = semibold,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = if (highHeartRate == 0) "Highest: --" else "Highest: $highHeartRate",
+                                    color = Color.White,
+                                    fontFamily = semibold,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(start = 10.dp)
+                                )
+                                Text(
+                                    text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
+                                    color = Color.White,
+                                    fontFamily = semibold,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(start = 10.dp)
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                    model.highmBPM.postValue(0)
+                                    model.lowmBPM.postValue(300)
+                                },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                                contentPadding = PaddingValues(7.dp),
+                                modifier = Modifier.defaultMinSize(
+                                    minWidth = 1.dp,
+                                    minHeight = 1.dp
+                                )
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.Reset),
+                                    color = Color.White,
+                                    fontFamily = regular,
+                                    fontSize = 14.sp,
+                                )
+                            }
                         }
-                        //click to show graph
-                        Button(
-                            onClick = {
 
-                            },
-                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                            contentPadding = PaddingValues(7.dp),
-                            modifier = Modifier
-                                .padding(start = 165.dp)
-                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                        ) {
-                            Text(
-                                stringResource(id = R.string.graph),
-                                color = Color.White,
-                                fontFamily = regular,
-                                fontSize = 12.sp,
-                            )
-                        }
                     }
                 }
             }
