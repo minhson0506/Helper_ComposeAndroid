@@ -1,5 +1,10 @@
 package com.example.terveyshelppi.Components
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -24,9 +29,12 @@ import com.example.terveyshelppi.R
 import com.example.terveyshelppi.ui.theme.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.example.terveyshelppi.Service.Notification.Notification
+import java.util.*
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -94,9 +102,11 @@ fun ProfilePage() {
                 }
             }
         )
-        Column(modifier = Modifier
-            .padding(top = 30.dp, bottom = 20.dp)
-            .fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
+        Column(
+            modifier = Modifier
+                .padding(top = 30.dp, bottom = 20.dp)
+                .fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly
+        ) {
             // Creating a Top bar
             Image(
                 painterResource(id = R.drawable.dog),
@@ -118,6 +128,53 @@ fun ProfilePage() {
                     .padding(top = 10.dp, bottom = 10.dp),
                 fontSize = 18.sp
             )
+            //set Notification
+            val notificationId = 1
+            val context = LocalContext.current
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, start = 16.dp, end = 16.dp),
+                onClick = {
+                    //this intent link to Notification class
+                    val intent = Intent(context, Notification::class.java)
+                    intent.putExtra("notification", notificationId)
+
+                    val alarmIntent =
+                        PendingIntent.getBroadcast(
+                            context,
+                            0,
+                            intent,
+                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+
+
+                    val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val hour = Calendar.HOUR
+                    val minute = Calendar.MINUTE + 1
+
+                    //call Calendar singleton
+                    val startTime = Calendar.getInstance()
+                    startTime[Calendar.HOUR_OF_DAY] = hour
+                    startTime[Calendar.MINUTE] = minute
+                    startTime[Calendar.SECOND] = 0
+                    val alarmStartTime = startTime.timeInMillis
+
+                    alarm.setInexactRepeating(
+                        AlarmManager.RTC_WAKEUP,
+                        alarmStartTime,
+                        AlarmManager.INTERVAL_DAY,
+                        alarmIntent
+                    )
+                    Toast.makeText(
+                        context,
+                        "Notification set!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }) {
+                Icon(Icons.Filled.Add, contentDescription = "Localized description")
+                Text(text = "Add notification")
+            }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
