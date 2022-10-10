@@ -381,10 +381,6 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                         }
                     }
                 }
-                graph?.let { Graph(points = it) }
-                Text("mutlt")
-                graph?.let { graphMulti?.let { it1 -> GraphMulti(firstPoints = it, secondPoints = it1) } }
-                barGraph?.let { GraphBarChar(points = it) }
             }
         }
     }
