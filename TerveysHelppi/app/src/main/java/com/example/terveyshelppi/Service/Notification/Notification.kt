@@ -7,7 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.example.terveyshelppi.MainActivity
 
@@ -24,6 +24,7 @@ class Notification : BroadcastReceiver() {
         val contentIntent = PendingIntent.getActivity(context, 0, mainIntent, 0)
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         val channelName: CharSequence = "My Notification"
         val importance = NotificationManager.IMPORTANCE_HIGH
@@ -32,10 +33,14 @@ class Notification : BroadcastReceiver() {
         notificationManager.createNotificationChannel(channel)
         builder.setChannelId(CHANNEL_ID)
         builder.setSmallIcon(R.drawable.ic_popup_reminder)
-            .setContentTitle("Check your notification!")
-            .setContentText("Go to app!")
+            .setContentTitle("Did you exercise today?")
+            .setContentText("Check out new workout program in TerveysHelppi!")
             .setContentIntent(contentIntent)
+            .setAutoCancel(false)
+            .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
             .priority = NotificationManager.IMPORTANCE_HIGH
         notificationManager.notify(notificationId, builder.build())
     }
+
+
 }

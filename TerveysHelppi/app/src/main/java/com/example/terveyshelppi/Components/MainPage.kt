@@ -156,7 +156,7 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                totalSteps,
+                                totalSteps.substringAfterLast("."),
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontFamily = semibold
