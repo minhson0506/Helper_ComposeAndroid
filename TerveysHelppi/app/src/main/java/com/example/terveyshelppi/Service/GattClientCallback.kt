@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.github.mikephil.charting.data.BarEntry
 import java.lang.Integer.min
 import java.util.*
 import kotlin.math.max
@@ -14,6 +15,7 @@ import com.github.mikephil.charting.data.Entry
 class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
     val TAG = "terveyshelppi"
     var index = 0
+    var index2 = 0
 
     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
@@ -83,10 +85,15 @@ class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
         Log.d(TAG, "BPM: $bpm")
         if (bpm != null) {
             model.mBPM.postValue(bpm)
-            if (model.highmBPM.value?.compareTo(bpm) ?: -1 < 0) model.highmBPM.postValue(bpm)
+            if (model.highmBPM.value?.compareTo(bpm) ?: -1 < 0) {
+                model.highmBPM.postValue(bpm)
+                model.testGraphMulti.value?.add(Entry(index2.toFloat(), (bpm/2).toFloat()))
+                index2++
+            }
             if (model.lowmBPM.value?.compareTo(bpm) ?: 1 > 0) model.lowmBPM.postValue(bpm)
             Log.d(TAG, "heart rate is ${model.mBPM.value}")
             model.graph.value?.add(Entry(index.toFloat(), bpm.toFloat()))
+            model.barGraph.postValue(mutableListOf(BarEntry(index.toFloat(), bpm.toFloat()), BarEntry((index + 1).toFloat(), (bpm/2).toFloat())))
             index++
         }
     }

@@ -52,6 +52,9 @@ fun MainPage(application: Application, navController: NavController, model: Resu
     val highHeartRate by model.highmBPM.observeAsState()
     val lowHeartRate by model.lowmBPM.observeAsState()
 
+    val graph by model.graph.observeAsState()
+    val graphMulti by model.testGraphMulti.observeAsState()
+    val barGraph by model.barGraph.observeAsState()
     val temp by sensorViewModel.tempValue.observeAsState()
 
     Log.d(TAG, "MainPage: temperature = $temp")

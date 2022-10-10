@@ -49,7 +49,7 @@
         </activity>
         <receiver android:name=".Service.Notification.Notification"/>
         <service
-            android:name="terveyshelppi"
+            android:name="TerveysHelppi"
             android:foregroundServiceType="location"
             tools:ignore="MissingClass">
         </service>
