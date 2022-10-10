@@ -29,11 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.Sensors.SensorViewModel
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun MainPage(application: Application, navController: NavController, model: ResultViewModel) {
+fun MainPage(application: Application, navController: NavController, model: ResultViewModel, sensorViewModel: SensorViewModel) {
     val TAG = "terveyshelppi"
 
     var user by remember { mutableStateOf("") }
@@ -44,6 +45,7 @@ fun MainPage(application: Application, navController: NavController, model: Resu
     var height by remember { mutableStateOf("") }
 
     val viewModel = ResultViewModel(application)
+    val sensorModel = SensorViewModel()
     val data = viewModel.getInfo().observeAsState()
 
     val heartRate by model.mBPM.observeAsState()
@@ -53,6 +55,9 @@ fun MainPage(application: Application, navController: NavController, model: Resu
     val graph by model.graph.observeAsState()
     val graphMulti by model.testGraphMulti.observeAsState()
     val barGraph by model.barGraph.observeAsState()
+    val temp by sensorViewModel.tempValue.observeAsState()
+
+    Log.d(TAG, "MainPage: temperature = $temp")
 
     if (data.value != null) {
         user = data.value?.name.toString()
@@ -78,27 +83,38 @@ fun MainPage(application: Application, navController: NavController, model: Resu
             .fillMaxSize()
     ) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            Row(modifier = Modifier.padding(top = 30.dp, start = 20.dp, bottom = 15.dp)) {
-                Text(
-                    stringResource(id = R.string.gm),
-                    color = Color.White,
-                    fontFamily = regular,
-                    fontSize = 20.sp
-                )
-                Text(
-                    if (user != "") user else stringResource(id = R.string.username),
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 5.dp),
-                    fontFamily = semibold,
-                    fontSize = 20.sp
-                )
-                Image(
-                    painterResource(id = R.drawable.sun),
-                    "",
-                    modifier = Modifier
-                        .padding(top = 5.dp, start = 10.dp)
-                        .size(20.dp)
-                )
+            Row(modifier = Modifier.padding(top = 30.dp, start = 20.dp, bottom = 15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                Row() {
+                    Text(
+                        stringResource(id = R.string.gm),
+                        color = Color.White,
+                        fontFamily = regular,
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        if (user != "") user else stringResource(id = R.string.username),
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 5.dp),
+                        fontFamily = semibold,
+                        fontSize = 20.sp
+                    )
+
+                    Image(
+                        painterResource(id = R.drawable.sun),
+                        "",
+                        modifier = Modifier
+                            .padding(top = 5.dp, start = 10.dp)
+                            .size(20.dp)
+                    )
+                }
+                temp?.let {
+                    Text(
+                        it.substringAfterLast(".") + " °C", color = Color.White,
+                        modifier = Modifier.padding(end = 20.dp),
+                        fontFamily = semibold,
+                        fontSize = 16.sp
+                    )
+                }
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -143,7 +159,7 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                totalSteps,
+                                totalSteps.substringAfterLast("."),
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontFamily = semibold
