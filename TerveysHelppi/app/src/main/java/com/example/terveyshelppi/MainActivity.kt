@@ -119,7 +119,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                             InfoLanding(navController = navController, application)
                         }
                         composable("main") {
-                            MainScreen(model = model, application, this@MainActivity, sensorViewModel = sensorViewModel)
+                            MainScreen(
+                                model = model,
+                                application,
+                                this@MainActivity,
+                                sensorViewModel = sensorViewModel
+                            )
                         }
 
                     }
@@ -178,23 +183,22 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
-fun hasPermissions(bluetoothAdapter: BluetoothAdapter, activity: AppCompatActivity): Boolean {
+fun hasPermissions(
+    bluetoothAdapter: BluetoothAdapter,
+    activity: AppCompatActivity,
+): Boolean {
     val TAG = "terveyshelppi"
     if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
         Log.d(TAG, "No Bluetooth LE capability")
         return false
-    } else
+    } else {
         if ((activity.checkSelfPermission(Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) ||
             (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) ||
             (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
             (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) || (activity.checkSelfPermission(
+                Manifest.permission.ACTIVITY_RECOGNITION
+            ) != PackageManager.PERMISSION_GRANTED)
         ) {
             Log.d(TAG, "No permission")
             activity.requestPermissions(
@@ -205,16 +209,12 @@ fun hasPermissions(bluetoothAdapter: BluetoothAdapter, activity: AppCompatActivi
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACTIVITY_RECOGNITION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ), 1
-            ); return true // assuming that the user grants permission
+            ); return true
         }
-    Log.i(TAG, "permissions ok")
-    return true
+        Log.i(TAG, "permissions ok")
+        return true
+    }
 }
 
 
@@ -300,7 +300,12 @@ fun BottomNavigationBar(navController: NavController) {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen(model: ResultViewModel, application: Application, activity: AppCompatActivity, sensorViewModel: SensorViewModel) {
+fun MainScreen(
+    model: ResultViewModel,
+    application: Application,
+    activity: AppCompatActivity,
+    sensorViewModel: SensorViewModel
+) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
