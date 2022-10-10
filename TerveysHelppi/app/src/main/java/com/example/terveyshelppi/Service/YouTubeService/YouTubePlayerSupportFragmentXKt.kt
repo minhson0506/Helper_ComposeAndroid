@@ -2,6 +2,7 @@ package com.google.android.youtube.player
 
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,11 +78,12 @@ open class YouTubePlayerSupportFragmentXKt : Fragment(), YouTubePlayer.Provider 
     }
 
     override fun onDestroyView() {
+        val TAG = "terveyshelppi"
         this.activity?.let {
             c?.c(it.isFinishing)
             c = null
         }
-
+        Log.d(TAG, "onDestroyView")
         super.onDestroyView()
     }
 

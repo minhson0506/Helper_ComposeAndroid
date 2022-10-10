@@ -2,6 +2,7 @@ package com.example.terveyshelppi.Service.YouTubeService
 
 
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Column
@@ -15,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
 import coil.compose.rememberAsyncImagePainter
 import com.example.terveyshelppi.BuildConfig
+import com.example.terveyshelppi.R
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerSupportFragmentXKt
@@ -47,7 +50,7 @@ fun searchOnYoutube(keywords: String, model: ResultViewModel){
 
 @ExperimentalFoundationApi
 @Composable
-fun YoutubeScreen(model: ResultViewModel) {
+fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
     val TAG = "terveyshelppi"
     Log.d(TAG, "YoutubeScreen: start to find video from videoid")
 
@@ -75,6 +78,11 @@ fun YoutubeScreen(model: ResultViewModel) {
             val videoId = result!!.map{it.id.videoId}
             Log.d(TAG, "start to load video")
             if (displayYoutube) playVideo(videoId = id)
+            else {
+                val fragment: Fragment? = activity.supportFragmentManager.findFragmentById(R.id.ytPlayer)
+                if(fragment != null)
+                    activity.supportFragmentManager.beginTransaction().remove(fragment).commit();
+            }
             for (i in 0..4) {
                 if (videoId[i] != null) {
                     Image(
@@ -159,7 +167,7 @@ fun playVideo(videoId: String) {
                     ) {
                         Log.d(TAG, "onInitializationSuccess: string 0")
                         if (!wasRestored) {
-                            player.cueVideo(videoId)
+                            player.loadVideo(videoId)
                         }
                     }
                 })
@@ -168,6 +176,7 @@ fun playVideo(videoId: String) {
             setReorderingAllowed(true)
             add(com.example.terveyshelppi.R.id.ytPlayer, fragment)
         }
+
         view
     })
 }

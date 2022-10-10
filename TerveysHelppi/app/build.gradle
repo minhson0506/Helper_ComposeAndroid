@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -85,6 +86,12 @@ dependencies {
 
     // graph
     implementation 'com.github.PhilJay:MPAndroidChart:3.1.0'
+
+    // Google APIs
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+
+    // Map
+    implementation 'org.osmdroid:osmdroid-android:6.1.14'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
