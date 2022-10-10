@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.terveyshelppi">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-feature android:name="android.hardware.sensor.magnetometer" android:required="true" />
-
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-feature android:name="android.hardware.sensor.ambient_temperature" android:required="true"/>
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <queries>
         <intent>
@@ -44,6 +48,11 @@
             </intent-filter>
         </activity>
         <receiver android:name=".Service.Notification.Notification"/>
+        <service
+            android:name="terveyshelppi"
+            android:foregroundServiceType="location"
+            tools:ignore="MissingClass">
+        </service>
     </application>
 
 </manifest>

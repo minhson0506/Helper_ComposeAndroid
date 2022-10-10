@@ -64,6 +64,10 @@ dependencies {
     // location
     implementation 'com.google.android.gms:play-services-location:20.0.0'
 
+    // Map
+    implementation 'org.osmdroid:osmdroid-android:6.1.14'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+
     // YouTubeAndroidPlayerApi for playing youtube videos
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
 

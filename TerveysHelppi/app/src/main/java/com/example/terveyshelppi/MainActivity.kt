@@ -37,13 +37,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.preference.PreferenceManager
 import com.example.terveyshelppi.Components.*
 import com.example.terveyshelppi.Service.GattClientCallback
 import com.example.terveyshelppi.Service.Sensors.SensorViewModel
 import com.example.terveyshelppi.Service.Sensors.ShowSensorData
+import com.example.terveyshelppi.Service.GetLocation
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
+import org.osmdroid.config.Configuration
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
@@ -80,14 +83,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         hasPermissions(bluetoothAdapter = bluetoothAdapter!!, activity = this)
 
         // check heart rate sensor and connect
-        if (checkSelfPermission(
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 1
-            )
-        }
+        model = ResultViewModel(application)
         for (btDev in bluetoothAdapter?.bondedDevices!!) {
             Log.d(TAG, "bluetooth device bonded is: : ${btDev.name}")
             if (btDev.name.startsWith("Polar")) {
@@ -99,16 +95,19 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             }
         }
 
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
+        setContent {
 
 
         setContent {
             val navController = rememberNavController()
-            model = ResultViewModel(application)
-
             ShowSensorData(sensorViewModel, application)
+            
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
+                    GetLocation(context = this, activity = this@MainActivity, model = model)
+
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
                             LandingPage(navController = navController, application)
@@ -182,21 +181,33 @@ fun hasPermissions(bluetoothAdapter: BluetoothAdapter, activity: AppCompatActivi
         Log.d(TAG, "No Bluetooth LE capability")
         return false
     } else
-        if ((activity.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) || (activity.checkSelfPermission(
-                Manifest.permission.ACTIVITY_RECOGNITION
-            ) != PackageManager.PERMISSION_GRANTED)
+        if ((activity.checkSelfPermission(Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) || 
+            (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED)
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         ) {
-            Log.d(TAG, "No fine location access")
+            Log.d(TAG, "No permission")
             activity.requestPermissions(
                 arrayOf(
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.ACTIVITY_RECOGNITION,
-                ),
-                1
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ), 1
             ); return true // assuming that the user grants permission
         }
     Log.i(TAG, "permissions ok")
