@@ -49,6 +49,11 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val testGraphMulti = MutableLiveData(mutableListOf<Entry>())
     val barGraph = MutableLiveData(mutableListOf<BarEntry>())
 
+    //data to show bar graph
+    val steps = MutableLiveData(0.0)
+    val cals = MutableLiveData(0.0)
+    val hours = MutableLiveData(0.0)
+
     //get user info
     fun getInfo(): LiveData<UserData> = roomDB.userDao().getAll()
     fun insertUser(userData: UserData) {

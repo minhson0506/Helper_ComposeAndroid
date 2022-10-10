@@ -247,13 +247,13 @@ fun NavigationGraph(
             ProfilePage()
         }
         composable("exercise") {
-            Exercise(navController)
+            Exercise(navController, model)
         }
         composable("graph-heartRate") {
             heartRate?.let { it1 -> Graph(it1) }
         }
         composable("daily") {
-            DailyActivity()
+            DailyActivity(sensorViewModel, model)
         }
     }
 }

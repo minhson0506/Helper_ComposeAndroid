@@ -12,27 +12,39 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.getAddress
+import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
+import org.osmdroid.util.GeoPoint
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Exercise(navController: NavController) {
+fun Exercise(navController: NavController, model: ResultViewModel) {
+    val context = LocalContext.current
+
     var distance by remember { mutableStateOf(0) }
     var duration by remember { mutableStateOf(0) }
     var speed by remember { mutableStateOf(0) }
     var elevation by remember { mutableStateOf(0) }
     var heartRate by remember { mutableStateOf(0) }
     var calories by remember { mutableStateOf(0) }
+
+    val long by model.long.observeAsState()
+    val lat by model.lat.observeAsState()
+
 
     var bool by remember { mutableStateOf(1) }
 
@@ -102,6 +114,13 @@ fun Exercise(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
+            if (lat != 0.0 && long != 0.0)
+                lat?.let { long?.let { it1 -> GeoPoint(it, it1) } }?.let {
+                    long?.let { it1 -> getAddress(context = context, lat!!, it1) }?.let { it2 ->
+                        showPoint(geoPoint = it,
+                            address = it2)
+                    }
+                }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

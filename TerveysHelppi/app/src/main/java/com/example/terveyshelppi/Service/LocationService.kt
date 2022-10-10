@@ -127,7 +127,7 @@ fun showPoint(geoPoint: GeoPoint, address: String) {
     val marker = Marker(map)
 
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 2
+    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 2.5
 
     AndroidView(
         modifier = Modifier.fillMaxWidth()

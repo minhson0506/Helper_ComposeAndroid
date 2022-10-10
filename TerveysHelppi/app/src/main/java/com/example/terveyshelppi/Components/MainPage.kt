@@ -166,7 +166,7 @@ fun MainPage(
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                totalSteps.substringAfterLast("."),
+                                totalSteps,
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontFamily = semibold

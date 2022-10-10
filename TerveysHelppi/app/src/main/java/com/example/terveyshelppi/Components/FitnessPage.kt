@@ -44,13 +44,6 @@ fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
                     stringResource(id = R.string.fitness), color = Color.White, fontFamily = regular)
             }, backgroundColor = Color.Black)
         Column(modifier = Modifier.padding(top = 50.dp)) {
-//            Text(
-//                stringResource(id = R.string.fitness),
-//                color = Color.White,
-//                modifier = Modifier.padding(top = 30.dp, start = 20.dp),
-//                fontFamily = regular,
-//                fontSize = 20.sp
-//            )
             YoutubeScreen(model = model, activity)
 
         }
