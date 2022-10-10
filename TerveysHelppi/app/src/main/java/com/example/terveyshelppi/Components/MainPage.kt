@@ -50,6 +50,10 @@ fun MainPage(application: Application, navController: NavController, model: Resu
     val highHeartRate by model.highmBPM.observeAsState()
     val lowHeartRate by model.lowmBPM.observeAsState()
 
+    val graph by model.graph.observeAsState()
+    val graphMulti by model.testGraphMulti.observeAsState()
+    val barGraph by model.barGraph.observeAsState()
+
     if (data.value != null) {
         user = data.value?.name.toString()
         totalSteps = data.value!!.totalSteps.toString()
@@ -361,6 +365,10 @@ fun MainPage(application: Application, navController: NavController, model: Resu
                         }
                     }
                 }
+                graph?.let { Graph(points = it) }
+                Text("mutlt")
+                graph?.let { graphMulti?.let { it1 -> GraphMulti(firstPoints = it, secondPoints = it1) } }
+                barGraph?.let { GraphBarChar(points = it) }
             }
         }
     }

@@ -13,6 +13,7 @@ import com.example.terveyshelppi.Service.RoomDB.RoomDB
 import com.example.terveyshelppi.Service.RoomDB.RunData
 import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.example.terveyshelppi.Service.RoomDB.WalkData
+import com.github.mikephil.charting.data.BarEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -45,6 +46,8 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val highmBPM = MutableLiveData(0)
     val lowmBPM = MutableLiveData(300)
     val graph = MutableLiveData(mutableListOf<Entry>())
+    val testGraphMulti = MutableLiveData(mutableListOf<Entry>())
+    val barGraph = MutableLiveData(mutableListOf<BarEntry>())
 
     //get user info
     fun getInfo(): LiveData<UserData> = roomDB.userDao().getAll()

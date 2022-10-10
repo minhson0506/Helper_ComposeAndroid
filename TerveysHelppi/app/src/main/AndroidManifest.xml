@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="terveyshelppi"
+            android:name="TerveysHelppi"
             android:foregroundServiceType="location"
             tools:ignore="MissingClass">
         </service>
