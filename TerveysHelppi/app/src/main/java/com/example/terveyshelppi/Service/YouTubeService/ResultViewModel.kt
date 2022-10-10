@@ -31,6 +31,10 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val title3 = MutableLiveData<String>(null)
     val title4 = MutableLiveData<String>(null)
 
+    // store long lat
+    val long = MutableLiveData<Double>(null)
+    val lat = MutableLiveData<Double>(null)
+
     //data from roomDB
     private val roomDB = RoomDB.getInstance(application)
     private val viewModelJob = Job()

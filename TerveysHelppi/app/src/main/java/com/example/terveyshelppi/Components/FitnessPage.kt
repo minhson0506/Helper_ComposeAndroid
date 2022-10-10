@@ -3,29 +3,29 @@ package com.example.terveyshelppi.Components
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.GetLocation
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
-import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
 
 @ExperimentalFoundationApi
 @Composable
 fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .background(
@@ -52,6 +52,7 @@ fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
 //                fontSize = 20.sp
 //            )
             YoutubeScreen(model = model, activity)
+
         }
     }
 }
