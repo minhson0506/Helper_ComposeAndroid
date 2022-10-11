@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -49,6 +51,8 @@ import com.example.terveyshelppi.Service.GetLocation
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import org.osmdroid.config.Configuration
 import kotlin.concurrent.thread
 
@@ -102,6 +106,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
 
 
+        thread {
+            GetLocation(context = this, activity = this@MainActivity, model = model)
+        }
         setContent {
             val navController = rememberNavController()
 
@@ -110,7 +117,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    GetLocation(context = this, activity = this@MainActivity, model = model)
 
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
@@ -192,26 +198,29 @@ fun hasPermissions(
         Log.d(TAG, "No Bluetooth LE capability")
         return false
     } else {
-        if ((activity.checkSelfPermission(Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) ||
+        if (
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) ||
             (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) || (activity.checkSelfPermission(
-                Manifest.permission.ACTIVITY_RECOGNITION
-            ) != PackageManager.PERMISSION_GRANTED)
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         ) {
             Log.d(TAG, "No permission")
             activity.requestPermissions(
                 arrayOf(
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACTIVITY_RECOGNITION,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
                 ), 1
             ); return true
         }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            val requestMulti = activity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permission - >
+//                permissions.entries.forEach {
+//                    Log.d("test006", "${it.key} = ${it.value}")
+//                }
+//            }
+//        }
         Log.i(TAG, "permissions ok")
         return true
     }

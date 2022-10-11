@@ -1,5 +1,8 @@
 package com.example.terveyshelppi.Components
 
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,31 +25,47 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.StopWatch
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.Service.getAddress
 import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
 import org.osmdroid.util.GeoPoint
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Exercise(navController: NavController, model: ResultViewModel) {
     val context = LocalContext.current
 
-    var distance by remember { mutableStateOf(0) }
-    var duration by remember { mutableStateOf(0) }
-    var speed by remember { mutableStateOf(0) }
-    var elevation by remember { mutableStateOf(0) }
-    var heartRate by remember { mutableStateOf(0) }
-    var calories by remember { mutableStateOf(0) }
+    val distance: Double by model.distanceRecording.observeAsState(0.0)
+    val speed: Double by model.speed.observeAsState(0.0)
+    val firstAltitude: Double by model.firstAltitude.observeAsState(0.0)
+    val secondAltitude: Double by model.secondAltitude.observeAsState(0.0)
+    val heartRate: Int by model.mBPM.observeAsState(0)
+
+    val stopWatch = remember { StopWatch() }
 
     val long by model.long.observeAsState()
     val lat by model.lat.observeAsState()
-
-
     var bool by remember { mutableStateOf(1) }
+
+    val data by model.getInfo().observeAsState()
+    var height by remember { mutableStateOf(0)}
+    var weight by remember { mutableStateOf(0)}
+    var calories by remember { mutableStateOf(0) }
+
+    if(data != null) {
+        height = data!!.height
+        weight = data!!.weight
+    }
+
+//    calories = (steps * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
+    calories = (distance/0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
     Box(
         modifier = Modifier
@@ -82,30 +101,17 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 null
             },
             actions = {
-                // Creating Icon button for dropdown menu
-                Image(
-                    painterResource(id = R.drawable.map),
-                    "",
-                    modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(20.dp)
-                        .clickable { }
-                )
                 Image(
                     painterResource(id = R.drawable.music),
                     "",
                     modifier = Modifier
                         .padding(end = 20.dp)
                         .size(20.dp)
-                        .clickable { }
-                )
-                Image(
-                    painterResource(id = R.drawable.options),
-                    "",
-                    modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(20.dp)
-                        .clickable { }
+                        .clickable {
+                            val intent = Intent("android.intent.action.MUSIC_PLAYER");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(context, intent, Bundle());
+                        }
                 )
             }
         )
@@ -132,14 +138,15 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                val textArray = listOf(
-                    Triple("Distance", distance, "km"),
-                    Triple("Duration", duration, ""),
-                    Triple("Speed", speed, "km/h"),
-                    Triple("Elevation", elevation, "m"),
-                    Triple("Calories", calories, "Cals"),
+                var textArray = listOf(
+                    Triple("Distance", round(distance), "m"),
+                    Triple("Duration", stopWatch.formattedTime, ""),
+                    Triple("Speed", round(speed), "km/h"),
+                    Triple("Elevation", round(secondAltitude - firstAltitude), "m"),
+                    Triple("Calories", calories, "Cal"),
                     Triple("Heart rate", heartRate, "BPM"),
                 )
+                Log.d("terveyshelppi", "Exercise: speed is $speed and ${speed * 3.6}")
 
                 LazyVerticalGrid(
                     cells = GridCells.Fixed(2)
@@ -185,6 +192,8 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
             if (bool == 1) {
                 Button(
                     onClick = {
+                        stopWatch.start()
+                        model.recording.postValue(true)
                         bool = 2
                     },
                     modifier = Modifier.padding(top = 15.dp),
@@ -200,6 +209,8 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
             } else if (bool == 2) {
                 Button(
                     onClick = {
+                        stopWatch.pause()
+                        model.recording.postValue(false)
                         bool = 3
                     },
                     modifier = Modifier.padding(top = 15.dp),
@@ -220,7 +231,9 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 ) {
                     Button(
                         onClick = {
-                            bool = 1
+                            stopWatch.start()
+                            model.recording.postValue(true)
+                            bool = 2
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                     ) {
@@ -233,6 +246,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     }
                     Button(
                         onClick = {
+                            model.recording.postValue(false)
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                         modifier = Modifier.padding(start = 20.dp),

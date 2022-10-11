@@ -208,36 +208,30 @@ fun InfoLanding(navController: NavController, application: Application) {
                             Toast
                                 .makeText(mContext, "Please enter your name!", Toast.LENGTH_SHORT)
                                 .show()
-                        }
-                        if (weight == "") {
+                        } else if (weight == "" || (weight.toIntOrNull() == null)) {
                             Toast
                                 .makeText(
                                     mContext,
-                                    "Please enter your weight!",
+                                    "Please enter your weight in number!",
                                     Toast.LENGTH_SHORT
                                 )
                                 .show()
-                        }
-                        if (height == "") {
+                        } else if (height == "" || (height.toIntOrNull() == null)) {
                             Toast
                                 .makeText(
                                     mContext,
-                                    "Please enter your height!",
+                                    "Please enter your height in number!",
                                     Toast.LENGTH_SHORT
                                 )
                                 .show()
-                        }
-                        if (hours == "") hours = "1"
-                        if (steps == "") steps = "6000"
-                        if (cal == "") cal = "1000"
-                        if (name != "" && weight != "" && height != "") {
+                        } else {
                             val user = UserData(
                                 name,
                                 weight.toInt(),
                                 height.toInt(),
-                                steps.toInt(),
-                                cal.toInt(),
-                                hours.toInt(),
+                                if (steps == "") 6000 else steps.toInt(),
+                                if (cal == "") 1000 else cal.toInt(),
+                                if (hours == "") 1 else hours.toInt(),
                                 0,
                                 0,
                                 0,
@@ -247,6 +241,7 @@ fun InfoLanding(navController: NavController, application: Application) {
                             Log.d(TAG, "InfoLanding: user info $user")
                             viewModel.insertUser(user)
                             navController.navigate("main")
+
                         }
                     })
                     .align(Alignment.End)

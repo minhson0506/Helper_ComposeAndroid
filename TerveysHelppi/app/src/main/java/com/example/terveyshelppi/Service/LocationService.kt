@@ -31,19 +31,19 @@ import androidx.compose.ui.unit.dp
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import java.util.*
 
-@Composable
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     val TAG = "terveysheppi"
     Log.d(TAG, "GetLocation: start to get location")
 
-    var distance by remember { mutableStateOf(0.0) }
-    var speed by remember { mutableStateOf(0.0) }
-    var maxSpeed by remember { mutableStateOf(0.0) }
+    var firstTime = 0
+//    val distance: Double? by model.distance.observeAsState(0.0)
+//    val speed: Double? by model.speed.observeAsState(0.0)
+//    val maxSpeed: Double? by model.maxSpeed.observeAsState(0.0)
     var preLocation: Location? = null
 //    var long by remember { mutableStateOf(0.0) }
 //    var lat by remember { mutableStateOf(0.0) }
-    val long: Double? by model.long.observeAsState(null)
-    val lat: Double? by model.lat.observeAsState(null)
+//    val long: Double? by model.long.observeAsState(null)
+//    val lat: Double? by model.lat.observeAsState(null)
 
     var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
@@ -62,21 +62,41 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
             locationResult ?: return
+            Log.d(TAG, "onLocationResult: $locationResult")
             for (location in locationResult.locations) {
                 if (preLocation != null) {
-                    distance = round(location.distanceTo(preLocation!!)).toDouble()
+                    if (model.distance.value != null)
+                        model.distance.postValue(location.distanceTo(preLocation) + model.distance.value!!)
+                    else model.distance.postValue(location.distanceTo(preLocation).toDouble())
+                    if (model.recording.value == true) {
+                        if (model.distanceRecording.value != null)
+                            model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distance.value!!)
+                        else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())
+                    }
+                    preLocation = location
                 } else {
                     preLocation = location
                 }
-                speed = round(location.speed).toDouble()
-                if (speed > maxSpeed) maxSpeed = speed
-                Log.d(TAG, "distance is: $distance")
-                Log.d(TAG, "speed is: $speed")
+                Log.d(TAG, "onLocationResult: speed is ${location.speed} and ${location.speed.toDouble()}")
+//                speed = round(location.speed).toDouble()
+                if (model.recording.value == true) model.speed.postValue(location.speed * 3.6)
+                else model.speed.postValue(0.0)
+
+//                if (location.speed.toDouble() > model.maxSpeed.value!!) model.maxSpeed.postValue(
+//                    location.speed.toDouble())
+//                Log.d(TAG, "distance is: $distance")
+//                Log.d(TAG, "speed is: $speed")
                 Log.d(TAG,
                     "location latitude: ${location.latitude} and longitude ${location.longitude} type is ${(location.latitude) is Double}")
-                //preLocation = location
+
+                //post location
                 model.long.postValue(location.longitude)
                 model.lat.postValue(location.latitude)
+                if (firstTime == 0) {
+                    model.firstAltitude.postValue(location.altitude)
+                    model.secondAltitude.postValue(location.altitude)
+                    firstTime++
+                } else if (model.recording.value == true) model.secondAltitude.postValue(location.altitude)
             }
         }
     }

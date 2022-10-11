@@ -32,9 +32,21 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val title3 = MutableLiveData<String>(null)
     val title4 = MutableLiveData<String>(null)
 
+    // store data of location
+    var distance = MutableLiveData<Double>(0.0)
+    var speed = MutableLiveData<Double>(0.0)
+    var maxSpeed = MutableLiveData<Double>(0.0)
+
+    var distanceRecording = MutableLiveData<Double>(0.0)
+
+    // state of recording
+    var recording = MutableLiveData<Boolean>(false)
+
     // store long lat
     val long = MutableLiveData<Double>(null)
     val lat = MutableLiveData<Double>(null)
+    val firstAltitude = MutableLiveData<Double>(0.0)
+    val secondAltitude = MutableLiveData<Double>(0.0)
 
     //data from roomDB
     private val roomDB = RoomDB.getInstance(application)
