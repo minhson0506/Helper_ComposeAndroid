@@ -110,21 +110,25 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
             }
         )
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp, bottom = 30.dp, start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             if (lat != 0.0 && long != 0.0)
                 lat?.let { long?.let { it1 -> GeoPoint(it, it1) } }?.let {
                     long?.let { it1 -> getAddress(context = context, lat!!, it1) }?.let { it2 ->
-                        showPoint(geoPoint = it,
-                            address = it2)
+                        showPoint(
+                            geoPoint = it,
+                            address = it2
+                        )
                     }
                 }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 30.dp),
+                    .padding(top = 20.dp),
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
@@ -143,7 +147,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     items(textArray) {
                         Card(
                             modifier = Modifier.padding(
-                                all = 10.dp
+                                all = 5.dp
                             ),
                             backgroundColor = button
                         ) {
@@ -151,18 +155,18 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                                 Text(
                                     text = it.first,
                                     color = Color.White,
-                                    fontSize = 18.sp,
+                                    fontSize = 16.sp,
                                     fontFamily = semibold,
-                                    modifier = Modifier.padding(top = 30.dp)
+                                    modifier = Modifier.padding(top = 20.dp)
                                 )
                                 Row(
-                                    modifier = Modifier.padding(top = 10.dp, bottom = 30.dp),
+                                    modifier = Modifier.padding(top = 10.dp, bottom = 20.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
                                         text = it.second.toString(),
                                         color = Color.White,
-                                        fontSize = 20.sp,
+                                        fontSize = 18.sp,
                                         fontFamily = semibold,
                                     )
                                     Text(
@@ -183,7 +187,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     onClick = {
                         bool = 2
                     },
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier.padding(top = 15.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                 ) {
                     Text(
@@ -198,7 +202,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     onClick = {
                         bool = 3
                     },
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier.padding(top = 15.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                 ) {
                     Text(
@@ -210,7 +214,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 }
             } else {
                 Row(
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier.padding(top = 15.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {

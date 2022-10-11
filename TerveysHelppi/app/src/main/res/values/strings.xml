@@ -38,4 +38,9 @@
     <string name="record">Record</string>
     <string name="sensor_val">%1$.1f</string>
     <string name="today">Today</string>
+    <string name="steps">Steps</string>
+    <string name="activecal">Active cal</string>
+    <string name="activeTime">Active time</string>
+    <string name="distance">Distance while active</string>
+    <string name="total_cal">Total burnt calories</string>
 </resources>

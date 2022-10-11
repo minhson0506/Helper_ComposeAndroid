@@ -34,6 +34,8 @@ import java.util.*
 @Composable
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     val TAG = "terveysheppi"
+    Log.d(TAG, "GetLocation: start to get location")
+
     var distance by remember { mutableStateOf(0.0) }
     var speed by remember { mutableStateOf(0.0) }
     var maxSpeed by remember { mutableStateOf(0.0) }
@@ -130,7 +132,8 @@ fun showPoint(geoPoint: GeoPoint, address: String) {
     val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 2.5
 
     AndroidView(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .height(dpValue.dp),
         factory = { map }) {
         address ?: return@AndroidView

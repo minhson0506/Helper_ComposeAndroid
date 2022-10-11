@@ -26,9 +26,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -36,10 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
+import androidx.navigation.navigation
 import androidx.preference.PreferenceManager
 import com.example.terveyshelppi.Components.*
 import com.example.terveyshelppi.Service.GattClientCallback
@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         setContent {
             val navController = rememberNavController()
+
             ShowSensorData(sensorViewModel, application)
 
             TerveysHelppiTheme {
@@ -126,7 +127,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                                 sensorViewModel = sensorViewModel
                             )
                         }
-
                     }
                 }
             }
@@ -253,7 +253,7 @@ fun NavigationGraph(
             heartRate?.let { it1 -> Graph(it1) }
         }
         composable("daily") {
-            DailyActivity(sensorViewModel, model)
+            DailyActivity(model)
         }
     }
 }
@@ -304,11 +304,22 @@ fun MainScreen(
     model: ResultViewModel,
     application: Application,
     activity: AppCompatActivity,
-    sensorViewModel: SensorViewModel
+    sensorViewModel: SensorViewModel,
 ) {
     val navController = rememberNavController()
+    var showBottomBar by remember { mutableStateOf(true) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    showBottomBar = when (navBackStackEntry?.destination?.route) {
+        "exercise" -> false
+        "daily" -> false
+        "graph-heartRate" -> false
+        else -> true
+    }
+
+
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) },
+        bottomBar = { if(showBottomBar) BottomNavigationBar(navController) },
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NavigationGraph(

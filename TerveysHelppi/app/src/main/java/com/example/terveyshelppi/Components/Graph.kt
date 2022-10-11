@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.terveyshelppi.ui.theme.background
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
@@ -28,25 +29,42 @@ import com.github.mikephil.charting.data.BarEntry
 fun Graph(points: MutableList<Entry>) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity
-    AndroidView(
+    Box(
         modifier = Modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Black,
+                        background
+                    )
+                )
+            )
             .fillMaxSize()
-            .height(dpValue.dp),
-        factory = { context: Context ->
-            val view = LineChart(context)
-            view.legend.isEnabled = false
-            val data = LineData(LineDataSet(points, "BPM"))
-            val desc = Description()
-            desc.text = "Beats Per Minute"
-            view.description = desc
-            view.data = data
-            view // return the view
-        },
-        update = { view ->
-            // Update the view
-            view.invalidate()
-        }
-    )
+    ) {
+        AndroidView(
+            modifier = Modifier
+                .fillMaxSize()
+                .height(dpValue.dp),
+            factory = { context: Context ->
+                val view = LineChart(context)
+                view.legend.isEnabled = false
+                val data = LineData(LineDataSet(points, "BPM"))
+                val desc = Description()
+                desc.text = "Beats Per Minute"
+                view.xAxis.textColor = (0xffffff)
+                view.legend.textColor = (0xffffff)
+                desc.textColor = (0xffffff)
+                view.axisLeft.textColor = (0xffffff)
+                view.description = desc
+                view.data = data
+                view // return the view
+            },
+            update = { view ->
+                // Update the view
+                view.invalidate()
+            }
+        )
+    }
 }
 
 @Composable
@@ -97,6 +115,7 @@ fun GraphBarChar(points: MutableList<BarEntry>) {
                 }
             }
             val data = BarData(BarDataSet(entries, "%"))
+            data.setValueTextColor(0xffffff)
             val desc = Description()
             desc.text = ""
             view.description = desc
