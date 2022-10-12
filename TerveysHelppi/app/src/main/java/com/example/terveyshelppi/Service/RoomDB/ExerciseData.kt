@@ -13,7 +13,7 @@ data class ExerciseData(
     val activeTime: Long,
     val averageSpeed: Double,
     val calories: Int,
-    val elevation: Int, //m
+    val elevation: Int,
     val heartRate: Double,
 ) {
 }

@@ -23,6 +23,7 @@ import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
+import java.util.*
 
 @Composable
 fun UpdateProfile(model: ResultViewModel, navController: NavController) {
@@ -233,6 +234,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                                     )
                                     .show()
                             } else {
+                                val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
                                 val user = UserData(
                                     name,
                                     weight.toInt(),
@@ -245,7 +247,9 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                                     data!!.totalCalories,
                                     data!!.totalSteps,
                                     data!!.totalHours,
-                                    data!!.avatar
+                                    data!!.avatar,
+                                    data!!.stepBeginOfDay,
+                                    day
                                 )
                                 Log.d(TAG, "UpdateProfile: user info $user")
                                 model.updateInfo(user)

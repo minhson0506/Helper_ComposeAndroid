@@ -329,7 +329,9 @@ fun Camera(model: ResultViewModel) {
                     data!!.totalCalories,
                     data!!.totalSteps,
                     data!!.totalHours,
-                    currentPhotoPath
+                    currentPhotoPath,
+                    data!!.stepBeginOfDay,
+                    data!!.day
                 )
                 model.updateInfo(user)
             } else Log.d(TAG, "ProfilePage: photo not taken")

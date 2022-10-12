@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import java.util.*
+import kotlin.math.log
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -42,6 +43,7 @@ fun MainPage(
 
     //get time of day
     val c = Calendar.getInstance()
+    Log.d(TAG, "MainPage: date is ${c.get(Calendar.DAY_OF_YEAR)} type ${c.get(Calendar.DAY_OF_YEAR) is Int}")
     val timeOfDay = c.get(Calendar.HOUR_OF_DAY)
     var text by remember { mutableStateOf("") }
 
@@ -71,7 +73,7 @@ fun MainPage(
     var weight by remember { mutableStateOf(0) }
     var height by remember { mutableStateOf(0) }
 
-    val data = model.getInfo().observeAsState()
+    val data by model.getInfo().observeAsState()
 
     val heartRate by model.mBPM.observeAsState()
     val highHeartRate by model.highmBPM.observeAsState()
@@ -80,15 +82,18 @@ fun MainPage(
 
     Log.d(TAG, "MainPage: temperature = $temp")
 
-    if (data.value != null) {
-        user = data.value?.name.toString()
-        totalSteps = data.value!!.totalSteps.toInt()
-        weight = data.value!!.weight
-        height = data.value!!.height
-        targetSteps = data.value!!.targetSteps
-        targetCals = data.value!!.targetCals
-        targetHours = data.value!!.targetHours
+    if (data != null) {
+        user = data?.name.toString()
+        totalSteps = data!!.totalSteps.toInt()
+        weight = data!!.weight
+        height = data!!.height
+        targetSteps = data!!.targetSteps
+        targetCals = data!!.targetCals
+        targetHours = data!!.targetHours
+        Log.d(TAG, "MainPage: today is ${Calendar.getInstance().time}")
+        Log.d(TAG, "MainPage: totalstep is $totalSteps and stepbeginofDay is ${data!!.stepBeginOfDay}")
     }
+
 
     totalCalories =
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()

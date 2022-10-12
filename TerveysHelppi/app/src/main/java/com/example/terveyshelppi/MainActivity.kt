@@ -37,10 +37,12 @@ import com.example.terveyshelppi.Components.*
 import com.example.terveyshelppi.Service.GattClientCallback
 import com.example.terveyshelppi.Service.GetLocation
 import com.example.terveyshelppi.Service.ResultViewModel
+import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.example.terveyshelppi.Service.ShowSensorData
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
 import org.osmdroid.config.Configuration
+import java.util.*
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
@@ -62,6 +64,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // init viewmodel
+        model = ResultViewModel(application)
+
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
@@ -77,7 +82,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         hasPermissions(bluetoothAdapter = bluetoothAdapter!!, activity = this)
 
         // check heart rate sensor and connect
-        model = ResultViewModel(application)
+
         for (btDev in bluetoothAdapter?.bondedDevices!!) {
             Log.d(TAG, "bluetooth device bonded is: : ${btDev.name}")
             if (btDev.name.startsWith("Polar")) {
@@ -92,12 +97,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         //init map
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
         thread {
-           /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
+            /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                 (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
             GetLocation(context = this, activity = this@MainActivity, model = model)
         }
         setContent {
             val navController = rememberNavController()
+
+            // reset data in the beginning of the day
+            ResetRoomData(model)
 
             ShowSensorData(model, application)
 
@@ -110,7 +118,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                             LandingPage(navController = navController, application)
                         }
                         composable("details") {
-                            InfoLanding(navController = navController, application)
+                            InfoLanding(navController = navController, model)
                         }
                         composable("main") {
                             MainScreen(
@@ -173,6 +181,39 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 }
 
+@Composable
+fun ResetRoomData(model: ResultViewModel) {
+    val TAG = "terveyshelppi"
+    val userDataFetch by model.getInfo().observeAsState(null)
+    if (userDataFetch != null) {
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        Log.d(TAG, "getInfo day is $day")
+        Log.d(TAG, "getInfo in room: ${userDataFetch?.day}")
+        Log.d(TAG, "getInfo in system: ${Calendar.getInstance().get(Calendar.DAY_OF_YEAR)}")
+        if (userDataFetch?.day != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+            Log.d(TAG, "getInfo: reset counter for beginning of the day")
+            Log.d(TAG, "ResetRoomData: $userDataFetch")
+            val user = UserData(userDataFetch!!.name,
+                userDataFetch!!.weight,
+                userDataFetch!!.height,
+                userDataFetch!!.targetSteps,
+                userDataFetch!!.targetCals,
+                userDataFetch!!.targetHours,
+                0,
+                0,
+                0,
+                userDataFetch!!.totalSteps,
+                0,
+                userDataFetch!!.avatar,
+                userDataFetch!!.totalSteps,
+                day)
+            model.updateInfo(user)
+            model.distance.postValue(0.0)
+            model.hours.postValue(0.0)
+        }
+    }
+}
+
 @RequiresApi(Build.VERSION_CODES.S)
 fun hasPermissions(
     bluetoothAdapter: BluetoothAdapter,
@@ -219,7 +260,7 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 fun NavigationGraph(
     navController: NavHostController,
     model: ResultViewModel,
-    activity: AppCompatActivity
+    activity: AppCompatActivity,
 ) {
     val heartRate by model.graph.observeAsState()
 
@@ -271,7 +312,11 @@ fun BottomNavigationBar(navController: NavController) {
                         modifier = Modifier.size(20.dp),
                     )
                 },
-                label = { Text(text = item.title, color = Color.White, fontFamily = regular) },
+                label = {
+                    Text(text = item.title,
+                        color = Color.White,
+                        fontFamily = regular)
+                },
                 alwaysShowLabel = true,
                 selected = false,
                 onClick = {
@@ -295,7 +340,7 @@ fun BottomNavigationBar(navController: NavController) {
 @Composable
 fun MainScreen(
     model: ResultViewModel,
-    activity: AppCompatActivity
+    activity: AppCompatActivity,
 ) {
     val navController = rememberNavController()
     var showBottomBar by remember { mutableStateOf(true) }
@@ -311,7 +356,7 @@ fun MainScreen(
 
 
     Scaffold(
-        bottomBar = { if(showBottomBar) BottomNavigationBar(navController) },
+        bottomBar = { if (showBottomBar) BottomNavigationBar(navController) },
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NavigationGraph(

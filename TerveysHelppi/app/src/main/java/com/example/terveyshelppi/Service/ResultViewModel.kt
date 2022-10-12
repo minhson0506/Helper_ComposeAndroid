@@ -1,6 +1,8 @@
 package com.example.terveyshelppi.Service
 
 import android.app.Application
+import android.util.Log
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,9 +16,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import com.github.mikephil.charting.data.Entry
+import java.util.*
+import kotlin.math.log
 
-class ResultViewModel(application: Application): AndroidViewModel(application) {
+class ResultViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = "terveyshelppi"
+
     // store data of searching
     val result = MutableLiveData<List<SearchResponse.Item>>(null)
 
@@ -61,7 +66,7 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     private val roomDB = RoomDB.getInstance(application)
     private val viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Default)
-    
+
     // store heart rate
     val mBPM = MutableLiveData(0)
     val highmBPM = MutableLiveData(0)
@@ -88,6 +93,7 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
             state.postValue(true)
         }
     }
+
     fun updateInfo(userData: UserData) {
         coroutineScope.launch {
             roomDB.userDao().update(userData)

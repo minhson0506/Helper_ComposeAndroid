@@ -2,6 +2,7 @@ package com.example.terveyshelppi.Service.RoomDB
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
 
 @Entity
 data class UserData(
@@ -17,8 +18,9 @@ data class UserData(
     val totalSteps: Double,
     val totalHours: Int,
     val avatar: String,
+    val stepBeginOfDay: Double,
+    val day: Int,
     @PrimaryKey
     val id: Int = 0
-
 ) {
 }
