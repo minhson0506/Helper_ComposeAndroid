@@ -40,50 +40,6 @@ fun MainPage(
 ) {
     val TAG = "terveyshelppi"
 
-    val distance: Double by model.distance.observeAsState(0.0)
-    var user by remember { mutableStateOf("") }
-    var totalSteps by remember { mutableStateOf(0) }
-    var totalCalories by remember { mutableStateOf(0) }
-    var totalHours by remember { mutableStateOf(0) }
-    var targetSteps by remember { mutableStateOf(0) }
-    var targetHours by remember { mutableStateOf(0) }
-    var targetCals by remember { mutableStateOf(0) }
-    var weight by remember { mutableStateOf(0) }
-    var height by remember { mutableStateOf(0) }
-
-
-    val data = model.getInfo().observeAsState()
-
-    val heartRate by model.mBPM.observeAsState()
-    val highHeartRate by model.highmBPM.observeAsState()
-    val lowHeartRate by model.lowmBPM.observeAsState()
-    val temp by model.tempValue.observeAsState()
-
-    Log.d(TAG, "MainPage: temperature = $temp")
-
-    if (data.value != null) {
-        user = data.value?.name.toString()
-        totalSteps = data.value!!.totalSteps.toInt()
-//        totalCalories = data.value!!.totalCalories
-        totalHours = data.value!!.totalHours
-        weight = data.value!!.weight
-        height = data.value!!.height
-        targetSteps = data.value!!.targetSteps
-        targetCals = data.value!!.targetCals
-        targetHours = data.value!!.targetHours
-    }
-
-    totalCalories =
-        (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
-
-    Log.d(TAG, "MainPage: userinfo $data")
-
-    val textArray = listOf(
-        Triple(R.drawable.step, totalSteps, targetSteps),
-        Triple(R.drawable.cal, totalCalories, targetCals),
-        Triple(R.drawable.clock, totalHours, targetHours),
-    )
-
     //get time of day
     val c = Calendar.getInstance()
     val timeOfDay = c.get(Calendar.HOUR_OF_DAY)
@@ -97,6 +53,54 @@ fun MainPage(
         else -> "Hello"
     }
 
+    val exerciseData by model.getAllExercises().observeAsState()
+    val list = mutableListOf(0L)
+    exerciseData?.forEach {
+        list.add(it.activeTime)
+    }
+    Log.d(TAG, "MainPage: list of time workout $list")
+
+    val distance: Double by model.distance.observeAsState(0.0)
+    var user by remember { mutableStateOf("") }
+    var totalSteps by remember { mutableStateOf(0) }
+    var totalCalories by remember { mutableStateOf(0) }
+    var totalHours by remember { mutableStateOf(0) }
+    var targetSteps by remember { mutableStateOf(0) }
+    var targetHours by remember { mutableStateOf(0) }
+    var targetCals by remember { mutableStateOf(0) }
+    var weight by remember { mutableStateOf(0) }
+    var height by remember { mutableStateOf(0) }
+
+    val data = model.getInfo().observeAsState()
+
+    val heartRate by model.mBPM.observeAsState()
+    val highHeartRate by model.highmBPM.observeAsState()
+    val lowHeartRate by model.lowmBPM.observeAsState()
+    val temp by model.tempValue.observeAsState()
+
+    Log.d(TAG, "MainPage: temperature = $temp")
+
+    if (data.value != null) {
+        user = data.value?.name.toString()
+        totalSteps = data.value!!.totalSteps.toInt()
+        weight = data.value!!.weight
+        height = data.value!!.height
+        targetSteps = data.value!!.targetSteps
+        targetCals = data.value!!.targetCals
+        targetHours = data.value!!.targetHours
+    }
+
+    totalCalories =
+        (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
+
+    totalHours = ((list.sum()) / 60).toInt()
+    Log.d(TAG, "MainPage: userinfo $data")
+
+    val textArray = listOf(
+        Triple(R.drawable.step, totalSteps, targetSteps),
+        Triple(R.drawable.cal, totalCalories, targetCals),
+        Triple(R.drawable.clock, totalHours, targetHours),
+    )
 
     Box(
         modifier = Modifier
@@ -155,10 +159,14 @@ fun MainPage(
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
-                    Column(modifier = Modifier.padding(top = 15.dp,
-                        start = 10.dp,
-                        end = 10.dp,
-                        bottom = 20.dp)) {
+                    Column(
+                        modifier = Modifier.padding(
+                            top = 15.dp,
+                            start = 10.dp,
+                            end = 10.dp,
+                            bottom = 20.dp
+                        )
+                    ) {
                         Text(
                             stringResource(id = R.string.daily), color = Color.White,
                             fontFamily = semibold, fontSize = 16.sp
@@ -229,7 +237,11 @@ fun MainPage(
                                 modifier = Modifier.size(45.dp),
                                 shape = CircleShape,
                                 contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color(
+                                        0xFF1E0F32
+                                    )
+                                ),
                             ) {
                                 Image(
                                     painterResource(id = R.drawable.start),
@@ -242,7 +254,9 @@ fun MainPage(
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(end = 10.dp)
+                                modifier = Modifier
+                                    .padding(end = 10.dp)
+                                    .clickable { navController.navigate("exercise") }
                             )
                             Button(
                                 onClick = {
@@ -250,7 +264,11 @@ fun MainPage(
                                 modifier = Modifier.size(45.dp),
                                 shape = CircleShape,
                                 contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color(
+                                        0xFF1E0F32
+                                    )
+                                ),
                             ) {
                                 Image(
                                     painterResource(id = R.drawable.menu),
@@ -351,19 +369,48 @@ fun MainPage(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 25.dp, bottom = 20.dp)
                     ) {
-                        Text(
-                            stringResource(id = R.string.heart), color = Color.White,
-                            modifier = Modifier.padding(top = 20.dp),
-                            fontFamily = semibold, fontSize = 16.sp
-                        )
                         Row(
                             modifier = Modifier
                                 .padding(top = 20.dp)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
+                        )
+                        {
+                            Text(
+                                stringResource(id = R.string.heart), color = Color.White,
+                                fontFamily = semibold, fontSize = 16.sp
+                            )
+                            Button(
+                                onClick = {
+                                    model.highmBPM.postValue(0)
+                                    model.lowmBPM.postValue(300)
+                                },
+                                modifier = Modifier
+                                    .size(40.dp),
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color(
+                                        0xFF1E0F32
+                                    )
+                                ),
+                            ) {
+                                Image(
+                                    painterResource(id = R.drawable.reload),
+                                    "",
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 10.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-//                            Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
                                 onClick = {
                                 },
@@ -400,26 +447,6 @@ fun MainPage(
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(start = 10.dp)
                             )
-                            /*}
-                            Button(
-                                onClick = {
-                                    model.highmBPM.postValue(0)
-                                    model.lowmBPM.postValue(300)
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                                contentPadding = PaddingValues(7.dp),
-                                modifier = Modifier.defaultMinSize(
-                                    minWidth = 1.dp,
-                                    minHeight = 1.dp
-                                )
-                            ) {
-                                Text(
-                                    stringResource(id = R.string.Reset),
-                                    color = Color.White,
-                                    fontFamily = regular,
-                                    fontSize = 14.sp,
-                                )
-                            }*/
                         }
 
                     }

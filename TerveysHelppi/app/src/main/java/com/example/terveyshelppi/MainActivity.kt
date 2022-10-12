@@ -233,9 +233,6 @@ fun NavigationGraph(
         composable(BottomNavItem.Profile.screen_route) {
             ProfilePage(navController, model)
         }
-        composable("exercise") {
-            Exercise(navController, model)
-        }
         composable("graph-heartRate") {
             heartRate?.let { it1 -> Graph(it1) }
         }
@@ -244,6 +241,12 @@ fun NavigationGraph(
         }
         composable("update") {
             UpdateProfile(model, navController)
+        }
+        composable("exercise") {
+            Exercise(navController, model)
+        }
+        composable("exercise_result") {
+            ExerciseResult(navController, model)
         }
     }
 }
@@ -300,6 +303,7 @@ fun MainScreen(
 
     showBottomBar = when (navBackStackEntry?.destination?.route) {
         "exercise" -> false
+        "exercise_result" -> false
         "daily" -> false
         "graph-heartRate" -> false
         else -> true

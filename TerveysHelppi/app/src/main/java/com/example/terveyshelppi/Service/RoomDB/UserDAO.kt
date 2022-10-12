@@ -18,25 +18,14 @@ interface UserDAO {
 }
 
 @Dao
-interface WalkDAO {
+interface ExerciseDAO {
     @Insert
-    fun insert(walkData: WalkData)
+    fun insert(exerciseData: ExerciseData)
 
-    @Query("SELECT * FROM walkdata")
-    fun getAll(): LiveData<List<WalkData>>
+    @Query("SELECT * FROM exercisedata")
+    fun getAll(): LiveData<List<ExerciseData>>
 
-    @Query("SELECT * from walkdata where id == :id")
-    fun getWalkById(id: Long): LiveData<List<WalkData>>
+//    @Query("SELECT * from walkdata where id == :id")
+//    fun getExerciseById(id: Long): LiveData<List<ExerciseData>>
 }
 
-@Dao
-interface RunDAO {
-    @Insert
-    fun insert(runData: RunData)
-
-    @Query("SELECT * FROM rundata")
-    fun getAll(): LiveData<List<RunData>>
-
-    @Query("SELECT * from rundata where id == :id")
-    fun getRunById(id: Long): LiveData<List<RunData>>
-}

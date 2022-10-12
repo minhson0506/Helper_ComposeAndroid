@@ -79,6 +79,7 @@ class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
         Log.d(TAG, "BPM: $bpm")
         if (bpm != null) {
             model.mBPM.postValue(bpm)
+            model.listBPM.value?.add(bpm)
             if (model.highmBPM.value?.compareTo(bpm) ?: -1 < 0) {
                 model.highmBPM.postValue(bpm)
                 model.testGraphMulti.value?.add(Entry(index2.toFloat(), (bpm/2).toFloat()))

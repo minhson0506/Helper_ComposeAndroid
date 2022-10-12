@@ -8,7 +8,7 @@
     <string name="height">Height</string>
     <string name="step">Steps/day</string>
     <string name="cal">Cals/day</string>
-    <string name="hour">Active hours/day</string>
+    <string name="hour">Active minutes/day</string>
     <string name="username">User</string>
     <string name="daily">Daily activity</string>
     <string name="exercise">Exercise</string>
@@ -44,4 +44,5 @@
     <string name="history">See history</string>
     <string name="update">Update profile</string>
     <string name="change">Change your goals</string>
+    <string name="result">Exercise details</string>
 </resources>

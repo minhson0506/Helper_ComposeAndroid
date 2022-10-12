@@ -231,7 +231,7 @@ fun InfoLanding(navController: NavController, application: Application) {
                                 height.toInt(),
                                 if (steps == "") 6000 else steps.toInt(),
                                 if (cal == "") 1000 else cal.toInt(),
-                                if (hours == "") 1 else hours.toInt(),
+                                if (hours == "") 60 else hours.toInt(),
                                 0,
                                 0,
                                 0,

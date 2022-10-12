@@ -66,7 +66,7 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                     else model.distance.postValue(location.distanceTo(preLocation).toDouble())
                     if (model.recording.value == true) {
                         if (model.distanceRecording.value != null)
-                            model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distance.value!!)
+                            model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distanceRecording.value!!)
                         else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())
                     }
                     preLocation = location
@@ -88,7 +88,7 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                 //post location
                 model.long.postValue(location.longitude)
                 model.lat.postValue(location.latitude)
-                if (firstTime == 0) {
+                if (firstTime == 0 || model.firstAltitude.value == 0.0) {
                     model.firstAltitude.postValue(location.altitude)
                     model.secondAltitude.postValue(location.altitude)
                     firstTime++
@@ -145,7 +145,7 @@ fun showPoint(geoPoint: GeoPoint, address: String) {
     val marker = Marker(map)
 
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 2.5
+    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 3
 
     AndroidView(
         modifier = Modifier

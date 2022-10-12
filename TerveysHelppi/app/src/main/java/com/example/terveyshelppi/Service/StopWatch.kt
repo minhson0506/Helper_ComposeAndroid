@@ -34,6 +34,9 @@ class StopWatch {
             }
         }
     }
+    fun getTime(): Long {
+        return timeMillis/1000
+    }
 
     fun pause() {
         isActive = false

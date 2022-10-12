@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.terveyshelppi.Service.RoomDB.RoomDB
 import com.example.terveyshelppi.Service.RoomDB.UserData
-import com.example.terveyshelppi.Service.RoomDB.WalkData
+import com.example.terveyshelppi.Service.RoomDB.ExerciseData
 import com.example.terveyshelppi.Service.YouTubeService.SearchResponse
 import com.github.mikephil.charting.data.BarEntry
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +44,7 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     var distance = MutableLiveData<Double>(0.0)
     var speed = MutableLiveData<Double>(0.0)
     var maxSpeed = MutableLiveData<Double>(0.0)
+    val locationState = MutableLiveData(false)
 
     var distanceRecording = MutableLiveData<Double>(0.0)
 
@@ -68,6 +69,7 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val graph = MutableLiveData(mutableListOf<Entry>())
     val testGraphMulti = MutableLiveData(mutableListOf<Entry>())
     val barGraph = MutableLiveData(mutableListOf<BarEntry>())
+    val listBPM = MutableLiveData(mutableListOf<Int>())
 
     // state of update profile
     val state = MutableLiveData(true)
@@ -89,17 +91,14 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     fun updateInfo(userData: UserData) {
         coroutineScope.launch {
             roomDB.userDao().update(userData)
-
-//            return true
         }
     }
 
-    //get walk history
-    fun getAllWalks(): LiveData<List<WalkData>> = roomDB.walkDao().getAll()
-    fun insertWalk(walkData: WalkData) {
+    //get exercise history
+    fun getAllExercises(): LiveData<List<ExerciseData>> = roomDB.exerciseDao().getAll()
+    fun insertExercise(exerciseData: ExerciseData) {
         coroutineScope.launch {
-            roomDB.walkDao().insert(walkData)
+            roomDB.exerciseDao().insert(exerciseData)
         }
     }
-    fun getWalkById(id: Long): LiveData<List<WalkData>> = roomDB.walkDao().getWalkById(id)
 }

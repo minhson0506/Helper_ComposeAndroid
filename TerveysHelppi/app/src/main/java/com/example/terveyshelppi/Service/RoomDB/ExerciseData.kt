@@ -2,20 +2,18 @@ package com.example.terveyshelppi.Service.RoomDB
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
 
 @Entity
-data class RunData(
+data class ExerciseData(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val timeStart: String,
     val distance: Int,
-    val duration: Int,
-    val averageSpeed: Int,
+    val duration: String,
+    val activeTime: Long,
+    val averageSpeed: Double,
     val calories: Int,
     val elevation: Int, //m
-    val heartRate: Int,
-    val pace: Int, //inch/km
-    val cadence: Int, //SPM
+    val heartRate: Double,
 ) {
 }
