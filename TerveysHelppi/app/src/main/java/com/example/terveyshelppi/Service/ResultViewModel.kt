@@ -69,6 +69,9 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val testGraphMulti = MutableLiveData(mutableListOf<Entry>())
     val barGraph = MutableLiveData(mutableListOf<BarEntry>())
 
+    // state of update profile
+    val state = MutableLiveData(true)
+
     //data to show bar graph
     val steps = MutableLiveData(0.0)
     val cals = MutableLiveData(0.0)
@@ -77,13 +80,17 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     //get user info
     fun getInfo(): LiveData<UserData> = roomDB.userDao().getAll()
     fun insertUser(userData: UserData) {
+        state.postValue(false)
         coroutineScope.launch {
             roomDB.userDao().insert(userData)
+            state.postValue(true)
         }
     }
     fun updateInfo(userData: UserData) {
         coroutineScope.launch {
             roomDB.userDao().update(userData)
+
+//            return true
         }
     }
 

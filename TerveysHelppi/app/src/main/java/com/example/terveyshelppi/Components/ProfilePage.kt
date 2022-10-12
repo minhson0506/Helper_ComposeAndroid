@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
@@ -44,7 +45,6 @@ import com.example.terveyshelppi.Service.ResultViewModel
 import java.io.File
 import java.util.*
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfilePage(navControler: NavController, model: ResultViewModel) {
@@ -60,12 +60,19 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
         val intent = Intent(mContext, Notification::class.java)
         intent.putExtra("notification", notificationId)
 
-        val alarmIntent =
+
+        val alarmIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             PendingIntent.getBroadcast(
                 mContext,
                 0,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE
+            )
+            else PendingIntent.getBroadcast(
+                mContext,
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
 
@@ -288,7 +295,7 @@ fun Camera(model: ResultViewModel) {
     val data by model.getInfo().observeAsState()
 
 
-    if(data != null) {
+    if (data != null) {
         bitmap = BitmapFactory.decodeFile(data!!.avatar)
     }
 

@@ -40,15 +40,17 @@ fun MainPage(
 ) {
     val TAG = "terveyshelppi"
 
+    val distance: Double by model.distance.observeAsState(0.0)
     var user by remember { mutableStateOf("") }
-    var totalSteps by remember { mutableStateOf("") }
-    var totalCalories by remember { mutableStateOf("") }
-    var totalHours by remember { mutableStateOf("") }
-    var targetSteps by remember { mutableStateOf("") }
-    var targetHours by remember { mutableStateOf("") }
-    var targetCals by remember { mutableStateOf("") }
-    var weight by remember { mutableStateOf("") }
-    var height by remember { mutableStateOf("") }
+    var totalSteps by remember { mutableStateOf(0) }
+    var totalCalories by remember { mutableStateOf(0) }
+    var totalHours by remember { mutableStateOf(0) }
+    var targetSteps by remember { mutableStateOf(0) }
+    var targetHours by remember { mutableStateOf(0) }
+    var targetCals by remember { mutableStateOf(0) }
+    var weight by remember { mutableStateOf(0) }
+    var height by remember { mutableStateOf(0) }
+
 
     val data = model.getInfo().observeAsState()
 
@@ -61,15 +63,18 @@ fun MainPage(
 
     if (data.value != null) {
         user = data.value?.name.toString()
-        totalSteps = data.value!!.totalSteps.toInt().toString()
-        totalCalories = data.value!!.totalCalories.toString()
-        totalHours = data.value!!.totalHours.toString()
-        weight = data.value!!.weight.toString()
-        height = data.value!!.height.toString()
-        targetSteps = data.value!!.targetSteps.toString()
-        targetCals = data.value!!.targetCals.toString()
-        targetHours = data.value!!.targetHours.toString()
+        totalSteps = data.value!!.totalSteps.toInt()
+//        totalCalories = data.value!!.totalCalories
+        totalHours = data.value!!.totalHours
+        weight = data.value!!.weight
+        height = data.value!!.height
+        targetSteps = data.value!!.targetSteps
+        targetCals = data.value!!.targetCals
+        targetHours = data.value!!.targetHours
     }
+
+    totalCalories =
+        (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
     Log.d(TAG, "MainPage: userinfo $data")
 
@@ -135,14 +140,6 @@ fun MainPage(
                             .size(20.dp)
                     )
                 }
-//                temp?.let {
-//                    Text(
-//                        it.substringAfterLast(".") + " °C", color = Color.White,
-//                        modifier = Modifier.padding(end = 20.dp),
-//                        fontFamily = semibold,
-//                        fontSize = 16.sp
-//                    )
-//                }
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -158,7 +155,10 @@ fun MainPage(
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
-                    Column(modifier = Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp, bottom = 20.dp)) {
+                    Column(modifier = Modifier.padding(top = 15.dp,
+                        start = 10.dp,
+                        end = 10.dp,
+                        bottom = 20.dp)) {
                         Text(
                             stringResource(id = R.string.daily), color = Color.White,
                             fontFamily = semibold, fontSize = 16.sp
@@ -302,9 +302,7 @@ fun MainPage(
                                     )
                                 }
                                 Text(
-                                    if (weight != "") weight + " " + stringResource(id = R.string.kg) else "-- " + stringResource(
-                                        id = R.string.kg
-                                    ),
+                                    weight.toString() + " " + stringResource(id = R.string.kg),
                                     color = Color.White,
                                     fontFamily = semibold,
                                     fontSize = 14.sp,
@@ -328,9 +326,7 @@ fun MainPage(
                                     )
                                 }
                                 Text(
-                                    if (height != "") height + " " + stringResource(id = R.string.cm) else "-- " + stringResource(
-                                        id = R.string.cm
-                                    ),
+                                    height.toString() + " " + stringResource(id = R.string.cm),
                                     color = Color.White,
                                     fontFamily = semibold,
                                     fontSize = 14.sp,

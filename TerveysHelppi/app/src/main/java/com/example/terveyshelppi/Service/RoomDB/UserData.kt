@@ -5,7 +5,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class UserData(
-    @PrimaryKey
     val name: String,
     val weight: Int,
     val height: Int,
@@ -17,7 +16,9 @@ data class UserData(
     val totalCalories: Int,
     val totalSteps: Double,
     val totalHours: Int,
-    val avatar: String
+    val avatar: String,
+    @PrimaryKey
+    val id: Int = 0
 
 ) {
 }

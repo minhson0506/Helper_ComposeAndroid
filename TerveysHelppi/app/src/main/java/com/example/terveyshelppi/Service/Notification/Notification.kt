@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.example.terveyshelppi.MainActivity
@@ -21,7 +22,7 @@ class Notification : BroadcastReceiver() {
         val mainIntent = Intent(context, MainActivity::class.java)
 
         //pending intent for notification
-        val contentIntent = PendingIntent.getActivity(context, 0, mainIntent, 0)
+        val contentIntent = PendingIntent.getActivity(context, 0, mainIntent, PendingIntent.FLAG_IMMUTABLE)
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

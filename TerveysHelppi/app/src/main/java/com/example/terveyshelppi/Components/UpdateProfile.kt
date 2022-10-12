@@ -39,15 +39,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
         var cal by remember { mutableStateOf(data!!.targetCals.toString()) }
         var hours by remember { mutableStateOf(data!!.targetHours.toString()) }
 
-
-/*    if (data != null) {
-        name = data!!.name
-        weight = data!!.weight.toString()
-        height = data!!.height.toString()
-        steps = data!!.targetSteps.toString()
-        cal = data!!.targetCals.toString()
-        hours = data!!.targetHours.toString()
-    }*/
+        val state by model.state.observeAsState(true)
 
         Box(
             modifier = Modifier
@@ -135,7 +127,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
 
                 TextField(
-                    value = steps.toString(),
+                    value = steps,
                     onValueChange = { steps = it },
                     label = { Text(stringResource(id = R.string.step)) },
                     modifier = Modifier
@@ -160,7 +152,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     modifier = Modifier.padding(top = 5.dp, start = 30.dp)
                 )
                 TextField(
-                    value = cal.toString(),
+                    value = cal,
                     onValueChange = { cal = it },
                     label = { Text(stringResource(id = R.string.cal)) },
                     modifier = Modifier
@@ -257,7 +249,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                                 )
                                 Log.d(TAG, "UpdateProfile: user info $user")
                                 model.updateInfo(user)
-                                navController.navigateUp()
+                                if (state) navController.navigateUp()
                             }
                         })
                         .align(Alignment.End)
