@@ -3,7 +3,6 @@ package com.example.terveyshelppi
 import android.app.Application
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
@@ -15,10 +14,8 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -29,19 +26,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import androidx.navigation.navigation
 import androidx.preference.PreferenceManager
 import com.example.terveyshelppi.Components.*
 import com.example.terveyshelppi.Service.GattClientCallback
@@ -51,8 +42,6 @@ import com.example.terveyshelppi.Service.GetLocation
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import org.osmdroid.config.Configuration
 import kotlin.concurrent.thread
 
@@ -244,6 +233,7 @@ fun NavigationGraph(
     sensorViewModel: SensorViewModel
 ) {
     val heartRate by model.graph.observeAsState()
+    val heartRatePair by model.heartRateGraph.observeAsState()
 
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
@@ -259,7 +249,8 @@ fun NavigationGraph(
             Exercise(navController, model)
         }
         composable("graph-heartRate") {
-            heartRate?.let { it1 -> Graph(it1) }
+//            heartRate?.let { it1 -> Graph(it1) }
+            heartRatePair?.let { it1 -> SampleLineGraph(lines = listOf(it1)) }
         }
         composable("daily") {
             DailyActivity(model)

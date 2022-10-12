@@ -23,6 +23,90 @@ import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.madrapps.plot.line.DataPoint
+import com.madrapps.plot.line.LineGraph
+import com.madrapps.plot.line.LinePlot
+import java.text.FieldPosition
+import java.text.Format
+import java.text.ParsePosition
+
+@Composable
+fun SampleLineGraph(lines: List<List<DataPoint>>) {
+    LineGraph(
+        plot = LinePlot(
+            listOf(
+                LinePlot.Line(
+                    lines[0],
+                    LinePlot.Connection(color = Color.Red),
+                    LinePlot.Intersection(color = Color.Green),
+                    LinePlot.Highlight(color = Color.Yellow),
+                )
+            ),
+            xAxis = LinePlot.XAxis(steps = 1, unit = 1f, roundToInt = true),
+            yAxis = LinePlot.YAxis(steps = 1, roundToInt = false),
+            grid = LinePlot.Grid(Color.Black, steps = 2),
+        ),
+        modifier = Modifier.fillMaxSize(),
+        onSelection = { xLine, points ->
+            // Do whatever you want here
+        }
+    )
+}
+
+
+
+//@Composable
+//fun GraphLineWithPlot(lines: List<Pair<Int, Int>>) {
+//    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
+//    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity
+//    AndroidView(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .height(dpValue.dp),
+//        factory = { context: Context ->
+//            val view = XYPlot(context, "Heart rate")
+//            val domainLabels = lines.map { it.first }
+//            val series = SimpleXYSeries(lines.map { it.second }, SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "BPM")
+//            val seriesFormat = LineAndPointFormatter(context, R.id.line_and_point)
+//            seriesFormat.interpolationParams =
+//                CatmullRomInterpolator.Params(10, CatmullRomInterpolator.Type.Centripetal)
+//
+//            view.addSeries(series, seriesFormat)
+//            view.graph.getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).format = object :Format() {
+//                override fun format(
+//                    obj: Any,
+//                    toAppendTo: StringBuffer,
+//                    pos: FieldPosition?,
+//                ): StringBuffer? {
+//                    val i = Math.round((obj as Number).toFloat())
+//                    return toAppendTo.append(domainLabels.get(i))
+//                }
+//
+//                override fun parseObject(source: String?, pos: ParsePosition?): Any? {
+//                    return null
+//                }
+//            }
+//
+////            val view = LineChart(context)
+////            view.legend.isEnabled = false
+////            val data = LineData(LineDataSet(points, "BPM"))
+////            val desc = Description()
+////            desc.text = "Beats Per Minute"
+////            view.xAxis.textColor = (0xffffff)
+////            view.legend.textColor = (0xffffff)
+////            desc.textColor = (0xffffff)
+////            view.axisLeft.textColor = (0xffffff)
+////            view.description = desc
+////            view.data = data
+//            view // return the view
+//        },
+//        update = { view ->
+//            // Update the view
+//            view.invalidate()
+//        }
+//    )
+//}
+
 
 
 @Composable

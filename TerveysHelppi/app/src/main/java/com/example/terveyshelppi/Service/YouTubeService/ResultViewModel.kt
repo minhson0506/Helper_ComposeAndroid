@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import com.github.mikephil.charting.data.Entry
+import com.madrapps.plot.line.DataPoint
 
 class ResultViewModel(application: Application): AndroidViewModel(application) {
     val TAG = "terveyshelppi"
@@ -60,6 +61,8 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val graph = MutableLiveData(mutableListOf<Entry>())
     val testGraphMulti = MutableLiveData(mutableListOf<Entry>())
     val barGraph = MutableLiveData(mutableListOf<BarEntry>())
+
+    val heartRateGraph = MutableLiveData(mutableListOf<DataPoint>())
 
     //data to show bar graph
     val steps = MutableLiveData(0.0)

@@ -5,8 +5,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -34,8 +41,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
 import com.example.terveyshelppi.Service.Notification.Notification
+import java.io.File
 import java.util.*
 
 
@@ -79,6 +89,25 @@ fun ProfilePage() {
             alarmIntent
         )
     }
+
+    val TAG = "terveyshelppi"
+    val fileName = "temp_photo"
+    val imgPath = LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File.createTempFile(fileName, ".jpg", imgPath)
+
+    val photoUri: Uri =
+        FileProvider.getUriForFile(LocalContext.current,
+            "com.example.terveyshelppi.fileprovider",
+            imageFile)
+    val currentPhotoPath = imageFile!!.absolutePath
+
+    var result by remember { mutableStateOf<Bitmap?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        if (it) result = BitmapFactory.decodeFile(currentPhotoPath)
+        else Log.i(TAG, "Picture not taken")
+    }
+
+    var takePhoto by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -147,7 +176,13 @@ fun ProfilePage() {
                 .fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly
         ) {
             // Creating a Top bar
-            Image(
+            if (result != null)
+                result?.let { image ->
+                    Image(image.asImageBitmap(),
+                        null,
+                        modifier = Modifier.fillMaxWidth())
+                }
+            else Image(
                 painterResource(id = R.drawable.dog),
                 contentDescription = "dog",
                 contentScale = ContentScale.Crop,
@@ -156,6 +191,10 @@ fun ProfilePage() {
                     .align(CenterHorizontally)
                     .size(100.dp)
                     .clip(CircleShape)
+                    .clickable {
+                        launcher.launch(photoUri)
+                        takePhoto = true
+                    }
 
             )
             Text(
