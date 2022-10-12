@@ -30,6 +30,7 @@ import androidx.fragment.app.commit
 import coil.compose.rememberAsyncImagePainter
 import com.example.terveyshelppi.BuildConfig
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer

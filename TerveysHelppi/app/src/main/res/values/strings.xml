@@ -9,7 +9,6 @@
     <string name="step">Steps/day</string>
     <string name="cal">Cals/day</string>
     <string name="hour">Active hours/day</string>
-    <string name="gm">Good morning</string>
     <string name="username">User</string>
     <string name="daily">Daily activity</string>
     <string name="exercise">Exercise</string>
@@ -28,8 +27,6 @@
     <string name="min">mins</string>
     <string name="search">Search ...</string>
     <string name="pb">Personal best</string>
-    <string name="walking">Walking</string>
-    <string name="running">Running</string>
     <string name="resume">Resume</string>
     <string name="pause">Pause</string>
     <string name="finish">Finish</string>
@@ -43,4 +40,8 @@
     <string name="activeTime">Active time</string>
     <string name="distance">Distance while active</string>
     <string name="total_cal">Total burnt calories</string>
+    <string name="start_ex">Start exercise</string>
+    <string name="history">See history</string>
+    <string name="update">Update profile</string>
+    <string name="change">Change your goals</string>
 </resources>

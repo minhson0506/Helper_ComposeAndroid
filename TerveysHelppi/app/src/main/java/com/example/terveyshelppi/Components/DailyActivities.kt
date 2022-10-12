@@ -1,15 +1,19 @@
 package com.example.terveyshelppi.Components
 
-import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -17,27 +21,40 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.terveyshelppi.R
-import com.example.terveyshelppi.Service.Sensors.SensorViewModel
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 import com.github.mikephil.charting.data.BarEntry
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DailyActivity(model: ResultViewModel) {
+fun DailyActivity(model: ResultViewModel, navController: NavController) {
     val TAG = "terveyshelppi"
 
-    var totalSteps by remember { mutableStateOf(100) }
+    var totalSteps by remember { mutableStateOf(0) }
     var totalCals by remember { mutableStateOf("") }
     var totalHours by remember { mutableStateOf("") }
-    var targetSteps by remember { mutableStateOf(1000) }
+    var targetSteps by remember { mutableStateOf("") }
+    var targetCals by remember { mutableStateOf("") }
+    var targetHours by remember { mutableStateOf("") }
+
     val data by model.getInfo().observeAsState()
+
     if (data != null) {
-        targetSteps = data!!.targetSteps
+        targetSteps = data!!.targetSteps.toString()
+        targetCals = data!!.targetCals.toString()
+        targetHours = data!!.targetHours.toString()
         totalSteps = data!!.totalSteps.toInt()
         totalCals = data!!.totalCalories.toString()
         totalHours = data!!.totalHours.toString()
     }
+
+    val textArray = listOf(
+        Triple(R.drawable.step, Pair(totalSteps, targetSteps), R.string.steps),
+        Triple(R.drawable.cal, Pair(totalCals, targetCals), R.string.activecal),
+        Triple(R.drawable.clock, Pair(totalHours, targetHours), R.string.activeTime),
+    )
 
     Box(
         modifier = Modifier
@@ -57,6 +74,19 @@ fun DailyActivity(model: ResultViewModel) {
                     stringResource(id = R.string.daily), color = Color.White, fontFamily = regular
                 )
             }, backgroundColor = Color.Black,
+            navigationIcon = if (navController.previousBackStackEntry != null) {
+                {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                }
+            } else {
+                null
+            },
             actions = {
                 // Creating Icon button for dropdown menu
                 Image(
@@ -71,7 +101,7 @@ fun DailyActivity(model: ResultViewModel) {
             })
         Column(
             modifier = Modifier
-                .padding(top = 40.dp, bottom = 20.dp)
+                .padding(top = 40.dp)
                 .fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Card(
@@ -84,7 +114,7 @@ fun DailyActivity(model: ResultViewModel) {
                 Column(modifier = Modifier.padding(bottom = 20.dp)) {
                     Text(
                         stringResource(id = R.string.today), color = Color.White,
-                        modifier = Modifier.padding(top = 15.dp, start = 15.dp),
+                        modifier = Modifier.padding(top = 15.dp, start = 15.dp, bottom = 20.dp),
                         fontFamily = semibold, fontSize = 16.sp
                     )
                     if (totalSteps != 0) {
@@ -100,74 +130,40 @@ fun DailyActivity(model: ResultViewModel) {
                         )
                         GraphBarChar(points = points)
                     }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                            .padding(bottom = 10.dp, top = 30.dp, start = 15.dp, end = 15.dp)
-                            .fillMaxWidth()
+                    LazyVerticalGrid(
+                        cells = GridCells.Fixed(3),
+                        modifier = Modifier.padding(
+                            top = 20.dp,
+                            start = 10.dp,
+                            end = 10.dp
+                        )
                     ) {
-                        Text(
-                            stringResource(id = R.string.steps),
-                            color = smallText,
-                            fontSize = 15.sp,
-                            fontFamily = regular
-                        )
-                        Text(
-                            stringResource(id = R.string.activecal),
-                            color = smallText,
-                            fontSize = 15.sp,
-                            fontFamily = regular
-                        )
-                        Text(
-                            stringResource(id = R.string.activeTime),
-                            color = smallText,
-                            fontSize = 15.sp,
-                            fontFamily = regular
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                            .padding(bottom = 10.dp, start = 25.dp, end = 25.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.step),
-                            "",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Image(
-                            painterResource(id = R.drawable.cal),
-                            "",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Image(
-                            painterResource(id = R.drawable.clock),
-                            "",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                            .padding(start = 15.dp, end = 15.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            totalSteps.toString(),
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontFamily = semibold
-                        )
-                        Text(
-                            totalCals,
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontFamily = semibold
-                        )
-                        Text(
-                            totalHours,
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontFamily = semibold
-                        )
+                        items(textArray) {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Text(
+                                    stringResource(id = it.third),
+                                    color = smallText,
+                                    fontSize = 14.sp,
+                                    fontFamily = regular,
+                                    modifier = Modifier.padding(bottom = 15.dp)
+                                )
+                                Image(
+                                    painterResource(id = it.first),
+                                    "",
+                                    modifier = Modifier.padding(bottom = 10.dp).size(20.dp)
+                                )
+                                Text(
+                                    "${it.second.first} / ${it.second.second}",
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontFamily = semibold
+                                )
+                            }
+                        }
                     }
                     Row(
                         modifier = Modifier
@@ -202,13 +198,12 @@ fun DailyActivity(model: ResultViewModel) {
                 }
             }
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 20.dp),
+                modifier = Modifier.padding(all = 20.dp)
+                    .fillMaxWidth(),
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                Column(modifier = Modifier.padding(bottom = 20.dp, start = 15.dp, end = 15.dp)) {
+                Column(modifier = Modifier.padding(start = 15.dp, end = 15.dp)) {
                     Row(
                         modifier = Modifier
                             .padding(top = 15.dp)
@@ -216,7 +211,7 @@ fun DailyActivity(model: ResultViewModel) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            stringResource(id = R.string.running), color = Color.White,
+                            stringResource(id = R.string.exercise), color = Color.White,
                             fontFamily = regular, fontSize = 16.sp
                         )
                         Text(
@@ -226,7 +221,7 @@ fun DailyActivity(model: ResultViewModel) {
                     }
                     Row(
                         modifier = Modifier
-                            .padding(top = 15.dp)
+                            .padding(top = 15.dp, bottom = 20.dp)
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {

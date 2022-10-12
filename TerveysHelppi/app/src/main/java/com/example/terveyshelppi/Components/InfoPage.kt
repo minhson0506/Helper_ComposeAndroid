@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.RoomDB.UserData
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
@@ -236,11 +236,16 @@ fun InfoLanding(navController: NavController, application: Application) {
                                 0,
                                 0,
                                 0.0,
-                                0
+                                0,
+                                ""
                             )
                             Log.d(TAG, "InfoLanding: user info $user")
                             viewModel.insertUser(user)
-                            navController.navigate("main")
+                            navController.navigate("main") {
+                                popUpTo("landingPage") {
+                                    inclusive = true
+                                }
+                            }
 
                         }
                     })

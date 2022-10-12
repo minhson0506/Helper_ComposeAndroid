@@ -16,7 +16,8 @@ data class UserData(
     val totalDistance: Int,
     val totalCalories: Int,
     val totalSteps: Double,
-    val totalHours: Int
+    val totalHours: Int,
+    val avatar: String
 
 ) {
 }

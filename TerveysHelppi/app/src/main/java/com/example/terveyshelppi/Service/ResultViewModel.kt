@@ -1,18 +1,13 @@
-package com.example.terveyshelppi.Service.YouTubeService
+package com.example.terveyshelppi.Service
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.terveyshelppi.Service.RoomDB.RoomDB
-import com.example.terveyshelppi.Service.RoomDB.RunData
 import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.example.terveyshelppi.Service.RoomDB.WalkData
+import com.example.terveyshelppi.Service.YouTubeService.SearchResponse
 import com.github.mikephil.charting.data.BarEntry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +19,19 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val TAG = "terveyshelppi"
     // store data of searching
     val result = MutableLiveData<List<SearchResponse.Item>>(null)
+
+    //data from step sensor
+    private val _stepValue: MutableLiveData<String> = MutableLiveData()
+    val stepValue: LiveData<String> = _stepValue
+    fun updateStepValue(value: String) {
+        _stepValue.value = value
+    }
+
+    private val _tempValue: MutableLiveData<String> = MutableLiveData()
+    val tempValue: LiveData<String> = _tempValue
+    fun updateTempValue(value: String) {
+        _tempValue.value = value
+    }
 
     //store data of title
     val title = MutableLiveData<String>(null)
@@ -87,13 +95,4 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
         }
     }
     fun getWalkById(id: Long): LiveData<List<WalkData>> = roomDB.walkDao().getWalkById(id)
-
-    //get run history
-    fun getAllRuns(): LiveData<List<RunData>> = roomDB.runDAO().getAll()
-    fun insertRun(runData: RunData) {
-        coroutineScope.launch {
-            roomDB.runDAO().insert(runData)
-        }
-    }
-    fun getRunById(id: Long): LiveData<List<RunData>> = roomDB.runDAO().getRunById(id)
 }

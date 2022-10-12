@@ -29,13 +29,12 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.StopWatch
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.getAddress
 import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
 import org.osmdroid.util.GeoPoint
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -64,7 +63,6 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
         weight = data!!.weight
     }
 
-//    calories = (steps * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
     calories = (distance/0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
     Box(
@@ -82,7 +80,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
         TopAppBar(
             title = {
                 Text(
-                    stringResource(id = R.string.walking),
+                    stringResource(id = R.string.exercise),
                     color = Color.White,
                     fontFamily = regular
                 )
@@ -118,7 +116,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 40.dp, bottom = 30.dp, start = 20.dp, end = 20.dp),
+                .padding(top = 40.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -138,7 +136,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                var textArray = listOf(
+                val textArray = listOf(
                     Triple("Distance", round(distance), "m"),
                     Triple("Duration", stopWatch.formattedTime, ""),
                     Triple("Speed", round(speed), "km/h"),
@@ -196,7 +194,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                         model.recording.postValue(true)
                         bool = 2
                     },
-                    modifier = Modifier.padding(top = 15.dp),
+                    modifier = Modifier.padding(top = 10.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                 ) {
                     Text(
@@ -213,7 +211,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                         model.recording.postValue(false)
                         bool = 3
                     },
-                    modifier = Modifier.padding(top = 15.dp),
+                    modifier = Modifier.padding(top = 10.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                 ) {
                     Text(
@@ -225,7 +223,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 }
             } else {
                 Row(
-                    modifier = Modifier.padding(top = 15.dp),
+                    modifier = Modifier.padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -248,7 +246,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                         onClick = {
                             model.recording.postValue(false)
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF7ED67D)),
                         modifier = Modifier.padding(start = 20.dp),
                     ) {
                         Text(

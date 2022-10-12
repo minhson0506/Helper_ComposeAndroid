@@ -17,8 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.terveyshelppi.R
-import com.example.terveyshelppi.Service.GetLocation
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
 import com.example.terveyshelppi.ui.theme.regular
 

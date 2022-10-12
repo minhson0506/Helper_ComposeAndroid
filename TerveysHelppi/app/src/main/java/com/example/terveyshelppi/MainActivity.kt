@@ -1,9 +1,7 @@
 package com.example.terveyshelppi
 
-import android.app.Application
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
@@ -15,10 +13,8 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -29,30 +25,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import androidx.navigation.navigation
 import androidx.preference.PreferenceManager
 import com.example.terveyshelppi.Components.*
 import com.example.terveyshelppi.Service.GattClientCallback
-import com.example.terveyshelppi.Service.Sensors.SensorViewModel
-import com.example.terveyshelppi.Service.Sensors.ShowSensorData
 import com.example.terveyshelppi.Service.GetLocation
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
+import com.example.terveyshelppi.Service.ShowSensorData
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import org.osmdroid.config.Configuration
 import kotlin.concurrent.thread
 
@@ -61,7 +48,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     companion object {
         private lateinit var model: ResultViewModel
-        private var sensorViewModel = SensorViewModel()
         private lateinit var sm: SensorManager
         private var stepSensor: Sensor? = null
         private var sTemperature: Sensor? = null
@@ -103,16 +89,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             }
         }
 
+        //init map
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-
-
         thread {
+           /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
             GetLocation(context = this, activity = this@MainActivity, model = model)
         }
         setContent {
             val navController = rememberNavController()
 
-            ShowSensorData(sensorViewModel, application)
+            ShowSensorData(model, application)
 
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
@@ -128,9 +115,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                         composable("main") {
                             MainScreen(
                                 model = model,
-                                application,
-                                this@MainActivity,
-                                sensorViewModel = sensorViewModel
+                                this@MainActivity
                             )
                         }
                     }
@@ -141,11 +126,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(p0: SensorEvent) {
         if (p0.sensor == sTemperature) {
-            sensorViewModel.updateTempValue(p0.values[0].toString())
+            model.updateTempValue(p0.values[0].toString())
             Log.d(TAG, "onSensorChanged: temp ${p0.values[0]}")
         }
         if (p0.sensor == stepSensor) {
-            sensorViewModel.updateStepValue(
+            model.updateStepValue(
                 getString(
                     R.string.sensor_val,
                     p0.values[0],
@@ -212,15 +197,10 @@ fun hasPermissions(
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                 ), 1
-            ); return true
+            )
+            return true
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            val requestMulti = activity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permission - >
-//                permissions.entries.forEach {
-//                    Log.d("test006", "${it.key} = ${it.value}")
-//                }
-//            }
-//        }
+
         Log.i(TAG, "permissions ok")
         return true
     }
@@ -239,9 +219,7 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 fun NavigationGraph(
     navController: NavHostController,
     model: ResultViewModel,
-    application: Application,
-    activity: AppCompatActivity,
-    sensorViewModel: SensorViewModel
+    activity: AppCompatActivity
 ) {
     val heartRate by model.graph.observeAsState()
 
@@ -250,10 +228,10 @@ fun NavigationGraph(
             FitnessPage(model = model, activity = activity)
         }
         composable(BottomNavItem.Home.screen_route) {
-            MainPage(application, navController, model, sensorViewModel)
+            MainPage(navController, model)
         }
         composable(BottomNavItem.Profile.screen_route) {
-            ProfilePage()
+            ProfilePage(navController, model)
         }
         composable("exercise") {
             Exercise(navController, model)
@@ -262,7 +240,10 @@ fun NavigationGraph(
             heartRate?.let { it1 -> Graph(it1) }
         }
         composable("daily") {
-            DailyActivity(model)
+            DailyActivity(model, navController)
+        }
+        composable("update") {
+            UpdateProfile(model, navController)
         }
     }
 }
@@ -311,9 +292,7 @@ fun BottomNavigationBar(navController: NavController) {
 @Composable
 fun MainScreen(
     model: ResultViewModel,
-    application: Application,
-    activity: AppCompatActivity,
-    sensorViewModel: SensorViewModel,
+    activity: AppCompatActivity
 ) {
     val navController = rememberNavController()
     var showBottomBar by remember { mutableStateOf(true) }
@@ -334,9 +313,7 @@ fun MainScreen(
                 NavigationGraph(
                     navController = navController,
                     model = model,
-                    application = application,
-                    activity = activity,
-                    sensorViewModel = sensorViewModel
+                    activity = activity
                 )
             }
         }

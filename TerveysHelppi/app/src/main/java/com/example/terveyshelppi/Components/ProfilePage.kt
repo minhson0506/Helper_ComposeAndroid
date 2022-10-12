@@ -1,14 +1,17 @@
 package com.example.terveyshelppi.Components
 
 import android.app.AlarmManager
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -19,33 +22,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.ui.theme.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
+import androidx.navigation.NavController
 import com.example.terveyshelppi.Service.Notification.Notification
+import com.example.terveyshelppi.Service.RoomDB.UserData
+import com.example.terveyshelppi.Service.ResultViewModel
+import java.io.File
 import java.util.*
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProfilePage() {
+fun ProfilePage(navControler: NavController, model: ResultViewModel) {
+    val TAG = "terveyshelppi"
     val mContext = LocalContext.current
     val notificationId = 1
 
     var mDisplayMenu by remember { mutableStateOf(false) }
+
 
     fun setNotification() {
         //this intent link to Notification class
@@ -117,18 +125,9 @@ fun ProfilePage() {
                     onDismissRequest = { mDisplayMenu = false }
                 ) {
                     DropdownMenuItem(onClick = {
-                        Toast.makeText(
-                            mContext,
-                            "Edit profile",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        navControler.navigate("update")
                     }) {
-                        Text(text = "Edit profile")
-                    }
-                    DropdownMenuItem(onClick = {
-                        Toast.makeText(mContext, "Update goals", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Text(text = "Update goals")
+                        Text(text = "Update profile")
                     }
                     DropdownMenuItem(onClick = {
                         Toast.makeText(mContext, "Notifcation is set!", Toast.LENGTH_SHORT).show()
@@ -144,20 +143,11 @@ fun ProfilePage() {
         Column(
             modifier = Modifier
                 .padding(top = 30.dp, bottom = 20.dp)
-                .fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Creating a Top bar
-            Image(
-                painterResource(id = R.drawable.dog),
-                contentDescription = "dog",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .align(CenterHorizontally)
-                    .size(100.dp)
-                    .clip(CircleShape)
-
-            )
+            Camera(model)
             Text(
                 stringResource(id = R.string.username),
                 color = Color.White,
@@ -290,10 +280,78 @@ fun ProfilePage() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun ProfilePreview() {
-    TerveysHelppiTheme {
-        ProfilePage()
+fun Camera(model: ResultViewModel) {
+    val TAG = "terveyshelppi"
+    val mContext = LocalContext.current
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val data by model.getInfo().observeAsState()
+
+
+    if(data != null) {
+        bitmap = BitmapFactory.decodeFile(data!!.avatar)
+    }
+
+    //create file
+    val fileName = "temp_photo"
+    val imgPath = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File.createTempFile(fileName, ".jpg", imgPath)
+
+    //generate content URI
+    val photoURI: Uri = FileProvider.getUriForFile(
+        mContext,
+        "com.example.kari.fileprovider",
+        imageFile
+    )
+    val currentPhotoPath = imageFile.absolutePath
+
+    //launch camera
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            if (it) {
+                bitmap = BitmapFactory.decodeFile(currentPhotoPath)
+                val user = UserData(
+                    data!!.name,
+                    data!!.weight,
+                    data!!.height,
+                    data!!.targetSteps,
+                    data!!.targetCals,
+                    data!!.targetHours,
+                    data!!.heartRate,
+                    data!!.totalDistance,
+                    data!!.totalCalories,
+                    data!!.totalSteps,
+                    data!!.totalHours,
+                    currentPhotoPath
+                )
+                model.updateInfo(user)
+            } else Log.d(TAG, "ProfilePage: photo not taken")
+        }
+    if (bitmap == null) {
+        Image(
+            painterResource(id = R.drawable.dog),
+            contentDescription = "dog",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .size(100.dp)
+                .clip(CircleShape)
+                .clickable {
+                    launcher.launch(photoURI)
+                }
+        )
+    } else {
+        Log.d(TAG, "Camera: bitmap: $bitmap")
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = "avatar",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .size(100.dp)
+                    .clip(CircleShape)
+            )
+        }
     }
 }
