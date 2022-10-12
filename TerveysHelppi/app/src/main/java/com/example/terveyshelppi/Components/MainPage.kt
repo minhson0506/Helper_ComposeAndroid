@@ -43,8 +43,8 @@ fun MainPage(
 
     //get time of day
     val c = Calendar.getInstance()
-    Log.d(TAG, "MainPage: date is ${c.get(Calendar.DAY_OF_YEAR)} type ${c.get(Calendar.DAY_OF_YEAR) is Int}")
     val timeOfDay = c.get(Calendar.HOUR_OF_DAY)
+
     var text by remember { mutableStateOf("") }
 
     text = when (timeOfDay) {
@@ -55,8 +55,11 @@ fun MainPage(
         else -> "Hello"
     }
 
+
+    //exercise data
     val exerciseData by model.getAllExercises().observeAsState()
     val list = mutableListOf(0L)
+
     exerciseData?.forEach {
         list.add(it.activeTime)
     }
@@ -72,6 +75,7 @@ fun MainPage(
     var targetCals by remember { mutableStateOf(0) }
     var weight by remember { mutableStateOf(0) }
     var height by remember { mutableStateOf(0) }
+    var beginStep by remember { mutableStateOf(0) }
 
     val data by model.getInfo().observeAsState()
 
@@ -90,8 +94,12 @@ fun MainPage(
         targetSteps = data!!.targetSteps
         targetCals = data!!.targetCals
         targetHours = data!!.targetHours
+        beginStep = data!!.stepBeginOfDay.toInt()
         Log.d(TAG, "MainPage: today is ${Calendar.getInstance().time}")
-        Log.d(TAG, "MainPage: totalstep is $totalSteps and stepbeginofDay is ${data!!.stepBeginOfDay}")
+        Log.d(
+            TAG,
+            "MainPage: totalstep is $totalSteps and stepbeginofDay is ${data!!.stepBeginOfDay}"
+        )
     }
 
 
@@ -99,10 +107,11 @@ fun MainPage(
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
     totalHours = ((list.sum()) / 60).toInt()
+
     Log.d(TAG, "MainPage: userinfo $data")
 
     val textArray = listOf(
-        Triple(R.drawable.step, totalSteps, targetSteps),
+        Triple(R.drawable.step, totalSteps - beginStep, targetSteps),
         Triple(R.drawable.cal, totalCalories, targetCals),
         Triple(R.drawable.clock, totalHours, targetHours),
     )
@@ -233,61 +242,66 @@ fun MainPage(
                             modifier = Modifier
                                 .padding(top = 20.dp, bottom = 20.dp)
                                 .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Button(
-                                onClick = {
-                                    navController.navigate("exercise")
-                                },
-                                modifier = Modifier.size(45.dp),
-                                shape = CircleShape,
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(
-                                        0xFF1E0F32
-                                    )
-                                ),
                             ) {
-                                Image(
-                                    painterResource(id = R.drawable.start),
-                                    "",
-                                    modifier = Modifier.size(20.dp)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Button(
+                                    onClick = {
+                                        navController.navigate("exercise")
+                                    },
+                                    modifier = Modifier.size(45.dp),
+                                    shape = CircleShape,
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color(
+                                            0xFF1E0F32
+                                        )
+                                    ),
+                                ) {
+                                    Image(
+                                        painterResource(id = R.drawable.start),
+                                        "",
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Text(
+                                    stringResource(id = R.string.start_ex),
+                                    color = Color.White,
+                                    fontFamily = semibold,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier
+                                        .padding(start = 10.dp)
+                                        .clickable { navController.navigate("exercise") }
                                 )
                             }
-                            Text(
-                                stringResource(id = R.string.start_ex),
-                                color = Color.White,
-                                fontFamily = semibold,
-                                fontSize = 14.sp,
-                                modifier = Modifier
-                                    .padding(end = 10.dp)
-                                    .clickable { navController.navigate("exercise") }
-                            )
-                            Button(
-                                onClick = {
-                                },
-                                modifier = Modifier.size(45.dp),
-                                shape = CircleShape,
-                                contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(
-                                        0xFF1E0F32
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Button(
+                                    onClick = {
+                                        navController.navigate("history")
+                                    },
+                                    modifier = Modifier.size(45.dp),
+                                    shape = CircleShape,
+                                    contentPadding = PaddingValues(0.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color(
+                                            0xFF1E0F32
+                                        )
+                                    ),
+                                ) {
+                                    Image(
+                                        painterResource(id = R.drawable.menu),
+                                        "",
+                                        modifier = Modifier.size(20.dp)
                                     )
-                                ),
-                            ) {
-                                Image(
-                                    painterResource(id = R.drawable.menu),
-                                    "",
-                                    modifier = Modifier.size(20.dp)
+                                }
+                                Text(
+                                    stringResource(id = R.string.history), color = Color.White,
+                                    fontFamily = semibold, fontSize = 14.sp,
+                                    modifier = Modifier.padding(start = 10.dp)
+                                        .clickable { navController.navigate("history") }
                                 )
                             }
-                            Text(
-                                stringResource(id = R.string.history), color = Color.White,
-                                fontFamily = semibold, fontSize = 14.sp
-                            )
                         }
                     }
-
                 }
                 Card(
                     modifier = Modifier
@@ -413,7 +427,7 @@ fun MainPage(
                             modifier = Modifier
                                 .padding(top = 10.dp)
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Button(
@@ -443,14 +457,14 @@ fun MainPage(
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 10.dp)
+                                modifier = Modifier.padding(start = 20.dp)
                             )
                             Text(
                                 text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 10.dp)
+                                modifier = Modifier.padding(start = 20.dp)
                             )
                         }
 

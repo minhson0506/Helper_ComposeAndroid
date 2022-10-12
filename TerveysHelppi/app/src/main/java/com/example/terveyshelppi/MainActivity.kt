@@ -289,6 +289,9 @@ fun NavigationGraph(
         composable("exercise_result") {
             ExerciseResult(navController, model)
         }
+        composable("history") {
+            ExerciseHistory(navController, model)
+        }
     }
 }
 

@@ -45,4 +45,5 @@
     <string name="update">Update profile</string>
     <string name="change">Change your goals</string>
     <string name="result">Exercise details</string>
+    <string name="all">All exercises</string>
 </resources>

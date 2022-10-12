@@ -177,6 +177,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     fontFamily = regular,
                     modifier = Modifier.padding(top = 5.dp, start = 30.dp)
                 )
+
                 TextField(
                     value = hours.toString(),
                     onValueChange = { hours = it },

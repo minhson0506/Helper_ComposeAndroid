@@ -98,7 +98,7 @@ fun GraphMulti(firstPoints: MutableList<Entry>, secondPoints: MutableList<Entry>
 @Composable
 fun GraphBarChar(points: MutableList<BarEntry>) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 2.5
+    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
     Log.d("terveyshelppi", "DailyActivity: start draw graph")
 
     AndroidView(
