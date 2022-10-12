@@ -21,6 +21,10 @@ import org.osmdroid.views.overlay.Marker
 import kotlin.math.round
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Point
 import android.location.Geocoder
 import android.os.Build
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +33,18 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import org.osmdroid.bonuspack.routing.OSRMRoadManager
+import org.osmdroid.bonuspack.routing.Road
+import org.osmdroid.bonuspack.routing.RoadManager
+import org.osmdroid.views.overlay.Polyline
 import java.util.*
+import org.osmdroid.views.Projection
+
+import org.osmdroid.views.overlay.Overlay
+import org.osmdroid.api.IMapController
+import java.lang.Exception
+import kotlin.concurrent.thread
+
 
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     val TAG = "terveysheppi"
@@ -71,13 +86,16 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                     if (model.recording.value == true) {
                         if (model.distanceRecording.value != null)
                             model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distance.value!!)
-                        else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())
+                        else model.distanceRecording.postValue(location.distanceTo(preLocation)
+                            .toDouble())
+//                        model.listPoints.value?.add(GeoPoint(location.latitude, location.longitude))
                     }
                     preLocation = location
                 } else {
                     preLocation = location
                 }
-                Log.d(TAG, "onLocationResult: speed is ${location.speed} and ${location.speed.toDouble()}")
+                Log.d(TAG,
+                    "onLocationResult: speed is ${location.speed} and ${location.speed.toDouble()}")
 //                speed = round(location.speed).toDouble()
                 if (model.recording.value == true) model.speed.postValue(location.speed * 3.6)
                 else model.speed.postValue(0.0)
@@ -90,6 +108,8 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                     "location latitude: ${location.latitude} and longitude ${location.longitude} type is ${(location.latitude) is Double}")
 
                 //post location
+                model.listPoints.value?.add(GeoPoint(location.latitude, location.longitude))
+
                 model.long.postValue(location.longitude)
                 model.lat.postValue(location.latitude)
                 if (firstTime == 0) {
@@ -149,7 +169,7 @@ fun showPoint(geoPoint: GeoPoint, address: String) {
     val marker = Marker(map)
 
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 2.5
+    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 3
 
     AndroidView(
         modifier = Modifier
@@ -175,4 +195,61 @@ fun composeMap(): MapView {
         MapView(context).apply { id = R.id.map }
     }
     return mapView
+}
+
+@Composable
+fun drawLineInMap() {
+//    points: MutableList<GeoPoint>, currentPoint: GeoPoint
+    val map = composeMap()
+    val context = LocalContext.current
+    var mapInitialized by remember(map) { mutableStateOf(false) }
+    if (!mapInitialized) {
+        map.setTileSource(TileSourceFactory.MAPNIK)
+        map.controller.setZoom(17.0)
+        map.controller.setCenter(GeoPoint(60.17, 24.95))
+        mapInitialized = true
+    }
+
+    val marker = Marker(map)
+
+    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
+    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 2.5
+
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(dpValue.dp),
+        factory = { map }) {
+        map.setMultiTouchControls(true)
+
+        val roadManager: RoadManager = OSRMRoadManager(context, "Route")
+        val waypoints = ArrayList<GeoPoint>()
+        val startPoint = GeoPoint(60.17, 24.95)
+        waypoints.add(startPoint)
+        val endPoint = GeoPoint(60.18, 24.95)
+        waypoints.add(endPoint)
+        var road: Road? = null
+        try {
+            road = roadManager.getRoad(waypoints)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        var wait = false
+//        thread {
+            if (road != null) {
+                if (road.mStatus !== Road.STATUS_OK) {
+                    //handle error... warn the user, etc.
+                }
+            }
+            val roadOverlay: Polyline = RoadManager.buildRoadOverlay(road, 0xee82ee, 55888f)
+            map.overlays.add(roadOverlay)
+            wait = true
+            Log.d("terveyshelppi", "drawLineInMap: finish to draw")
+//        }
+
+        while(!wait) {
+            Log.d("terveyshelppi", "drawLineInMap: return Map ")
+        }
+        map.invalidate()
+    }
 }

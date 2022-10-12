@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.StopWatch
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.drawLineInMap
 import com.example.terveyshelppi.Service.getAddress
 import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
@@ -55,17 +56,17 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
     var bool by remember { mutableStateOf(1) }
 
     val data by model.getInfo().observeAsState()
-    var height by remember { mutableStateOf(0)}
-    var weight by remember { mutableStateOf(0)}
+    var height by remember { mutableStateOf(0) }
+    var weight by remember { mutableStateOf(0) }
     var calories by remember { mutableStateOf(0) }
 
-    if(data != null) {
+    if (data != null) {
         height = data!!.height
         weight = data!!.weight
     }
 
 //    calories = (steps * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
-    calories = (distance/0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
+    calories = (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
     Box(
         modifier = Modifier
@@ -247,6 +248,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     Button(
                         onClick = {
                             model.recording.postValue(false)
+                            navController.navigate("result")
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                         modifier = Modifier.padding(start = 20.dp),

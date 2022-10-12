@@ -6,7 +6,6 @@ import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.github.mikephil.charting.data.BarEntry
 import java.util.*
 import com.github.mikephil.charting.data.Entry
-import com.madrapps.plot.line.DataPoint
 
 class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
     val TAG = "terveyshelppi"
@@ -91,7 +90,7 @@ class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
             model.graph.value?.add(Entry(index.toFloat(), bpm.toFloat()))
             model.barGraph.postValue(mutableListOf(BarEntry(index.toFloat(), bpm.toFloat()), BarEntry((index + 1).toFloat(), (bpm/2).toFloat())))
 
-            model.heartRateGraph.value?.add(DataPoint(index.toFloat(), bpm.toFloat()))
+//            model.heartRateGraph.value?.add(DataPoint(index.toFloat(), bpm.toFloat()))
 
             index++
 

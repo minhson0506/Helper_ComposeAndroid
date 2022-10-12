@@ -233,7 +233,7 @@ fun NavigationGraph(
     sensorViewModel: SensorViewModel
 ) {
     val heartRate by model.graph.observeAsState()
-    val heartRatePair by model.heartRateGraph.observeAsState()
+//    val heartRatePair by model.heartRateGraph.observeAsState()
 
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
@@ -248,9 +248,12 @@ fun NavigationGraph(
         composable("exercise") {
             Exercise(navController, model)
         }
+        composable("result") {
+            ExerciseResult(model)
+        }
         composable("graph-heartRate") {
-//            heartRate?.let { it1 -> Graph(it1) }
-            heartRatePair?.let { it1 -> SampleLineGraph(lines = listOf(it1)) }
+            heartRate?.let { it1 -> Graph(it1) }
+//            heartRatePair?.let { it1 -> SampleLineGraph(lines = listOf(it1)) }
         }
         composable("daily") {
             DailyActivity(model)

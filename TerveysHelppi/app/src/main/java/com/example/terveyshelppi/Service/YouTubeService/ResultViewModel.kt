@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import com.github.mikephil.charting.data.Entry
-import com.madrapps.plot.line.DataPoint
+import org.osmdroid.util.GeoPoint
 
 class ResultViewModel(application: Application): AndroidViewModel(application) {
     val TAG = "terveyshelppi"
@@ -43,11 +43,13 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     // state of recording
     var recording = MutableLiveData<Boolean>(false)
 
+
     // store long lat
     val long = MutableLiveData<Double>(null)
     val lat = MutableLiveData<Double>(null)
     val firstAltitude = MutableLiveData<Double>(0.0)
     val secondAltitude = MutableLiveData<Double>(0.0)
+    val listPoints = MutableLiveData(mutableListOf<GeoPoint>())
 
     //data from roomDB
     private val roomDB = RoomDB.getInstance(application)
@@ -62,7 +64,7 @@ class ResultViewModel(application: Application): AndroidViewModel(application) {
     val testGraphMulti = MutableLiveData(mutableListOf<Entry>())
     val barGraph = MutableLiveData(mutableListOf<BarEntry>())
 
-    val heartRateGraph = MutableLiveData(mutableListOf<DataPoint>())
+//    val heartRateGraph = MutableLiveData(mutableListOf<DataPoint>())
 
     //data to show bar graph
     val steps = MutableLiveData(0.0)
