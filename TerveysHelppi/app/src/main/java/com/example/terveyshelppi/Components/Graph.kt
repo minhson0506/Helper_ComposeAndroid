@@ -2,14 +2,21 @@ package com.example.terveyshelppi.Components
 
 import android.content.Context
 import android.content.res.Resources
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.terveyshelppi.ui.theme.background
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
@@ -22,25 +29,42 @@ import com.github.mikephil.charting.data.BarEntry
 fun Graph(points: MutableList<Entry>) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity
-    AndroidView(
+    Box(
         modifier = Modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Black,
+                        background
+                    )
+                )
+            )
             .fillMaxSize()
-            .height(dpValue.dp),
-        factory = { context: Context ->
-            val view = LineChart(context)
-            view.legend.isEnabled = false
-            val data = LineData(LineDataSet(points, "BPM"))
-            val desc = Description()
-            desc.text = "Beats Per Minute"
-            view.description = desc
-            view.data = data
-            view // return the view
-        },
-        update = { view ->
-            // Update the view
-            view.invalidate()
-        }
-    )
+    ) {
+        AndroidView(
+            modifier = Modifier
+                .fillMaxSize()
+                .height(dpValue.dp),
+            factory = { context: Context ->
+                val view = LineChart(context)
+                view.legend.isEnabled = false
+                val data = LineData(LineDataSet(points, "BPM"))
+                val desc = Description()
+                desc.text = "Beats Per Minute"
+                view.xAxis.textColor = (0xffffff)
+                view.legend.textColor = (0xffffff)
+                desc.textColor = (0xffffff)
+                view.axisLeft.textColor = (0xffffff)
+                view.description = desc
+                view.data = data
+                view // return the view
+            },
+            update = { view ->
+                // Update the view
+                view.invalidate()
+            }
+        )
+    }
 }
 
 @Composable
@@ -56,7 +80,7 @@ fun GraphMulti(firstPoints: MutableList<Entry>, secondPoints: MutableList<Entry>
             view.legend.isEnabled = false
             val firstData = LineDataSet(firstPoints, "BPM")
             val secondData = LineDataSet(secondPoints, "extra")
-            val dataSets : List<ILineDataSet> = listOf(firstData, secondData)
+            val dataSets: List<ILineDataSet> = listOf(firstData, secondData)
             val data = LineData(dataSets)
             val desc = Description()
             desc.text = "Beats Per Minute"
@@ -74,21 +98,26 @@ fun GraphMulti(firstPoints: MutableList<Entry>, secondPoints: MutableList<Entry>
 @Composable
 fun GraphBarChar(points: MutableList<BarEntry>) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity /2
+    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
+    Log.d("terveyshelppi", "DailyActivity: start draw graph")
+
     AndroidView(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .height(dpValue.dp),
         factory = { context: Context ->
             val view = BarChart(context)
             view.legend.isEnabled = false
             val entries: MutableList<BarEntry> = ArrayList()
             points.forEach {
-                entries.add(it)
+                if (it != null) {
+                    entries.add(it)
+                }
             }
-            val data = BarData(BarDataSet(entries, "BPM"))
+            val data = BarData(BarDataSet(entries, "%"))
+            data.setValueTextColor(0xffffff)
             val desc = Description()
-            desc.text = "Beats Per Minute"
+            desc.text = ""
             view.description = desc
             view.data = data
             view.setFitBars(true)

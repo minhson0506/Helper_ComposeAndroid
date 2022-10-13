@@ -17,8 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.terveyshelppi.R
-import com.example.terveyshelppi.Service.GetLocation
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
 import com.example.terveyshelppi.ui.theme.regular
 
@@ -44,13 +43,6 @@ fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
                     stringResource(id = R.string.fitness), color = Color.White, fontFamily = regular)
             }, backgroundColor = Color.Black)
         Column(modifier = Modifier.padding(top = 50.dp)) {
-//            Text(
-//                stringResource(id = R.string.fitness),
-//                color = Color.White,
-//                modifier = Modifier.padding(top = 30.dp, start = 20.dp),
-//                fontFamily = regular,
-//                fontSize = 20.sp
-//            )
             YoutubeScreen(model = model, activity)
 
         }

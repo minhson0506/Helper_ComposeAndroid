@@ -2,14 +2,8 @@ package com.example.terveyshelppi.Service
 
 import android.bluetooth.*
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
 import com.github.mikephil.charting.data.BarEntry
-import java.lang.Integer.min
 import java.util.*
-import kotlin.math.max
 import com.github.mikephil.charting.data.Entry
 
 class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
@@ -85,6 +79,7 @@ class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
         Log.d(TAG, "BPM: $bpm")
         if (bpm != null) {
             model.mBPM.postValue(bpm)
+            model.listBPM.value?.add(bpm)
             if (model.highmBPM.value?.compareTo(bpm) ?: -1 < 0) {
                 model.highmBPM.postValue(bpm)
                 model.testGraphMulti.value?.add(Entry(index2.toFloat(), (bpm/2).toFloat()))

@@ -8,8 +8,7 @@
     <string name="height">Height</string>
     <string name="step">Steps/day</string>
     <string name="cal">Cals/day</string>
-    <string name="hour">Active hours/day</string>
-    <string name="gm">Good morning</string>
+    <string name="hour">Active minutes/day</string>
     <string name="username">User</string>
     <string name="daily">Daily activity</string>
     <string name="exercise">Exercise</string>
@@ -21,15 +20,12 @@
     <string name="bpm">BPM</string>
     <string name="fitness">Fitness</string>
     <string name="profile">Profile</string>
-    <string name="weekly">Weekly summary</string>
-    <string name="date">September 18 – 24</string>
+    <string name="weekly">Your goals</string>
     <string name="average">Average active time</string>
     <string name="time">29</string>
     <string name="min">mins</string>
     <string name="search">Search ...</string>
     <string name="pb">Personal best</string>
-    <string name="walking">Walking</string>
-    <string name="running">Running</string>
     <string name="resume">Resume</string>
     <string name="pause">Pause</string>
     <string name="finish">Finish</string>
@@ -37,4 +33,16 @@
     <string name="graph">Graph</string>
     <string name="record">Record</string>
     <string name="sensor_val">%1$.1f</string>
+    <string name="today">Today</string>
+    <string name="steps">Steps</string>
+    <string name="activecal">Active cal</string>
+    <string name="activeTime">Active time</string>
+    <string name="distance">Distance while active</string>
+    <string name="total_cal">Total burnt calories</string>
+    <string name="start_ex">Start exercise</string>
+    <string name="history">See history</string>
+    <string name="update">Update profile</string>
+    <string name="change">Change your goals</string>
+    <string name="result">Exercise details</string>
+    <string name="all">All exercises</string>
 </resources>

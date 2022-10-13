@@ -1,9 +1,7 @@
 package com.example.terveyshelppi
 
-import android.app.Application
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
@@ -15,7 +13,6 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -26,28 +23,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.preference.PreferenceManager
 import com.example.terveyshelppi.Components.*
 import com.example.terveyshelppi.Service.GattClientCallback
-import com.example.terveyshelppi.Service.Sensors.SensorViewModel
-import com.example.terveyshelppi.Service.Sensors.ShowSensorData
 import com.example.terveyshelppi.Service.GetLocation
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
+import com.example.terveyshelppi.Service.RoomDB.UserData
+import com.example.terveyshelppi.Service.ShowSensorData
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
 import org.osmdroid.config.Configuration
+import java.util.*
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
@@ -55,7 +50,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     companion object {
         private lateinit var model: ResultViewModel
-        private var sensorViewModel = SensorViewModel()
         private lateinit var sm: SensorManager
         private var stepSensor: Sensor? = null
         private var sTemperature: Sensor? = null
@@ -69,6 +63,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // init viewmodel
+        model = ResultViewModel(application)
 
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
@@ -85,7 +82,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         hasPermissions(bluetoothAdapter = bluetoothAdapter!!, activity = this)
 
         // check heart rate sensor and connect
-        model = ResultViewModel(application)
+
         for (btDev in bluetoothAdapter?.bondedDevices!!) {
             Log.d(TAG, "bluetooth device bonded is: : ${btDev.name}")
             if (btDev.name.startsWith("Polar")) {
@@ -97,29 +94,38 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             }
         }
 
+        //init map
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-
-
+        thread {
+            /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                 (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
+            GetLocation(context = this, activity = this@MainActivity, model = model)
+        }
         setContent {
             val navController = rememberNavController()
-            ShowSensorData(sensorViewModel, application)
+
+            // reset data in the beginning of the day
+            ResetRoomData(model)
+
+            ShowSensorData(model, application)
 
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    GetLocation(context = this, activity = this@MainActivity, model = model)
 
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
                             LandingPage(navController = navController, application)
                         }
                         composable("details") {
-                            InfoLanding(navController = navController, application)
+                            InfoLanding(navController = navController, model)
                         }
                         composable("main") {
-                            MainScreen(model = model, application, this@MainActivity, sensorViewModel = sensorViewModel)
+                            MainScreen(
+                                model = model,
+                                this@MainActivity
+                            )
                         }
-
                     }
                 }
             }
@@ -128,11 +134,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(p0: SensorEvent) {
         if (p0.sensor == sTemperature) {
-            sensorViewModel.updateTempValue(p0.values[0].toString())
+            model.updateTempValue(p0.values[0].toString())
             Log.d(TAG, "onSensorChanged: temp ${p0.values[0]}")
         }
         if (p0.sensor == stepSensor) {
-            sensorViewModel.updateStepValue(
+            model.updateStepValue(
                 getString(
                     R.string.sensor_val,
                     p0.values[0],
@@ -175,44 +181,70 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 }
 
+@Composable
+fun ResetRoomData(model: ResultViewModel) {
+    val TAG = "terveyshelppi"
+    val userDataFetch by model.getInfo().observeAsState(null)
+    if (userDataFetch != null) {
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        Log.d(TAG, "getInfo day is $day")
+        Log.d(TAG, "getInfo in room: ${userDataFetch?.day}")
+        Log.d(TAG, "getInfo in system: ${Calendar.getInstance().get(Calendar.DAY_OF_YEAR)}")
+        if (userDataFetch?.day != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+            Log.d(TAG, "getInfo: reset counter for beginning of the day")
+            Log.d(TAG, "ResetRoomData: $userDataFetch")
+            val user = UserData(userDataFetch!!.name,
+                userDataFetch!!.weight,
+                userDataFetch!!.height,
+                userDataFetch!!.targetSteps,
+                userDataFetch!!.targetCals,
+                userDataFetch!!.targetHours,
+                0,
+                0,
+                0,
+                userDataFetch!!.totalSteps,
+                0,
+                userDataFetch!!.avatar,
+                userDataFetch!!.totalSteps,
+                day)
+            model.updateInfo(user)
+            model.distance.postValue(0.0)
+            model.hours.postValue(0.0)
+        }
+    }
+}
+
 @RequiresApi(Build.VERSION_CODES.S)
-fun hasPermissions(bluetoothAdapter: BluetoothAdapter, activity: AppCompatActivity): Boolean {
+fun hasPermissions(
+    bluetoothAdapter: BluetoothAdapter,
+    activity: AppCompatActivity,
+): Boolean {
     val TAG = "terveyshelppi"
     if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
         Log.d(TAG, "No Bluetooth LE capability")
         return false
-    } else
-        if ((activity.checkSelfPermission(Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) ||
+    } else {
+        if (
             (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
             (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) ||
-            (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
+            (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         ) {
             Log.d(TAG, "No permission")
             activity.requestPermissions(
                 arrayOf(
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACTIVITY_RECOGNITION,
+                    Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ), 1
-            ); return true // assuming that the user grants permission
+            )
+            return true
         }
-    Log.i(TAG, "permissions ok")
-    return true
+
+        Log.i(TAG, "permissions ok")
+        return true
+    }
 }
 
 
@@ -228,22 +260,37 @@ sealed class BottomNavItem(var title: String, var icon: Int, var screen_route: S
 fun NavigationGraph(
     navController: NavHostController,
     model: ResultViewModel,
-    application: Application,
     activity: AppCompatActivity,
-    sensorViewModel: SensorViewModel
 ) {
+    val heartRate by model.graph.observeAsState()
+
     NavHost(navController, startDestination = BottomNavItem.Home.screen_route) {
         composable(BottomNavItem.Fitness.screen_route) {
             FitnessPage(model = model, activity = activity)
         }
         composable(BottomNavItem.Home.screen_route) {
-            MainPage(application, navController, model, sensorViewModel)
+            MainPage(navController, model)
         }
         composable(BottomNavItem.Profile.screen_route) {
-            ProfilePage()
+            ProfilePage(navController, model)
+        }
+        composable("graph-heartRate") {
+            heartRate?.let { it1 -> Graph(it1) }
+        }
+        composable("daily") {
+            DailyActivity(model, navController)
+        }
+        composable("update") {
+            UpdateProfile(model, navController)
         }
         composable("exercise") {
-            Exercise(navController)
+            Exercise(navController, model)
+        }
+        composable("exercise_result") {
+            ExerciseResult(navController, model)
+        }
+        composable("history") {
+            ExerciseHistory(navController, model)
         }
     }
 }
@@ -268,7 +315,11 @@ fun BottomNavigationBar(navController: NavController) {
                         modifier = Modifier.size(20.dp),
                     )
                 },
-                label = { Text(text = item.title, color = Color.White, fontFamily = regular) },
+                label = {
+                    Text(text = item.title,
+                        color = Color.White,
+                        fontFamily = regular)
+                },
                 alwaysShowLabel = true,
                 selected = false,
                 onClick = {
@@ -290,18 +341,32 @@ fun BottomNavigationBar(navController: NavController) {
 
 @ExperimentalFoundationApi
 @Composable
-fun MainScreen(model: ResultViewModel, application: Application, activity: AppCompatActivity, sensorViewModel: SensorViewModel) {
+fun MainScreen(
+    model: ResultViewModel,
+    activity: AppCompatActivity,
+) {
     val navController = rememberNavController()
+    var showBottomBar by remember { mutableStateOf(true) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    showBottomBar = when (navBackStackEntry?.destination?.route) {
+        "exercise" -> false
+        "exercise_result" -> false
+        "daily" -> false
+        "graph-heartRate" -> false
+        "history" -> false
+        else -> true
+    }
+
+
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) },
+        bottomBar = { if (showBottomBar) BottomNavigationBar(navController) },
         content = { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NavigationGraph(
                     navController = navController,
                     model = model,
-                    application = application,
-                    activity = activity,
-                    sensorViewModel = sensorViewModel
+                    activity = activity
                 )
             }
         }

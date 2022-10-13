@@ -1,6 +1,5 @@
 package com.example.terveyshelppi.Components
 
-import android.app.Application
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -20,22 +20,22 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.RoomDB.UserData
-import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
+import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
+import java.util.*
 
 @Composable
-fun InfoLanding(navController: NavController, application: Application) {
+fun InfoLanding(navController: NavController, model: ResultViewModel) {
     val TAG = "terveyshelppi"
     val mContext = LocalContext.current
 
     var name by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
-    var steps by remember { mutableStateOf("") }
+    var targetSteps by remember { mutableStateOf("") }
     var cal by remember { mutableStateOf("") }
     var hours by remember { mutableStateOf("") }
-
-    val viewModel = ResultViewModel(application)
+    val totalStep by model.stepValue.observeAsState("")
 
     Box(
         modifier = Modifier
@@ -123,8 +123,8 @@ fun InfoLanding(navController: NavController, application: Application) {
             )
 
             TextField(
-                value = steps.toString(),
-                onValueChange = { steps = it },
+                value = targetSteps.toString(),
+                onValueChange = { targetSteps = it },
                 label = { Text(stringResource(id = R.string.step)) },
                 modifier = Modifier
                     .padding(top = 15.dp, start = 30.dp, end = 30.dp)
@@ -208,45 +208,48 @@ fun InfoLanding(navController: NavController, application: Application) {
                             Toast
                                 .makeText(mContext, "Please enter your name!", Toast.LENGTH_SHORT)
                                 .show()
-                        }
-                        if (weight == "") {
+                        } else if (weight == "" || (weight.toIntOrNull() == null)) {
                             Toast
                                 .makeText(
                                     mContext,
-                                    "Please enter your weight!",
+                                    "Please enter your weight in number!",
                                     Toast.LENGTH_SHORT
                                 )
                                 .show()
-                        }
-                        if (height == "") {
+                        } else if (height == "" || (height.toIntOrNull() == null)) {
                             Toast
                                 .makeText(
                                     mContext,
-                                    "Please enter your height!",
+                                    "Please enter your height in number!",
                                     Toast.LENGTH_SHORT
                                 )
                                 .show()
-                        }
-                        if (hours == "") hours = "1"
-                        if (steps == "") steps = "6000"
-                        if (cal == "") cal = "1000"
-                        if (name != "" && weight != "" && height != "") {
+                        } else {
+                            val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
                             val user = UserData(
                                 name,
                                 weight.toInt(),
                                 height.toInt(),
-                                steps.toInt(),
-                                cal.toInt(),
-                                hours.toInt(),
+                                if (targetSteps == "") 6000 else targetSteps.toInt(),
+                                if (cal == "") 1000 else cal.toInt(),
+                                if (hours == "") 60 else hours.toInt(),
                                 0,
                                 0,
                                 0,
-                                0.0,
-                                0
+                                if (totalStep == "") 0.0 else totalStep.toDouble(),
+                                0,
+                                "",
+                                if (totalStep == "") 0.0 else totalStep.toDouble(),
+                                day
                             )
                             Log.d(TAG, "InfoLanding: user info $user")
-                            viewModel.insertUser(user)
-                            navController.navigate("main")
+                            model.insertUser(user)
+                            navController.navigate("main") {
+                                popUpTo("landingPage") {
+                                    inclusive = true
+                                }
+                            }
+
                         }
                     })
                     .align(Alignment.End)
