@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import com.example.terveyshelppi.Service.StopWatch
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
-import com.example.terveyshelppi.Service.drawLineInMap
+import com.example.terveyshelppi.Service.YouTubeService.showPointGG
 import org.osmdroid.util.GeoPoint
 
 @Composable
@@ -28,6 +28,6 @@ fun ExerciseResult(model: ResultViewModel) {
 //            }
 //        else Text("Nothing")
 //    else Text("Null")
-    drawLineInMap()
+    showPointGG()
 
 }

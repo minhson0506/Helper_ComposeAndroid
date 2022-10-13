@@ -30,7 +30,7 @@ import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.StopWatch
 import com.example.terveyshelppi.Service.YouTubeService.ResultViewModel
-import com.example.terveyshelppi.Service.drawLineInMap
+//import com.example.terveyshelppi.Service.drawLineInMap
 import com.example.terveyshelppi.Service.getAddress
 import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
