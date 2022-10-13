@@ -1,6 +1,5 @@
 package com.example.terveyshelppi.Components
 
-import android.R.attr.entries
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -28,7 +27,6 @@ import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.RoomDB.ExerciseData
 import com.example.terveyshelppi.ui.theme.*
-import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import java.util.*
 
@@ -153,7 +151,7 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
                                 totalHours.toFloat() / targetHours.toFloat()
                             ),
                         )
-                        GraphBarChar(points = points)
+                        GraphBarChart(points = points)
                     }
                     LazyVerticalGrid(
                         cells = GridCells.Fixed(3),
