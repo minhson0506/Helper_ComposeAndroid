@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -29,11 +28,13 @@ import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 @Composable
 fun mapGG(points: MutableList<LatLng>) {
-    val mapView = rememberMapViewWithLifecycle()
     val TAG = "terveyshelppi"
+
+    val mapView = rememberMapViewWithLifecycle()
 
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
@@ -44,48 +45,46 @@ fun mapGG(points: MutableList<LatLng>) {
             .background(Color.White)
             .height(dpValue.dp)
     ) {
+
         AndroidView({ mapView }) { mapView ->
             CoroutineScope(Dispatchers.Main).launch {
-                val map = mapView.awaitMap()
-                map.uiSettings.isZoomControlsEnabled = true
+                try {
+                    val map = mapView.awaitMap()
+                    map.uiSettings.isZoomControlsEnabled = true
 
-//                val pickUp =  LatLng(-35.016, 143.321)
-                val polylineOptions = PolylineOptions()
-                if (points.isNotEmpty()) {
-                    Log.d(TAG, "mapGG: with point $points")
-                    val pickUp = points[0]
-//                val destination = LatLng(-32.491, 147.309)
-                    val destination = points[points.size - 1]
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 6f))
-                    val markerOptions = MarkerOptions()
-                        .title("Start point")
-                        .position(pickUp)
-                    map.addMarker(markerOptions)
+                    val polylineOptions = PolylineOptions()
+                    if (points.isNotEmpty()) {
+                        Log.d(TAG, "mapGG: with point $points")
+                        val pickUp = points[0]
+                        val destination = points[points.size - 1]
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 6f))
+                        val markerOptions = MarkerOptions()
+                            .title("Start point")
+                            .position(pickUp)
+                        map.addMarker(markerOptions)
 
-                    val markerOptionsDestination = MarkerOptions()
-                        .title("End point")
-                        .position(destination)
-                    map.addMarker(markerOptionsDestination)
+                        val markerOptionsDestination = MarkerOptions()
+                            .title("End point")
+                            .position(destination)
+                        map.addMarker(markerOptionsDestination)
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 17F))
 
-                    polylineOptions.add(pickUp)
-                    for (index in points.indices) {
-                        if (index != 0 && index != (points.size - 1))
-                            polylineOptions.add(points[index])
-                    }
-                    polylineOptions.add(destination)
+                        polylineOptions.add(pickUp)
+                        for (index in points.indices) {
+                            if (index != 0 && index != (points.size - 1))
+                                polylineOptions.add(points[index])
+                        }
+                        polylineOptions.add(destination)
 
-                } else Log.d(TAG, "mapGG: No data point")
+                    } else Log.d(TAG, "mapGG: No data point")
 
-                map.addPolyline(polylineOptions)
-//                map.addPolyline(PolylineOptions().add( pickUp,
-//                    LatLng(-34.747, 145.592),
-//                    LatLng(-34.364, 147.891),
-//                    LatLng(-33.501, 150.217),
-//                    LatLng(-32.306, 149.248),
-//                    destination))
-
+                    map.addPolyline(polylineOptions)
+                } catch (error: IOException) {
+                    Log.d(TAG, "mapGG: error is ${error.message}")
+                }
             }
         }
+
     }
 }
 

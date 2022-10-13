@@ -1,11 +1,7 @@
 package com.example.terveyshelppi.Components
 
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -20,20 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.RoomDB.ExerciseData
-import com.example.terveyshelppi.Service.getAddress
 import com.example.terveyshelppi.Service.mapGG
-import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
-import org.osmdroid.util.GeoPoint
 import kotlin.math.round
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -99,7 +90,7 @@ fun ExerciseResult(navController: NavController, model: ResultViewModel) {
                 val textArray = listOf(
                     Triple("Total Distance", lastItem?.distance.toString(), "m"),
                     Triple("Duration", lastItem?.duration, ""),
-                    Triple("Avg. Speed", lastItem?.let { round(it.averageSpeed).toString() }, "km/h"),
+                    Triple("Avg. Speed", lastItem?.let { round(it.averageSpeed * 3.6).toString() }, "km/h"),
                     Triple("Elevation", lastItem?.elevation.toString(), "m"),
                     Triple("Calories Burnt", lastItem?.calories.toString(), "Cal"),
                     Triple("Avg. Heart Rate", lastItem?.let { round(it.heartRate).toString() }, "BPM"),
