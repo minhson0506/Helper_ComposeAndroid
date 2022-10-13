@@ -20,8 +20,7 @@
     <string name="bpm">BPM</string>
     <string name="fitness">Fitness</string>
     <string name="profile">Profile</string>
-    <string name="weekly">Weekly summary</string>
-    <string name="date">September 18 – 24</string>
+    <string name="weekly">Your goals</string>
     <string name="average">Average active time</string>
     <string name="time">29</string>
     <string name="min">mins</string>

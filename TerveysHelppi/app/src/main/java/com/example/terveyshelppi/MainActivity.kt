@@ -354,6 +354,7 @@ fun MainScreen(
         "exercise_result" -> false
         "daily" -> false
         "graph-heartRate" -> false
+        "history" -> false
         else -> true
     }
 

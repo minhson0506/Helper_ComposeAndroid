@@ -44,55 +44,52 @@ import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.example.terveyshelppi.Service.ResultViewModel
 import java.io.File
 import java.util.*
+import kotlin.math.round
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfilePage(navControler: NavController, model: ResultViewModel) {
     val TAG = "terveyshelppi"
     val mContext = LocalContext.current
-    val notificationId = 1
+
 
     var mDisplayMenu by remember { mutableStateOf(false) }
 
+    //exercise data
+    val exerciseData by model.getAllExercises().observeAsState()
+    val data by model.getInfo().observeAsState()
 
-    fun setNotification() {
-        //this intent link to Notification class
-        val intent = Intent(mContext, Notification::class.java)
-        intent.putExtra("notification", notificationId)
+    var user by remember { mutableStateOf("") }
+    var targetSteps by remember { mutableStateOf(0) }
+    var targetHours by remember { mutableStateOf(0) }
+    var targetCals by remember { mutableStateOf(0) }
 
-
-        val alarmIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            PendingIntent.getBroadcast(
-                mContext,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-            else PendingIntent.getBroadcast(
-                mContext,
-                0,
-                intent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT
-            )
+    var maxDistance by remember { mutableStateOf(0) }
+    var maxTime by remember { mutableStateOf(0L) }
+    var maxCalories by remember { mutableStateOf(0) }
+    var maxElevation by remember { mutableStateOf(0) }
+    var maxSpeed by remember { mutableStateOf(0.0) }
 
 
-        val alarm = mContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val hour = Calendar.HOUR
-        val minute = Calendar.MINUTE + 1
+    if (data != null) {
+        user = data?.name.toString()
+        targetSteps = data!!.targetSteps
+        targetCals = data!!.targetCals
+        targetHours = data!!.targetHours
+    }
 
-        //call Calendar singleton
-        val startTime = Calendar.getInstance()
-        startTime[Calendar.HOUR_OF_DAY] = hour
-        startTime[Calendar.MINUTE] = minute
-        startTime[Calendar.SECOND] = 0
-        val alarmStartTime = startTime.timeInMillis
+    if (exerciseData != null) {
+        val distance = exerciseData!!.map { it.distance }
+        val activeTime = exerciseData!!.map { it.activeTime }
+        val calories = exerciseData!!.map { it.calories }
+        val elevation = exerciseData!!.map { it.elevation }
+        val speed = exerciseData!!.map { it.averageSpeed }
 
-        alarm.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP,
-            alarmStartTime,
-            AlarmManager.INTERVAL_DAY,
-            alarmIntent
-        )
+        maxDistance = distance.maxOrNull() ?: 0
+        maxTime = activeTime.maxOrNull() ?: 0
+        maxCalories = calories.maxOrNull() ?: 0
+        maxElevation = elevation.maxOrNull() ?: 0
+        maxSpeed = speed.maxOrNull() ?: 0.0
     }
 
     Box(
@@ -137,8 +134,9 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                         Text(text = "Update profile")
                     }
                     DropdownMenuItem(onClick = {
-                        Toast.makeText(mContext, "Notifcation is set!", Toast.LENGTH_SHORT).show()
-                        setNotification()
+                        Toast.makeText(mContext, "Notifcation is set!", Toast.LENGTH_SHORT)
+                            .show()
+                        setNotification(mContext)
                     }) {
                         Text(
                             text = "Set notification"
@@ -156,7 +154,7 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
         ) {
             Camera(model)
             Text(
-                stringResource(id = R.string.username),
+                user,
                 color = Color.White,
                 fontFamily = semibold,
                 modifier = Modifier
@@ -164,7 +162,11 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                     .padding(top = 10.dp, bottom = 10.dp),
                 fontSize = 18.sp
             )
-
+            val goalArray = listOf(
+                Triple(R.drawable.step, targetSteps, "steps/day"),
+                Triple(R.drawable.cal, targetCals, "cals/day"),
+                Triple(R.drawable.clock, targetHours, "mins/day"),
+            )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -178,35 +180,44 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                         modifier = Modifier.padding(top = 15.dp, start = 10.dp),
                         fontFamily = semibold, fontSize = 16.sp
                     )
-                    Text(
-                        stringResource(id = R.string.date), color = smallText,
-                        modifier = Modifier.padding(top = 10.dp, start = 10.dp),
-                        fontFamily = light, fontSize = 12.sp
-                    )
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            stringResource(id = R.string.average), color = Color.White,
-                            modifier = Modifier.padding(start = 10.dp),
-                            fontFamily = regular, fontSize = 14.sp
+                    LazyVerticalGrid(
+                        cells = GridCells.Fixed(3),
+                        modifier = Modifier.padding(
+                            top = 20.dp,
+                            start = 10.dp,
+                            end = 10.dp
                         )
-                        Row() {
-                            Text(
-                                stringResource(id = R.string.time), color = Color.White,
-                                fontFamily = semibold, fontSize = 14.sp
-                            )
-                            Text(
-                                stringResource(id = R.string.min), color = Color.White,
-                                modifier = Modifier.padding(start = 5.dp, end = 10.dp),
-                                fontFamily = light, fontSize = 14.sp
-                            )
+                    ) {
+                        items(goalArray) {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = CenterHorizontally,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Image(
+                                    painterResource(id = it.first),
+                                    "",
+                                    modifier = Modifier
+                                        .padding(bottom = 15.dp)
+                                        .size(20.dp)
+                                )
+                                Text(
+                                    it.second.toString(),
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontFamily = semibold,
+                                    modifier = Modifier.padding(bottom = 10.dp)
+                                )
+
+                                Text(
+                                    it.third,
+                                    color = smallText,
+                                    fontSize = 14.sp,
+                                    fontFamily = regular,
+                                )
+                            }
                         }
                     }
-
                 }
             }
             Card(
@@ -217,13 +228,11 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                 elevation = 4.dp
             ) {
                 val textArray = listOf(
-                    Triple(R.drawable.step, 2000, Pair("steps", "Most steps")),
-                    Triple(R.drawable.floor, 3, Pair("floors", "Most floors")),
-                    Triple(R.drawable.clock, 50, Pair("minutes", "Duration")),
-                    Triple(R.drawable.cal, 100, Pair("Cals", "Calories burnt")),
-                    Triple(R.drawable.distance, 2, Pair("km", "Distance")),
-                    Triple(R.drawable.elevation, 20, Pair("m", "Elevation")),
-                    Triple(R.drawable.speed, 20, Pair("km/h", "Speed"))
+                    Triple(R.drawable.distance, maxDistance, Pair("m", "Distance")),
+                    Triple(R.drawable.cal, maxCalories, Pair("Cal", "Most calories")),
+                    Triple(R.drawable.speed, round(maxSpeed), Pair("km/h", "Highest speed")),
+                    Triple(R.drawable.clock, maxTime, Pair("min", "Highest time")),
+                    Triple(R.drawable.elevation, maxElevation, Pair("m", "Elevation")),
                 )
                 Column(
                     modifier = Modifier
@@ -285,6 +294,48 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
             }
         }
     }
+}
+
+fun setNotification(mContext: Context) {
+    val notificationId = 1
+
+    //this intent link to Notification class
+    val intent = Intent(mContext, Notification::class.java)
+    intent.putExtra("notification", notificationId)
+
+
+    val alarmIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        PendingIntent.getBroadcast(
+            mContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+    else PendingIntent.getBroadcast(
+        mContext,
+        0,
+        intent,
+        PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+
+    val alarm = mContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val hour = Calendar.HOUR
+    val minute = Calendar.MINUTE + 1
+
+    //call Calendar singleton
+    val startTime = Calendar.getInstance()
+    startTime[Calendar.HOUR_OF_DAY] = hour
+    startTime[Calendar.MINUTE] = minute
+    startTime[Calendar.SECOND] = 0
+    val alarmStartTime = startTime.timeInMillis
+
+    alarm.setInexactRepeating(
+        AlarmManager.RTC_WAKEUP,
+        alarmStartTime,
+        AlarmManager.INTERVAL_DAY,
+        alarmIntent
+    )
 }
 
 @Composable
