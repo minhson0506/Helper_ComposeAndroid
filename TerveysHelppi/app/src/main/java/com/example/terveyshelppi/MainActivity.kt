@@ -96,13 +96,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         //init map
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-        thread {
             /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
                  (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
-            GetLocation(context = this, activity = this@MainActivity, model = model)
-        }
+
+
         setContent {
             val navController = rememberNavController()
+
+            //get location map
+            GetLocation(context = this, activity = this@MainActivity, model = model)
 
             // reset data in the beginning of the day
             ResetRoomData(model)
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
-                            LandingPage(navController = navController, application)
+                            LandingPage(navController = navController, model)
                         }
                         composable("details") {
                             InfoLanding(navController = navController, model)

@@ -117,7 +117,7 @@ fun GraphBarChar(points: MutableList<BarEntry>) {
             val data = BarData(BarDataSet(entries, "%"))
             data.setValueTextColor(0xffffff)
             val desc = Description()
-            desc.text = ""
+            desc.text = "Total value/Target value"
             view.description = desc
             view.data = data
             view.setFitBars(true)

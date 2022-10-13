@@ -49,6 +49,7 @@ fun MainPage(
     //get time of day
     val c = Calendar.getInstance()
     val timeOfDay = c.get(Calendar.HOUR_OF_DAY)
+    val today = c.time.toString().slice(0..9)
 
     var text by remember { mutableStateOf("") }
 
@@ -66,7 +67,7 @@ fun MainPage(
     val list = mutableListOf(0L)
 
     exerciseData?.forEach {
-        list.add(it.activeTime)
+        if(it.timeStart.slice(0..9)  == today) list.add(it.activeTime)
     }
     Log.d(TAG, "MainPage: list of time workout $list")
 
@@ -359,7 +360,7 @@ fun MainPage(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp),
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {

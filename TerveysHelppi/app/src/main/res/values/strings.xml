@@ -38,7 +38,7 @@
     <string name="activecal">Active cal</string>
     <string name="activeTime">Active time</string>
     <string name="distance">Distance while active</string>
-    <string name="total_cal">Total burnt calories</string>
+    <string name="total_cal">Total calories burnt</string>
     <string name="start_ex">Start exercise</string>
     <string name="history">See history</string>
     <string name="update">Update profile</string>

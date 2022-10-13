@@ -75,10 +75,8 @@ fun mapGG(points: MutableList<LatLng>) {
                                 polylineOptions.add(points[index])
                         }
                         polylineOptions.add(destination)
-
+                        map.addPolyline(polylineOptions)
                     } else Log.d(TAG, "mapGG: No data point")
-
-                    map.addPolyline(polylineOptions)
                 } catch (error: IOException) {
                     Log.d(TAG, "mapGG: error is ${error.message}")
                 }

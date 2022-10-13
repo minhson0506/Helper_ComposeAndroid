@@ -23,11 +23,14 @@ import android.location.Geocoder
 import android.os.Build
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.google.android.libraries.maps.model.LatLng
 import java.util.*
 
+@Composable
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     val TAG = "terveysheppi"
     Log.d(TAG, "GetLocation: start to get location")
@@ -41,6 +44,8 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
 //    var lat by remember { mutableStateOf(0.0) }
 //    val long: Double? by model.long.observeAsState(null)
 //    val lat: Double? by model.lat.observeAsState(null)
+    val data by model.getInfo().observeAsState()
+
 
     var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
@@ -73,6 +78,31 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                         else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())
                     }
                     preLocation = location
+                    Log.d(TAG, "onLocationResult: model distance data in LocationService $data")
+                    if (data != null) {
+                        val user = model.distance.value?.let {
+                            UserData(
+                                data!!.name,
+                                data!!.weight,
+                                data!!.height,
+                                data!!.targetSteps,
+                                data!!.targetCals,
+                                data!!.targetHours,
+                                data!!.heartRate,
+                                it.toInt(),
+                                data!!.totalCalories,
+                                data!!.totalSteps,
+                                data!!.totalHours,
+                                data!!.avatar,
+                                data!!.stepBeginOfDay,
+                                data!!.day
+                            )
+                        }
+                        if (user != null) {
+                            model.updateInfo(user)
+                        }
+                    }
+
                 } else {
                     preLocation = location
                 }

@@ -1,9 +1,10 @@
 package com.example.terveyshelppi.Components
 
+import android.R.attr.entries
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,9 +28,9 @@ import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.RoomDB.ExerciseData
 import com.example.terveyshelppi.ui.theme.*
+import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import java.util.Calendar
-import androidx.compose.foundation.lazy.items
+import java.util.*
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,6 +51,7 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
     }
 
     val distance: Double by model.distance.observeAsState(0.0)
+    Log.d(TAG, "DailyActivity: model distance in Daily $distance")
     var totalSteps by remember { mutableStateOf(0) }
     var totalCals by remember { mutableStateOf(0) }
     var totalHours by remember { mutableStateOf(0) }

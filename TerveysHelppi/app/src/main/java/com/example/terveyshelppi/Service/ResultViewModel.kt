@@ -65,11 +65,6 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
     val firstAltitude = MutableLiveData<Double>(0.0)
     val secondAltitude = MutableLiveData<Double>(0.0)
 
-    //data from roomDB
-    private val roomDB = RoomDB.getInstance(application)
-    private val viewModelJob = Job()
-    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Default)
-
     // store heart rate
     val mBPM = MutableLiveData(0)
     val highmBPM = MutableLiveData(0)
@@ -86,6 +81,12 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
     val steps = MutableLiveData(0.0)
     val cals = MutableLiveData(0.0)
     val hours = MutableLiveData(0.0)
+
+
+    //data from roomDB
+    private val roomDB = RoomDB.getInstance(application)
+    private val viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Default)
 
     //get user info
     fun getInfo(): LiveData<UserData> = roomDB.userDao().getAll()
