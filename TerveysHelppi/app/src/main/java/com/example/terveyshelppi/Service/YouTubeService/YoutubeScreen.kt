@@ -183,7 +183,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                     SearchResponse.Item("", SearchResponse.Item.Id("", "vmdITEguAnE"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "wpLJXHUyvyM"), ""),
                     //stretching
-                    SearchResponse.Item("", SearchResponse.Item.Id("", "7lyvblFNI"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "flDQ-Av5DZ8"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "YfCK3uOz1r4"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "itJE4neqDJw"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "I9ZRSpLTSu8"), ""),
