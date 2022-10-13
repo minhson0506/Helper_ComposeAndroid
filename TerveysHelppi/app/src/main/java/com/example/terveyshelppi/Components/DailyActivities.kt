@@ -44,8 +44,10 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
     val listExercise = mutableListOf<ExerciseData>()
 
     exerciseData?.forEach {
-        list.add(it.activeTime)
-        if(time == it.timeStart.slice(0..10)) {
+        if (it.timeStart.slice(0..10) == time) {
+            list.add(it.activeTime)
+        }
+        if (time == it.timeStart.slice(0..10)) {
             listExercise.add(it)
         }
     }
@@ -158,7 +160,6 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
                     LazyVerticalGrid(
                         cells = GridCells.Fixed(3),
                         modifier = Modifier.padding(
-                            top = 20.dp,
                             start = 10.dp,
                             end = 10.dp
                         )
