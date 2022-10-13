@@ -35,6 +35,7 @@ import com.example.terveyshelppi.Service.StopWatch
 import com.example.terveyshelppi.Service.getAddress
 import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
+import com.google.android.libraries.maps.model.LatLng
 import org.osmdroid.util.GeoPoint
 import java.util.*
 import kotlin.math.round

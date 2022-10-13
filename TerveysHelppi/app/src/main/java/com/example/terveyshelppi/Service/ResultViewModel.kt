@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import com.github.mikephil.charting.data.Entry
+import com.google.android.libraries.maps.model.LatLng
 import java.util.*
 import kotlin.math.log
 
@@ -55,6 +56,8 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
 
     // state of recording
     var recording = MutableLiveData<Boolean>(false)
+
+    val points = MutableLiveData(mutableListOf<LatLng>())
 
     // store long lat
     val long = MutableLiveData<Double>(null)

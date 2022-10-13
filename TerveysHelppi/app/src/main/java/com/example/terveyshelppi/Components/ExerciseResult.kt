@@ -30,6 +30,7 @@ import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.RoomDB.ExerciseData
 import com.example.terveyshelppi.Service.getAddress
+import com.example.terveyshelppi.Service.mapGG
 import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
 import org.osmdroid.util.GeoPoint
@@ -49,6 +50,7 @@ fun ExerciseResult(navController: NavController, model: ResultViewModel) {
 
     val long by model.long.observeAsState()
     val lat by model.lat.observeAsState()
+    val points by model.points.observeAsState()
 
     Box(
         modifier = Modifier
@@ -161,15 +163,7 @@ fun ExerciseResult(navController: NavController, model: ResultViewModel) {
                     }
                 }
             }
-            if (lat != 0.0 && long != 0.0)
-                lat?.let { long?.let { it1 -> GeoPoint(it, it1) } }?.let {
-                    long?.let { it1 -> getAddress(context = context, lat!!, it1) }?.let { it2 ->
-                        showPoint(
-                            geoPoint = it,
-                            address = it2
-                        )
-                    }
-                }
+            points?.let { mapGG(points = it) }
         }
     }
 }

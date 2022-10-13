@@ -2,6 +2,7 @@ package com.example.terveyshelppi.Service
 
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,11 +31,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun mapGG() {
+fun mapGG(points: MutableList<LatLng>) {
     val mapView = rememberMapViewWithLifecycle()
+    val TAG = "terveyshelppi"
 
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity /3
+    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
 
     Column(
         modifier = Modifier
@@ -42,30 +44,45 @@ fun mapGG() {
             .background(Color.White)
             .height(dpValue.dp)
     ) {
-        AndroidView({ mapView}) {mapView->
+        AndroidView({ mapView }) { mapView ->
             CoroutineScope(Dispatchers.Main).launch {
                 val map = mapView.awaitMap()
                 map.uiSettings.isZoomControlsEnabled = true
 
-                val pickUp =  LatLng(-35.016, 143.321)
-                val destination = LatLng(-32.491, 147.309)
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination,6f))
-                val markerOptions = MarkerOptions()
-                    .title("Sydney Opera House")
-                    .position(pickUp)
-                map.addMarker(markerOptions)
+//                val pickUp =  LatLng(-35.016, 143.321)
+                val polylineOptions = PolylineOptions()
+                if (points.isNotEmpty()) {
+                    Log.d(TAG, "mapGG: with point $points")
+                    val pickUp = points[0]
+//                val destination = LatLng(-32.491, 147.309)
+                    val destination = points[points.size - 1]
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 6f))
+                    val markerOptions = MarkerOptions()
+                        .title("Start point")
+                        .position(pickUp)
+                    map.addMarker(markerOptions)
 
-                val markerOptionsDestination = MarkerOptions()
-                    .title("Restaurant Hubert")
-                    .position(destination)
-                map.addMarker(markerOptionsDestination)
+                    val markerOptionsDestination = MarkerOptions()
+                        .title("End point")
+                        .position(destination)
+                    map.addMarker(markerOptionsDestination)
 
-                map.addPolyline(PolylineOptions().add( pickUp,
-                    LatLng(-34.747, 145.592),
-                    LatLng(-34.364, 147.891),
-                    LatLng(-33.501, 150.217),
-                    LatLng(-32.306, 149.248),
-                    destination))
+                    polylineOptions.add(pickUp)
+                    for (index in points.indices) {
+                        if (index != 0 && index != (points.size - 1))
+                            polylineOptions.add(points[index])
+                    }
+                    polylineOptions.add(destination)
+
+                } else Log.d(TAG, "mapGG: No data point")
+
+                map.addPolyline(polylineOptions)
+//                map.addPolyline(PolylineOptions().add( pickUp,
+//                    LatLng(-34.747, 145.592),
+//                    LatLng(-34.364, 147.891),
+//                    LatLng(-33.501, 150.217),
+//                    LatLng(-32.306, 149.248),
+//                    destination))
 
             }
         }

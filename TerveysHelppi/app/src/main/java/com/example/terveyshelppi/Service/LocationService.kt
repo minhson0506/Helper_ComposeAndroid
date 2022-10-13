@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.android.libraries.maps.model.LatLng
 import java.util.*
 
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
@@ -65,6 +66,8 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                         model.distance.postValue(location.distanceTo(preLocation) + model.distance.value!!)
                     else model.distance.postValue(location.distanceTo(preLocation).toDouble())
                     if (model.recording.value == true) {
+                        Log.d(TAG, "onLocationResult: post location when recording")
+                        model.points.value?.add(LatLng(location.latitude, location.longitude))
                         if (model.distanceRecording.value != null)
                             model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distanceRecording.value!!)
                         else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())

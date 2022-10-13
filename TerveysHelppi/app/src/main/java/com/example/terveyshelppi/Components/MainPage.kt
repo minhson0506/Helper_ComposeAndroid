@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.libraries.maps.model.LatLng
 import java.util.*
 import kotlin.math.log
 
@@ -251,6 +252,8 @@ fun MainPage(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Button(
                                     onClick = {
+                                        // clear points of location before
+                                        model.points.postValue(mutableListOf<LatLng>())
                                         navController.navigate("exercise")
                                     },
                                     modifier = Modifier.size(45.dp),
@@ -275,7 +278,11 @@ fun MainPage(
                                     fontSize = 14.sp,
                                     modifier = Modifier
                                         .padding(start = 10.dp)
-                                        .clickable { navController.navigate("exercise") }
+                                        .clickable {
+                                            // clear points of location before
+                                            model.points.postValue(mutableListOf<LatLng>())
+                                            navController.navigate("exercise")
+                                        }
                                 )
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
