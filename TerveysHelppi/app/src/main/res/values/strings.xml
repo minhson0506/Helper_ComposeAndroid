@@ -45,4 +45,5 @@
     <string name="change">Change your goals</string>
     <string name="result">Exercise details</string>
     <string name="all">All exercises</string>
+    <string name="barChart">Total value/Target value (%)</string>
 </resources>

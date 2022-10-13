@@ -5,17 +5,23 @@ import android.content.res.Resources
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.ui.theme.background
+import com.example.terveyshelppi.ui.theme.semibold
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
@@ -123,28 +129,28 @@ fun GraphBarChart(points: MutableList<BarEntry>) {
             }
             val set = BarDataSet(entries, "%")
 
-            set.colors = mutableListOf(ColorTemplate.COLORFUL_COLORS[0], ColorTemplate.COLORFUL_COLORS[1], ColorTemplate.COLORFUL_COLORS[2])
             val data = BarData(set)
-            data.setValueTextColor(ColorTemplate.COLORFUL_COLORS[3])
+            data.setValueTextColor(ColorTemplate.LIBERTY_COLORS[0])
 
             view.data = data
             view.setDrawValueAboveBar(true)
 
+            val desc = Description()
+            desc.text = ""
+            view.description = desc
+
             // set xAxis
             val xAxis = view.xAxis
-            xAxis.textColor = ColorTemplate.COLORFUL_COLORS[4]
-
+            xAxis.textColor = 0xffffff
 
             // set color
-            var colorInt = listOf(0xffffff, 0xff0000).toIntArray()
             // set yAxis left
             val leftAxis = view.axisLeft
-            val color = ColorTemplate.createColors(colorInt)
-            leftAxis.textColor = color[0]
+            leftAxis.textColor = ColorTemplate.LIBERTY_COLORS[0]
 
             // set yAxis right
             val rightAxis = view.axisRight
-            rightAxis.textColor = color[1]
+            rightAxis.textColor = ColorTemplate.LIBERTY_COLORS[0]
 
             view.setFitBars(true)
             view // return the view
@@ -154,4 +160,5 @@ fun GraphBarChart(points: MutableList<BarEntry>) {
             view.invalidate()
         }
     )
+
 }

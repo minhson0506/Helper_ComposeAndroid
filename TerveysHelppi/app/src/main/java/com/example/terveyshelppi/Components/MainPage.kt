@@ -113,14 +113,14 @@ fun MainPage(
     totalCalories =
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
-    totalHours = ((list.sum()) / 60).toInt()
+    totalHours = list.sum().toInt()
 
     Log.d(TAG, "MainPage: userinfo $data")
 
     val textArray = listOf(
         Triple(R.drawable.step, totalSteps - beginStep, targetSteps),
         Triple(R.drawable.cal, totalCalories, targetCals),
-        Triple(R.drawable.clock, totalHours, targetHours),
+        Triple(R.drawable.clock, totalHours/60, targetHours),
     )
 
     Box(

@@ -15,11 +15,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -79,14 +81,14 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
     totalCals =
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
-    totalHours = ((list.sum()) / 60).toInt()
+    totalHours = list.sum().toInt()
 
     actualSteps = totalSteps - beginSteps
 
     val textArray = listOf(
         Triple(R.drawable.step, Pair(actualSteps, targetSteps), R.string.steps),
         Triple(R.drawable.cal, Pair(totalCals, targetCals), R.string.activecal),
-        Triple(R.drawable.clock, Pair(totalHours, targetHours), R.string.activeTime),
+        Triple(R.drawable.clock, Pair(totalHours/60, targetHours), R.string.activeTime),
     )
 
     Box(
@@ -135,22 +137,28 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
                 Column(modifier = Modifier.padding(bottom = 20.dp)) {
                     Text(
                         stringResource(id = R.string.today), color = Color.White,
-                        modifier = Modifier.padding(top = 15.dp, start = 15.dp, bottom = 20.dp),
+                        modifier = Modifier.padding(top = 15.dp, start = 15.dp),
                         fontFamily = semibold, fontSize = 16.sp
                     )
+
                     if (totalSteps != 0) {
+                        Text(
+                            stringResource(id = R.string.barChart), color = Color.White,
+                            modifier = Modifier.padding(top = 10.dp).align(CenterHorizontally), textAlign = TextAlign.Center,
+                            fontFamily = semibold, fontSize = 12.sp
+                        )
                         val points = mutableListOf(
                             BarEntry(
                                 1.toFloat(),
-                                actualSteps.toFloat() / targetSteps.toFloat()
+                                (actualSteps*100).toFloat() / targetSteps.toFloat()
                             ),
                             BarEntry(
                                 2.toFloat(),
-                                totalCals.toFloat() / 2.toFloat() / targetCals.toFloat()
+                                (totalCals*100).toFloat() / 2.toFloat() / targetCals.toFloat()
                             ),
                             BarEntry(
                                 3.toFloat(),
-                                totalHours.toFloat() / targetHours.toFloat()
+                                totalHours.toFloat()/60*100 / targetHours.toFloat()
                             ),
                         )
                         GraphBarChart(points = points)
