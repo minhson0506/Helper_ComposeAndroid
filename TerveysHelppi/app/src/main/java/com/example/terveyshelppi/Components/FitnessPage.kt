@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.YouTubeService.YoutubeScreen
+import com.example.terveyshelppi.Service.mapGG
 import com.example.terveyshelppi.ui.theme.regular
 
 @ExperimentalFoundationApi
