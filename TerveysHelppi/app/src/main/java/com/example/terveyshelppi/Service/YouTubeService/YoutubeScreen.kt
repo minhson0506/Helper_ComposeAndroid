@@ -74,6 +74,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
     var input by remember { mutableStateOf("") }
     val result: List<SearchResponse.Item>? by model.result.observeAsState(null)
     var bool by remember { mutableStateOf(true) }
+    var shuffle by remember { mutableStateOf(true)}
 
 
     Row(
@@ -131,6 +132,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                 displayYoutube = false
                 model.result.postValue(null)
                 bool = true
+                shuffle = true
             },
             modifier = Modifier
                 .padding(end = 20.dp)
@@ -148,7 +150,8 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
     }
 
     Column(
-        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
+        modifier = Modifier
+            .padding(top = 10.dp, bottom = 10.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -159,43 +162,42 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                 fontFamily = semibold,
                 fontSize = 16.sp
             )
-            //yoga
-            val items = listOf(
-                SearchResponse.Item("", SearchResponse.Item.Id("", "GLy2rYHwUqY"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "XcZ6ude_P3Y"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "4pKly2JojMw"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "VCAwwX3WiA0"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "w9aXIcuPWqk"), "")
-            )
+            if (shuffle) {
+                val items = listOf(
+                    //yoga
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "GLy2rYHwUqY"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "XcZ6ude_P3Y"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "4pKly2JojMw"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "VCAwwX3WiA0"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "w9aXIcuPWqk"), ""),
+                    //gym
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "2pLT-olgUJs"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "uUKAYkQZXko"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "0arpNtjXuLY"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "pMTWS3CkBG0"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "GfVJ7gCGNOA"), ""),
+                    //diet
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "0KFKLTkvZNI"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "8BKbu_s8p1Q"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "CxktmQ3zJOA"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "vmdITEguAnE"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "wpLJXHUyvyM"), ""),
+                    //stretching
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "7lyvblFNI"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "YfCK3uOz1r4"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "itJE4neqDJw"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "I9ZRSpLTSu8"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "qULTwquOuT4"), "")
+                )
 
-            //gym
-            val gym = listOf(
-                SearchResponse.Item("", SearchResponse.Item.Id("", "2pLT-olgUJs"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "uUKAYkQZXko"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "0arpNtjXuLY"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "pMTWS3CkBG0"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "GfVJ7gCGNOA"), "")
-            )
-
-            //diet
-            val diet = listOf(
-                SearchResponse.Item("", SearchResponse.Item.Id("", "0KFKLTkvZNI"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "8BKbu_s8p1Q"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "CxktmQ3zJOA"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "vmdITEguAnE"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "wpLJXHUyvyM"), "")
-            )
-
-            //stretching
-            val stretching = listOf(
-                SearchResponse.Item("", SearchResponse.Item.Id("", "7lyvblFNI"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "YfCK3uOz1r4"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "itJE4neqDJw"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "I9ZRSpLTSu8"), ""),
-                SearchResponse.Item("", SearchResponse.Item.Id("", "qULTwquOuT4"), "")
-            )
-
-            model.result.postValue(items)
+                val suggestionsList = listOf(items.shuffled()[0],
+                    items.shuffled()[1],
+                    items.shuffled()[2],
+                    items.shuffled()[3],
+                    items.shuffled()[4])
+                model.result.postValue(suggestionsList)
+                shuffle = false
+            }
         }
 
         val videoId = result?.map { it.id.videoId }

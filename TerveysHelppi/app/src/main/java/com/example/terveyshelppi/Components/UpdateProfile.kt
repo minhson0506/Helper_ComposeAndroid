@@ -54,14 +54,15 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly) {
                 //basic info
                 Text(
                     stringResource(id = R.string.update),
                     color = Color.White,
                     fontSize = 18.sp,
                     fontFamily = semibold,
-                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
+                    modifier = Modifier.padding(top = 20.dp, start = 30.dp)
                 )
                 TextField(
                     value = name,
@@ -86,7 +87,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     onValueChange = { weight = it },
                     label = { Text(stringResource(id = R.string.weight)) },
                     modifier = Modifier
-                        .padding(top = 20.dp, start = 30.dp, end = 30.dp)
+                        .padding(top = 10.dp, start = 30.dp, end = 30.dp)
                         .fillMaxWidth()
                         .border(
                             BorderStroke(
@@ -104,7 +105,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     onValueChange = { height = it },
                     label = { Text(stringResource(id = R.string.height)) },
                     modifier = Modifier
-                        .padding(top = 20.dp, start = 30.dp, end = 30.dp)
+                        .padding(top = 10.dp, start = 30.dp, end = 30.dp)
                         .fillMaxWidth()
                         .border(
                             BorderStroke(
@@ -124,7 +125,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     color = Color.White,
                     fontSize = 18.sp,
                     fontFamily = semibold,
-                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
+                    modifier = Modifier.padding(top = 20.dp, start = 30.dp)
                 )
 
                 TextField(
@@ -157,7 +158,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     onValueChange = { cal = it },
                     label = { Text(stringResource(id = R.string.cal)) },
                     modifier = Modifier
-                        .padding(top = 15.dp, start = 30.dp, end = 30.dp)
+                        .padding(top = 10.dp, start = 30.dp, end = 30.dp)
                         .fillMaxWidth()
                         .border(
                             BorderStroke(
@@ -183,7 +184,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     onValueChange = { hours = it },
                     label = { Text(stringResource(id = R.string.hour)) },
                     modifier = Modifier
-                        .padding(top = 15.dp, start = 30.dp, end = 30.dp)
+                        .padding(top = 10.dp, start = 30.dp, end = 30.dp)
                         .fillMaxWidth()
                         .border(
                             BorderStroke(
@@ -207,7 +208,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     painterResource(id = R.drawable.ok),
                     "",
                     modifier = Modifier
-                        .padding(top = 50.dp, end = 30.dp)
+                        .padding(top = 20.dp, end = 30.dp)
                         .size(50.dp)
                         .clickable(onClick = {
                             if (weight.toIntOrNull() == null) {
@@ -235,7 +236,9 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                                     )
                                     .show()
                             } else {
-                                val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+                                val day = Calendar
+                                    .getInstance()
+                                    .get(Calendar.DAY_OF_YEAR)
                                 val user = UserData(
                                     name,
                                     weight.toInt(),

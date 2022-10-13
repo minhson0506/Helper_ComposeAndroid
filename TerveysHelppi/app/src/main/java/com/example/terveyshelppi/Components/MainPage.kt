@@ -1,6 +1,7 @@
 package com.example.terveyshelppi.Components
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -29,6 +30,7 @@ import com.example.terveyshelppi.ui.theme.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
 import java.util.*
 import kotlin.math.log
 
@@ -40,6 +42,8 @@ fun MainPage(
     model: ResultViewModel,
 ) {
     val TAG = "terveyshelppi"
+
+    val context = LocalContext.current
 
     //get time of day
     val c = Calendar.getInstance()
@@ -83,6 +87,7 @@ fun MainPage(
     val highHeartRate by model.highmBPM.observeAsState()
     val lowHeartRate by model.lowmBPM.observeAsState()
     val temp by model.tempValue.observeAsState()
+    val graph by model.graph.observeAsState()
 
     Log.d(TAG, "MainPage: temperature = $temp")
 
@@ -242,7 +247,7 @@ fun MainPage(
                             modifier = Modifier
                                 .padding(top = 20.dp, bottom = 20.dp)
                                 .fillMaxWidth(),
-                            ) {
+                        ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Button(
                                     onClick = {
@@ -276,7 +281,26 @@ fun MainPage(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Button(
                                     onClick = {
-                                        navController.navigate("history")
+                                        if (exerciseData != null) {
+                                            if (exerciseData!!.isNotEmpty()) {
+                                                Log.d(TAG,
+                                                    "MainPage: exercise 0 is ${exerciseData!![0]}")
+                                                navController.navigate(
+                                                    "history")
+                                            } else {
+                                                Toast
+                                                    .makeText(context,
+                                                        "You haven't exercised today!",
+                                                        Toast.LENGTH_SHORT)
+                                                    .show()
+                                            }
+                                        } else {
+                                            Toast
+                                                .makeText(context,
+                                                    "You haven't exercised today!",
+                                                    Toast.LENGTH_SHORT)
+                                                .show()
+                                        }
                                     },
                                     modifier = Modifier.size(45.dp),
                                     shape = CircleShape,
@@ -296,8 +320,30 @@ fun MainPage(
                                 Text(
                                     stringResource(id = R.string.history), color = Color.White,
                                     fontFamily = semibold, fontSize = 14.sp,
-                                    modifier = Modifier.padding(start = 10.dp)
-                                        .clickable { navController.navigate("history") }
+                                    modifier = Modifier
+                                        .padding(start = 10.dp)
+                                        .clickable {
+                                            if (exerciseData != null) {
+                                                if (exerciseData!!.isNotEmpty()) {
+                                                    Log.d(TAG,
+                                                        "MainPage: exercise 0 is ${exerciseData!![0]}")
+                                                    navController.navigate(
+                                                        "history")
+                                                } else {
+                                                    Toast
+                                                        .makeText(context,
+                                                            "You haven't exercised today!",
+                                                            Toast.LENGTH_SHORT)
+                                                        .show()
+                                                }
+                                            } else {
+                                                Toast
+                                                    .makeText(context,
+                                                        "You haven't exercised today!",
+                                                        Toast.LENGTH_SHORT)
+                                                    .show()
+                                            }
+                                        }
                                 )
                             }
                         }
@@ -379,7 +425,19 @@ fun MainPage(
                         .fillMaxWidth()
                         .padding(start = 20.dp, end = 20.dp)
                         .clickable {
-                            navController.navigate("graph-heartRate")
+                            if (graph != null) {
+                                if (graph!!.size > 1) {
+                                    navController.navigate("graph-heartRate")
+                                } else Toast
+                                    .makeText(context,
+                                        "No data for heart rate graph",
+                                        Toast.LENGTH_SHORT)
+                                    .show()
+                            } else Toast
+                                .makeText(context,
+                                    "No data for heart rate graph",
+                                    Toast.LENGTH_SHORT)
+                                .show()
                         },
                     backgroundColor = card,
                     elevation = 4.dp
