@@ -96,8 +96,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         //init map
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-            /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                 (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
+        /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+             (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
 
 
         setContent {
@@ -187,6 +187,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 fun ResetRoomData(model: ResultViewModel) {
     val TAG = "terveyshelppi"
     val userDataFetch by model.getInfo().observeAsState(null)
+    Log.d(TAG, "ResetRoomData: GMT is ${Calendar.getInstance().timeZone}")
     if (userDataFetch != null) {
         val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
         Log.d(TAG, "getInfo day is $day")
@@ -241,6 +242,20 @@ fun hasPermissions(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                 ), 1
             )
+            if (Build.VERSION.SDK_INT >= 31) {
+                while ((activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                    (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) ||
+                    (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
+                    (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                ) {
+                    Log.d(TAG, "hasPermissions: wait to permission granted")
+                }
+            } else while ((activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) ||
+                (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ) {
+                Log.d(TAG, "hasPermissions: wait to permission granted")
+            }
             return true
         }
 
@@ -277,7 +292,7 @@ fun NavigationGraph(
             ProfilePage(navController, model)
         }
         composable("graph-heartRate") {
-            heartRate?.let { it1 -> Graph(it1) }
+            heartRate?.let { it1 -> Graph(it1, navController) }
         }
         composable("daily") {
             DailyActivity(model, navController)

@@ -96,9 +96,9 @@ fun Graph(points: MutableList<Entry>, navController: NavController) {
                     val desc = Description()
                     desc.text = ""
                     data.setValueTextColor(ColorTemplate.LIBERTY_COLORS[0])
-                    view.xAxis.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    view.xAxis.textColor = 0xffffff
                     view.legend.textColor = ColorTemplate.LIBERTY_COLORS[0]
-                    desc.textColor = (0xffffff)
+                    desc.textColor = 0xffffff
                     view.axisLeft.textColor = ColorTemplate.LIBERTY_COLORS[0]
                     view.axisRight.textColor = ColorTemplate.LIBERTY_COLORS[0]
                     view.description = desc

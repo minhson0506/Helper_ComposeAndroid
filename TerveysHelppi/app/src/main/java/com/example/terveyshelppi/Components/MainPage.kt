@@ -523,14 +523,14 @@ fun MainPage(
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 20.dp)
+                                modifier = Modifier.padding(start = 10.dp)
                             )
                             Text(
                                 text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 20.dp)
+                                modifier = Modifier.padding(start = 10.dp)
                             )
                         }
 

@@ -232,7 +232,7 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                     Triple(R.drawable.distance, maxDistance, Pair("m", "Distance")),
                     Triple(R.drawable.cal, maxCalories, Pair("Cal", "Most calories")),
                     Triple(R.drawable.speed, round(maxSpeed), Pair("km/h", "Highest speed")),
-                    Triple(R.drawable.clock, maxTime, Pair("min", "Highest time")),
+                    Triple(R.drawable.clock, maxTime/60, Pair("min", "Highest time")),
                     Triple(R.drawable.elevation, maxElevation, Pair("m", "Elevation")),
                 )
                 Column(
@@ -345,7 +345,6 @@ fun Camera(model: ResultViewModel) {
     val mContext = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val data by model.getInfo().observeAsState()
-
 
     if (data != null) {
         bitmap = BitmapFactory.decodeFile(data!!.avatar)
