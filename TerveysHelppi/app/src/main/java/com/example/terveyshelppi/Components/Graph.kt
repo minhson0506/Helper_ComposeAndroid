@@ -5,7 +5,12 @@ import android.content.res.Resources
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.remember
@@ -19,8 +24,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import com.example.terveyshelppi.R
 import com.example.terveyshelppi.ui.theme.background
+import com.example.terveyshelppi.ui.theme.regular
 import com.example.terveyshelppi.ui.theme.semibold
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -38,7 +45,7 @@ import com.github.mikephil.charting.utils.ColorTemplate
 
 
 @Composable
-fun Graph(points: MutableList<Entry>) {
+fun Graph(points: MutableList<Entry>, navController: NavController) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity
     Box(
@@ -53,29 +60,57 @@ fun Graph(points: MutableList<Entry>) {
             )
             .fillMaxSize()
     ) {
-        AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .height(dpValue.dp),
-            factory = { context: Context ->
-                val view = LineChart(context)
-                view.legend.isEnabled = false
-                val data = LineData(LineDataSet(points, "BPM"))
-                val desc = Description()
-                desc.text = "Beats Per Minute"
-                view.xAxis.textColor = (0xffffff)
-                view.legend.textColor = (0xffffff)
-                desc.textColor = (0xffffff)
-                view.axisLeft.textColor = (0xffffff)
-                view.description = desc
-                view.data = data
-                view // return the view
-            },
-            update = { view ->
-                // Update the view
-                view.invalidate()
-            }
-        )
+        Column() {
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(id = R.string.heart), color = Color.White, fontFamily = regular
+                    )
+                }, backgroundColor = Color.Black,
+                navigationIcon = if (navController.previousBackStackEntry != null) {
+                    {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                } else {
+                    null
+                })
+            Text(
+                stringResource(id = R.string.lineChart), color = Color.White,
+                modifier = Modifier.padding(top = 10.dp).align(Alignment.CenterHorizontally), textAlign = TextAlign.Center,
+                fontFamily = semibold, fontSize = 12.sp
+            )
+            AndroidView(
+                modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+                    .fillMaxSize()
+                    .height(dpValue.dp),
+                factory = { context: Context ->
+                    val view = LineChart(context)
+                    view.legend.isEnabled = false
+                    val data = LineData(LineDataSet(points, "BPM"))
+                    val desc = Description()
+                    desc.text = ""
+                    data.setValueTextColor(ColorTemplate.LIBERTY_COLORS[0])
+                    view.xAxis.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    view.legend.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    desc.textColor = (0xffffff)
+                    view.axisLeft.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    view.axisRight.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    view.description = desc
+                    view.data = data
+                    view // return the view
+                },
+                update = { view ->
+                    // Update the view
+                    view.invalidate()
+                }
+            )
+        }
     }
 }
 

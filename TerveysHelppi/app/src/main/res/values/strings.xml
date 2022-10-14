@@ -46,4 +46,5 @@
     <string name="result">Exercise details</string>
     <string name="all">All exercises</string>
     <string name="barChart">Total value/Target value (%)</string>
+    <string name="lineChart">Beats Per Minute</string>
 </resources>
