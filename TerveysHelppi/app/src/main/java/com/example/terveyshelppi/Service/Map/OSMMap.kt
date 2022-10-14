@@ -65,8 +65,8 @@ fun showPoint(geoPoint: GeoPoint, address: String) {
             it.controller.setCenter(geoPoint)
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             marker.position = geoPoint
-            marker.showInfoWindow()
-            marker.title = address + "; lat ${geoPoint.latitude} & long ${geoPoint.longitude}"
+//            marker.showInfoWindow()
+            marker.title = address
             map.overlays.clear()
             map.overlays.add(marker)
         } catch (error: IOException) {
