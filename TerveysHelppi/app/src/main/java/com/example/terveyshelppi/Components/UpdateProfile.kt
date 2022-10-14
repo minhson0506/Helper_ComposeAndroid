@@ -62,14 +62,14 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     color = Color.White,
                     fontSize = 18.sp,
                     fontFamily = semibold,
-                    modifier = Modifier.padding(top = 20.dp, start = 30.dp)
+                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
                 )
                 TextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(id = R.string.name)) },
                     modifier = Modifier
-                        .padding(top = 20.dp, start = 30.dp, end = 30.dp)
+                        .padding(top = 10.dp, start = 30.dp, end = 30.dp)
                         .fillMaxWidth()
                         .border(
                             BorderStroke(
@@ -125,7 +125,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     color = Color.White,
                     fontSize = 18.sp,
                     fontFamily = semibold,
-                    modifier = Modifier.padding(top = 20.dp, start = 30.dp)
+                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
                 )
 
                 TextField(
@@ -133,7 +133,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     onValueChange = { steps = it },
                     label = { Text(stringResource(id = R.string.step)) },
                     modifier = Modifier
-                        .padding(top = 15.dp, start = 30.dp, end = 30.dp)
+                        .padding(top = 10.dp, start = 30.dp, end = 30.dp)
                         .fillMaxWidth()
                         .border(
                             BorderStroke(
@@ -147,11 +147,11 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                         .background(Color.White, shape = RoundedCornerShape(10))
                 )
                 Text(
-                    "recommended 6,000 steps/day",
+                    "recommended 6000 steps/day",
                     color = smallText,
                     fontSize = 14.sp,
                     fontFamily = regular,
-                    modifier = Modifier.padding(top = 5.dp, start = 30.dp)
+                    modifier = Modifier.padding(start = 30.dp)
                 )
                 TextField(
                     value = cal,
@@ -176,7 +176,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     color = smallText,
                     fontSize = 14.sp,
                     fontFamily = regular,
-                    modifier = Modifier.padding(top = 5.dp, start = 30.dp)
+                    modifier = Modifier.padding(start = 30.dp)
                 )
 
                 TextField(
@@ -202,13 +202,13 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                     color = smallText,
                     fontSize = 14.sp,
                     fontFamily = regular,
-                    modifier = Modifier.padding(top = 5.dp, start = 30.dp)
+                    modifier = Modifier.padding(start = 30.dp)
                 )
                 Image(
                     painterResource(id = R.drawable.ok),
                     "",
                     modifier = Modifier
-                        .padding(top = 20.dp, end = 30.dp)
+                        .padding(top = 20.dp, end = 30.dp, bottom = 20.dp)
                         .size(50.dp)
                         .clickable(onClick = {
                             if (weight.toIntOrNull() == null) {

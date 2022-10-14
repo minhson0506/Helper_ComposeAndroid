@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.libraries.maps.model.LatLng
 import java.util.*
 import kotlin.math.log
 
@@ -48,6 +49,7 @@ fun MainPage(
     //get time of day
     val c = Calendar.getInstance()
     val timeOfDay = c.get(Calendar.HOUR_OF_DAY)
+    val today = c.time.toString().slice(0..9)
 
     var text by remember { mutableStateOf("") }
 
@@ -65,7 +67,7 @@ fun MainPage(
     val list = mutableListOf(0L)
 
     exerciseData?.forEach {
-        list.add(it.activeTime)
+        if(it.timeStart.slice(0..9)  == today) list.add(it.activeTime)
     }
     Log.d(TAG, "MainPage: list of time workout $list")
 
@@ -111,14 +113,14 @@ fun MainPage(
     totalCalories =
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
-    totalHours = ((list.sum()) / 60).toInt()
+    totalHours = list.sum().toInt()
 
     Log.d(TAG, "MainPage: userinfo $data")
 
     val textArray = listOf(
         Triple(R.drawable.step, totalSteps - beginStep, targetSteps),
         Triple(R.drawable.cal, totalCalories, targetCals),
-        Triple(R.drawable.clock, totalHours, targetHours),
+        Triple(R.drawable.clock, totalHours/60, targetHours),
     )
 
     Box(
@@ -251,6 +253,8 @@ fun MainPage(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Button(
                                     onClick = {
+                                        // clear points of location before
+                                        model.points.postValue(mutableListOf<LatLng>())
                                         navController.navigate("exercise")
                                     },
                                     modifier = Modifier.size(45.dp),
@@ -275,7 +279,11 @@ fun MainPage(
                                     fontSize = 14.sp,
                                     modifier = Modifier
                                         .padding(start = 10.dp)
-                                        .clickable { navController.navigate("exercise") }
+                                        .clickable {
+                                            // clear points of location before
+                                            model.points.postValue(mutableListOf<LatLng>())
+                                            navController.navigate("exercise")
+                                        }
                                 )
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -352,7 +360,7 @@ fun MainPage(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp),
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
@@ -515,14 +523,14 @@ fun MainPage(
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 20.dp)
+                                modifier = Modifier.padding(start = 10.dp)
                             )
                             Text(
                                 text = if (lowHeartRate == 300) "Lowest: --" else "Lowest: $lowHeartRate",
                                 color = Color.White,
                                 fontFamily = semibold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(start = 20.dp)
+                                modifier = Modifier.padding(start = 10.dp)
                             )
                         }
 

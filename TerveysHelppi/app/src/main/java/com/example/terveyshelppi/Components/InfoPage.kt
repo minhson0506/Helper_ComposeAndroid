@@ -141,7 +141,7 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
                     .background(Color.White, shape = RoundedCornerShape(10))
             )
             Text(
-                "recommended 6,000 steps/day",
+                "recommended 6000 steps/day",
                 color = smallText,
                 fontSize = 14.sp,
                 fontFamily = regular,

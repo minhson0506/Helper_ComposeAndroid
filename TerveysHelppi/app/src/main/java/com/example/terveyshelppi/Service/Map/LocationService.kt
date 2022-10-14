@@ -23,10 +23,14 @@ import android.location.Geocoder
 import android.os.Build
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.terveyshelppi.Service.RoomDB.UserData
+import com.google.android.libraries.maps.model.LatLng
 import java.util.*
 
+@Composable
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     val TAG = "terveysheppi"
     Log.d(TAG, "GetLocation: start to get location")
@@ -40,6 +44,8 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
 //    var lat by remember { mutableStateOf(0.0) }
 //    val long: Double? by model.long.observeAsState(null)
 //    val lat: Double? by model.lat.observeAsState(null)
+    val data by model.getInfo().observeAsState()
+
 
     var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
@@ -65,11 +71,38 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                         model.distance.postValue(location.distanceTo(preLocation) + model.distance.value!!)
                     else model.distance.postValue(location.distanceTo(preLocation).toDouble())
                     if (model.recording.value == true) {
+                        Log.d(TAG, "onLocationResult: post location when recording")
+                        model.points.value?.add(LatLng(location.latitude, location.longitude))
                         if (model.distanceRecording.value != null)
                             model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distanceRecording.value!!)
                         else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())
                     }
                     preLocation = location
+                    Log.d(TAG, "onLocationResult: model distance data in LocationService $data")
+                    if (data != null) {
+                        val user = model.distance.value?.let {
+                            UserData(
+                                data!!.name,
+                                data!!.weight,
+                                data!!.height,
+                                data!!.targetSteps,
+                                data!!.targetCals,
+                                data!!.targetHours,
+                                data!!.heartRate,
+                                it.toInt(),
+                                data!!.totalCalories,
+                                data!!.totalSteps,
+                                data!!.totalHours,
+                                data!!.avatar,
+                                data!!.stepBeginOfDay,
+                                data!!.day
+                            )
+                        }
+                        if (user != null) {
+                            model.updateInfo(user)
+                        }
+                    }
+
                 } else {
                     preLocation = location
                 }
@@ -114,61 +147,3 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
 //        address = getAddress(context = context, lat, long))
 }
 
-fun getAddress(context: Context, lat: Double, long: Double): String {
-    var TAG = "w2_d3_LocationMap"
-    val geocoder = Geocoder(context, Locale.getDefault())
-    var address = ""
-    try {
-        address = if (Build.VERSION.SDK_INT >= 33) {
-            val location = geocoder.getFromLocation(lat, long, 1)
-            location.first().getAddressLine(0)
-        } else {
-            geocoder.getFromLocation(lat, long, 1)?.first()?.getAddressLine(0) ?: ""
-        }
-    } catch (e: Error) {
-        Log.d(TAG, "getAddress: not response")
-    }
-    return address
-}
-
-@Composable
-fun showPoint(geoPoint: GeoPoint, address: String) {
-    val map = composeMap()
-    var mapInitialized by remember(map) { mutableStateOf(false) }
-    if (!mapInitialized) {
-        map.setTileSource(TileSourceFactory.MAPNIK)
-        map.controller.setZoom(17.0)
-        map.controller.setCenter(GeoPoint(60.17, 24.95))
-        mapInitialized = true
-    }
-
-    val marker = Marker(map)
-
-    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 3
-
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(dpValue.dp),
-        factory = { map }) {
-        address ?: return@AndroidView
-        it.controller.setCenter(geoPoint)
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker.position = geoPoint
-        marker.showInfoWindow()
-        marker.title = address + "; lat ${geoPoint.latitude} & long ${geoPoint.longitude}"
-        map.overlays.clear()
-        map.overlays.add(marker)
-        map.invalidate()
-    }
-}
-
-@Composable
-fun composeMap(): MapView {
-    val context = LocalContext.current
-    val mapView = remember {
-        MapView(context).apply { id = R.id.map }
-    }
-    return mapView
-}

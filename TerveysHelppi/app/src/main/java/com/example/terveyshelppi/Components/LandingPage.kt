@@ -27,16 +27,18 @@ import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 
 @Composable
-fun LandingPage(navController: NavController, application: Application) {
+fun LandingPage(navController: NavController, model: ResultViewModel) {
     val TAG = "terveyshelppi"
 
     var user by remember { mutableStateOf("") }
 
-    val viewModel = ResultViewModel(application)
-    val data = viewModel.getInfo().observeAsState()
 
-    if (data.value != null) {
-        user = data.value?.name.toString()
+    val data by model.getInfo().observeAsState()
+
+    if (data != null) {
+        user = data?.name.toString()
+        model.distance.postValue(data?.totalDistance?.toDouble())
+        Log.d(TAG, "LandingPage: model distance at landing ${data?.totalDistance}")
     }
 
     Log.d(TAG, "LandingPage: $user")

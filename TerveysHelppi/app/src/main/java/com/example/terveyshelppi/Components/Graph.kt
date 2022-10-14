@@ -4,29 +4,48 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeCompilerApi
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
+import com.example.terveyshelppi.R
 import com.example.terveyshelppi.ui.theme.background
+import com.example.terveyshelppi.ui.theme.regular
+import com.example.terveyshelppi.ui.theme.semibold
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.google.android.libraries.maps.MapView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.utils.ColorTemplate
 
 
 @Composable
-fun Graph(points: MutableList<Entry>) {
+fun Graph(points: MutableList<Entry>, navController: NavController) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity
     Box(
@@ -41,29 +60,57 @@ fun Graph(points: MutableList<Entry>) {
             )
             .fillMaxSize()
     ) {
-        AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .height(dpValue.dp),
-            factory = { context: Context ->
-                val view = LineChart(context)
-                view.legend.isEnabled = false
-                val data = LineData(LineDataSet(points, "BPM"))
-                val desc = Description()
-                desc.text = "Beats Per Minute"
-                view.xAxis.textColor = (0xffffff)
-                view.legend.textColor = (0xffffff)
-                desc.textColor = (0xffffff)
-                view.axisLeft.textColor = (0xffffff)
-                view.description = desc
-                view.data = data
-                view // return the view
-            },
-            update = { view ->
-                // Update the view
-                view.invalidate()
-            }
-        )
+        Column() {
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(id = R.string.heart), color = Color.White, fontFamily = regular
+                    )
+                }, backgroundColor = Color.Black,
+                navigationIcon = if (navController.previousBackStackEntry != null) {
+                    {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                } else {
+                    null
+                })
+            Text(
+                stringResource(id = R.string.lineChart), color = Color.White,
+                modifier = Modifier.padding(top = 10.dp).align(Alignment.CenterHorizontally), textAlign = TextAlign.Center,
+                fontFamily = semibold, fontSize = 12.sp
+            )
+            AndroidView(
+                modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+                    .fillMaxSize()
+                    .height(dpValue.dp),
+                factory = { context: Context ->
+                    val view = LineChart(context)
+                    view.legend.isEnabled = false
+                    val data = LineData(LineDataSet(points, "BPM"))
+                    val desc = Description()
+                    desc.text = ""
+                    data.setValueTextColor(ColorTemplate.LIBERTY_COLORS[0])
+                    view.xAxis.textColor = 0xffffff
+                    view.legend.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    desc.textColor = 0xffffff
+                    view.axisLeft.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    view.axisRight.textColor = ColorTemplate.LIBERTY_COLORS[0]
+                    view.description = desc
+                    view.data = data
+                    view // return the view
+                },
+                update = { view ->
+                    // Update the view
+                    view.invalidate()
+                }
+            )
+        }
     }
 }
 
@@ -96,7 +143,7 @@ fun GraphMulti(firstPoints: MutableList<Entry>, secondPoints: MutableList<Entry>
 }
 
 @Composable
-fun GraphBarChar(points: MutableList<BarEntry>) {
+fun GraphBarChart(points: MutableList<BarEntry>) {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
     Log.d("terveyshelppi", "DailyActivity: start draw graph")
@@ -108,18 +155,38 @@ fun GraphBarChar(points: MutableList<BarEntry>) {
         factory = { context: Context ->
             val view = BarChart(context)
             view.legend.isEnabled = false
+            // set data for graph
             val entries: MutableList<BarEntry> = ArrayList()
             points.forEach {
                 if (it != null) {
                     entries.add(it)
                 }
             }
-            val data = BarData(BarDataSet(entries, "%"))
-            data.setValueTextColor(0xffffff)
+            val set = BarDataSet(entries, "%")
+
+            val data = BarData(set)
+            data.setValueTextColor(ColorTemplate.LIBERTY_COLORS[0])
+
+            view.data = data
+            view.setDrawValueAboveBar(true)
+
             val desc = Description()
             desc.text = ""
             view.description = desc
-            view.data = data
+
+            // set xAxis
+            val xAxis = view.xAxis
+            xAxis.textColor = 0xffffff
+
+            // set color
+            // set yAxis left
+            val leftAxis = view.axisLeft
+            leftAxis.textColor = ColorTemplate.LIBERTY_COLORS[0]
+
+            // set yAxis right
+            val rightAxis = view.axisRight
+            rightAxis.textColor = ColorTemplate.LIBERTY_COLORS[0]
+
             view.setFitBars(true)
             view // return the view
         },
@@ -128,4 +195,5 @@ fun GraphBarChar(points: MutableList<BarEntry>) {
             view.invalidate()
         }
     )
+
 }

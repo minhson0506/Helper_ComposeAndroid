@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.Service.Map.getAddress
+import com.example.terveyshelppi.Service.Map.showPoint
 import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.RoomDB.ExerciseData
 import com.example.terveyshelppi.Service.StopWatch
-import com.example.terveyshelppi.Service.getAddress
-import com.example.terveyshelppi.Service.showPoint
 import com.example.terveyshelppi.ui.theme.*
 import org.osmdroid.util.GeoPoint
 import java.util.*

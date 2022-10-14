@@ -183,19 +183,15 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                     SearchResponse.Item("", SearchResponse.Item.Id("", "vmdITEguAnE"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "wpLJXHUyvyM"), ""),
                     //stretching
-                    SearchResponse.Item("", SearchResponse.Item.Id("", "7lyvblFNI"), ""),
+                    SearchResponse.Item("", SearchResponse.Item.Id("", "flDQ-Av5DZ8"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "YfCK3uOz1r4"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "itJE4neqDJw"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "I9ZRSpLTSu8"), ""),
                     SearchResponse.Item("", SearchResponse.Item.Id("", "qULTwquOuT4"), "")
                 )
 
-                val suggestionsList = listOf(items.shuffled()[0],
-                    items.shuffled()[1],
-                    items.shuffled()[2],
-                    items.shuffled()[3],
-                    items.shuffled()[4])
-                model.result.postValue(suggestionsList)
+                val suggestionsList = items.shuffled()
+                model.result.postValue(listOf(suggestionsList[0], suggestionsList[1], suggestionsList[2], suggestionsList[3], suggestionsList[4]))
                 shuffle = false
             }
         }

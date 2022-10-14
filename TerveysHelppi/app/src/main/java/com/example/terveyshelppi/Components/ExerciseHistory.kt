@@ -28,6 +28,7 @@ import com.example.terveyshelppi.Service.ResultViewModel
 import com.example.terveyshelppi.Service.RoomDB.ExerciseData
 import com.example.terveyshelppi.ui.theme.*
 import java.util.*
+import kotlin.math.round
 
 @Composable
 fun ExerciseHistory(navController: NavController, model: ResultViewModel) {
@@ -53,6 +54,7 @@ fun ExerciseHistory(navController: NavController, model: ResultViewModel) {
             )
             .fillMaxSize()
     ) {
+        Column() {
         TopAppBar(
             title = {
                 Text(
@@ -61,120 +63,149 @@ fun ExerciseHistory(navController: NavController, model: ResultViewModel) {
                     fontFamily = regular
                 )
             }, backgroundColor = Color.Black,
-            navigationIcon = if (navController.previousBackStackEntry != null) {
-                {
-                    IconButton(onClick = {
-                        navController.navigateUp()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-                }
-            } else {
-                null
-            }
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 40.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
-        ) {
-            listDate.forEach { date ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 30.dp, bottom = 10.dp),
-                ) {
-                    Button(
-                        onClick = {
-                            navController.navigate("exercise")
-                        },
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = button),
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.calendar),
-                            "",
-                            modifier = Modifier.size(15.dp)
-                        )
-                    }
-                    Text(
-                        date, color = Color.White,
-                        modifier = Modifier.padding(start = 10.dp),
-                        fontFamily = regular, fontSize = 16.sp
+            navigationIcon = {
+                IconButton(onClick = {
+                    Log.d(TAG, "ExerciseHistory: back button")
+                    navController.navigateUp()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
                 }
-                Column(
-                    modifier = Modifier
-                        .height(280.dp)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    exerciseData?.forEach { exercise ->
-                        if (exercise.timeStart.slice(0..9) == date) {
-                            Card(
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                    .fillMaxWidth(),
-                                backgroundColor = card,
-                                elevation = 4.dp
-                            ) {
-                                Column(modifier = Modifier.padding(start = 15.dp, end = 15.dp)) {
-                                    Row(
-                                        modifier = Modifier
-                                            .padding(top = 15.dp)
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            stringResource(id = R.string.exercise),
-                                            color = Color.White,
-                                            fontFamily = regular,
-                                            fontSize = 16.sp
-                                        )
-                                        Text(
-                                            exercise.timeStart.slice(11..15), color = smallText,
-                                            fontFamily = regular, fontSize = 14.sp
-                                        )
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .padding(top = 15.dp, bottom = 20.dp)
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Row() {
-                                            Image(
-                                                painterResource(id = R.drawable.timer),
-                                                "",
-                                                modifier = Modifier.size(20.dp)
-                                            )
+            }
+        )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 20.dp, start = 20.dp, end = 20.dp),
+            ) {
+                listDate.forEach { date ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 30.dp, bottom = 10.dp),
+                    ) {
+                        Button(
+                            onClick = {
+                            },
+                            modifier = Modifier.size(40.dp),
+                            shape = CircleShape,
+                            contentPadding = PaddingValues(0.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = button),
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.calendar),
+                                "",
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
+                        Text(
+                            date, color = Color.White,
+                            modifier = Modifier.padding(start = 10.dp),
+                            fontFamily = regular, fontSize = 16.sp
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        exerciseData?.forEach { exercise ->
+                            if (exercise.timeStart.slice(0..9) == date) {
+                                Card(
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                        .fillMaxWidth(),
+                                    backgroundColor = card,
+                                    elevation = 4.dp
+                                ) {
+                                    Column(modifier = Modifier.padding(start = 15.dp, end = 15.dp)) {
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(top = 15.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
                                             Text(
-                                                exercise.duration, color = Color.White,
-                                                fontFamily = semibold, fontSize = 16.sp,
-                                                modifier = Modifier.padding(start = 5.dp)
-                                            )
-                                        }
-                                        Row() {
-                                            Image(
-                                                painterResource(id = R.drawable.distance),
-                                                "",
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                            Text(
-                                                exercise.distance.toString() + " m",
+                                                stringResource(id = R.string.exercise),
                                                 color = Color.White,
-                                                fontFamily = semibold,
-                                                fontSize = 16.sp,
-                                                modifier = Modifier.padding(start = 5.dp)
+                                                fontFamily = regular,
+                                                fontSize = 16.sp
+                                            )
+                                            Text(
+                                                exercise.timeStart.slice(11..15), color = smallText,
+                                                fontFamily = regular, fontSize = 14.sp
                                             )
                                         }
-
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(top = 20.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Row() {
+                                                Image(
+                                                    painterResource(id = R.drawable.timer),
+                                                    "",
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Text(
+                                                    exercise.duration, color = Color.White,
+                                                    fontFamily = regular, fontSize = 15.sp,
+                                                    modifier = Modifier.padding(start = 5.dp)
+                                                )
+                                            }
+                                            Row() {
+                                                Image(
+                                                    painterResource(id = R.drawable.distance),
+                                                    "",
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Text(
+                                                    exercise.distance.toString() + " m",
+                                                    color = Color.White,
+                                                    fontFamily = regular,
+                                                    fontSize = 15.sp,
+                                                    modifier = Modifier.padding(start = 5.dp)
+                                                )
+                                            }
+                                        }
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(top = 15.dp, bottom = 20.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Row() {
+                                                Image(
+                                                    painterResource(id = R.drawable.speed),
+                                                    "",
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Text(
+                                                    round(exercise.averageSpeed * 3.6).toString() + " km/h",
+                                                    color = Color.White,
+                                                    fontFamily = regular,
+                                                    fontSize = 15.sp,
+                                                    modifier = Modifier.padding(start = 5.dp)
+                                                )
+                                            }
+                                            Row() {
+                                                Image(
+                                                    painterResource(id = R.drawable.cal),
+                                                    "",
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                                Text(
+                                                    exercise.calories.toString() + " Cal",
+                                                    color = Color.White,
+                                                    fontFamily = regular,
+                                                    fontSize = 15.sp,
+                                                    modifier = Modifier.padding(start = 5.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }

@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import com.example.terveyshelppi.Service.Notification.Notification
 import com.example.terveyshelppi.Service.RoomDB.UserData
 import com.example.terveyshelppi.Service.ResultViewModel
+import com.google.android.libraries.maps.model.LatLng
 import java.io.File
 import java.util.*
 import kotlin.math.round
@@ -231,7 +232,7 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                     Triple(R.drawable.distance, maxDistance, Pair("m", "Distance")),
                     Triple(R.drawable.cal, maxCalories, Pair("Cal", "Most calories")),
                     Triple(R.drawable.speed, round(maxSpeed), Pair("km/h", "Highest speed")),
-                    Triple(R.drawable.clock, maxTime, Pair("min", "Highest time")),
+                    Triple(R.drawable.clock, maxTime/60, Pair("min", "Highest time")),
                     Triple(R.drawable.elevation, maxElevation, Pair("m", "Elevation")),
                 )
                 Column(
@@ -345,7 +346,6 @@ fun Camera(model: ResultViewModel) {
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     val data by model.getInfo().observeAsState()
 
-
     if (data != null) {
         bitmap = BitmapFactory.decodeFile(data!!.avatar)
     }
@@ -388,18 +388,23 @@ fun Camera(model: ResultViewModel) {
             } else Log.d(TAG, "ProfilePage: photo not taken")
         }
     if (bitmap == null) {
-        Image(
-            painterResource(id = R.drawable.dog),
-            contentDescription = "dog",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .size(100.dp)
-                .clip(CircleShape)
-                .clickable {
-                    launcher.launch(photoURI)
-                }
-        )
+        Button(
+            onClick = {
+                launcher.launch(photoURI)
+            },
+            modifier = Modifier.padding(top = 20.dp).size(100.dp),
+            shape = CircleShape,
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = button
+            ),
+        ) {
+            Image(
+                painterResource(id = R.drawable.add),
+                "",
+                modifier = Modifier.size(40.dp)
+            )
+        }
     } else {
         Log.d(TAG, "Camera: bitmap: $bitmap")
         bitmap?.let {
