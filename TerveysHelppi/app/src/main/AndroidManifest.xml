@@ -70,7 +70,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
-        <receiver android:name=".Service.Notification.Notification" />
+        <receiver android:name=".service.notification.Notification" />
         <service
             android:name="TerveysHelppi"
             android:foregroundServiceType="location"

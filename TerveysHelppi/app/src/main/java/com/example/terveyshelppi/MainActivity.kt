@@ -33,17 +33,16 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import androidx.preference.PreferenceManager
-import com.example.terveyshelppi.Components.*
-import com.example.terveyshelppi.Service.GattClientCallback
-import com.example.terveyshelppi.Service.GetLocation
-import com.example.terveyshelppi.Service.ResultViewModel
-import com.example.terveyshelppi.Service.RoomDB.UserData
-import com.example.terveyshelppi.Service.ShowSensorData
+import com.example.terveyshelppi.components.*
+import com.example.terveyshelppi.service.GattClientCallback
+import com.example.terveyshelppi.service.GetLocation
+import com.example.terveyshelppi.service.ResultViewModel
+import com.example.terveyshelppi.service.roomDB.UserData
+import com.example.terveyshelppi.service.ShowSensorData
 import com.example.terveyshelppi.ui.theme.TerveysHelppiTheme
 import com.example.terveyshelppi.ui.theme.regular
 import org.osmdroid.config.Configuration
 import java.util.*
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
     val TAG = "terveyshelppi"
