@@ -345,7 +345,10 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp),
+                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp)
+                        .clickable {
+                                   navController.navigate("update")
+                        },
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {
