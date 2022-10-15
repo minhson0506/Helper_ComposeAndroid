@@ -79,7 +79,7 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
             TextField(
                 value = weight,
                 onValueChange = { weight = it },
-                label = { Text(stringResource(id = R.string.weight) + "(kg)") },
+                label = { Text(stringResource(id = R.string.weight)) },
                 modifier = Modifier
                     .padding(top = 20.dp, start = 30.dp, end = 30.dp)
                     .fillMaxWidth()
@@ -97,7 +97,7 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
             TextField(
                 value = height,
                 onValueChange = { height = it },
-                label = { Text(stringResource(id = R.string.height) + "(cm)") },
+                label = { Text(stringResource(id = R.string.height)) },
                 modifier = Modifier
                     .padding(top = 20.dp, start = 30.dp, end = 30.dp)
                     .fillMaxWidth()

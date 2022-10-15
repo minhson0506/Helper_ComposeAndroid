@@ -4,8 +4,8 @@
     <string name="ready">Ready to start?</string>
     <string name="goal">Set up goals?</string>
     <string name="name">Name</string>
-    <string name="weight">Weight</string>
-    <string name="height">Height</string>
+    <string name="weight">Weight (kg)</string>
+    <string name="height">Height (cm)</string>
     <string name="step">Steps/day</string>
     <string name="cal">Cals/day</string>
     <string name="hour">Active minutes/day</string>
