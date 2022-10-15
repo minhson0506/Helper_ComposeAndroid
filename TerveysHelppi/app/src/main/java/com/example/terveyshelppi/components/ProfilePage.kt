@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +38,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
-import com.example.terveyshelppi.libraryComponent.TextModifiedWithPadding
 import com.example.terveyshelppi.service.notification.Notification
 import com.example.terveyshelppi.service.roomDB.UserData
 import com.example.terveyshelppi.service.ResultViewModel
@@ -50,14 +48,14 @@ import kotlin.math.round
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfilePage(navControler: NavController, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
     val mContext = LocalContext.current
 
+    // state to display dropdown menu
     var mDisplayMenu by remember { mutableStateOf(false) }
 
-    //exercise data
+    // exercise and user data from Room
     val exerciseData by model.getAllExercises().observeAsState()
-    val data by model.getInfo().observeAsState()
+    val userData by model.getInfo().observeAsState()
 
     var user by remember { mutableStateOf("") }
     var targetSteps by remember { mutableStateOf(0) }
@@ -69,26 +67,37 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
     var maxElevation by remember { mutableStateOf(0) }
     var maxSpeed by remember { mutableStateOf(0.0) }
 
-    // set data from Room
-    if (data != null) {
-        user = data?.name.toString()
-        targetSteps = data!!.targetSteps
-        targetCals = data!!.targetCals
-        targetHours = data!!.targetHours
+    if (userData != null) {
+        user = userData?.name.toString()
+        targetSteps = userData!!.targetSteps
+        targetCals = userData!!.targetCals
+        targetHours = userData!!.targetHours
     }
 
+    // get highest values from exercises
     if (exerciseData != null) {
-        val distance = exerciseData!!.map { it.distance }
-        val activeTime = exerciseData!!.map { it.activeTime }
-        val calories = exerciseData!!.map { it.calories }
-        val elevation = exerciseData!!.map { it.elevation }
-        val speed = exerciseData!!.map { it.averageSpeed }
-        maxDistance = distance.maxOrNull() ?: 0
-        maxTime = activeTime.maxOrNull() ?: 0
-        maxCalories = calories.maxOrNull() ?: 0
-        maxElevation = elevation.maxOrNull() ?: 0
-        maxSpeed = speed.maxOrNull() ?: 0.0
+        maxDistance = exerciseData!!.maxOfOrNull { it.distance } ?: 0
+        maxTime = exerciseData!!.maxOfOrNull { it.activeTime } ?: 0
+        maxCalories = exerciseData!!.maxOfOrNull { it.calories } ?: 0
+        maxElevation = exerciseData!!.maxOfOrNull { it.elevation } ?: 0
+        maxSpeed = exerciseData!!.maxOfOrNull { it.averageSpeed } ?: 0.0
     }
+
+    // data for grid view (goals)
+    val goalArray = listOf(
+        Triple(R.drawable.step, targetSteps, "steps/day"),
+        Triple(R.drawable.cal, targetCals, "cals/day"),
+        Triple(R.drawable.clock, targetHours, "mins/day"),
+    )
+
+    // data for grid view (personal best)
+    val textArray = listOf(
+        Triple(R.drawable.distance, maxDistance, Pair("m", "Distance")),
+        Triple(R.drawable.cal, maxCalories, Pair("Cal", "Most calories")),
+        Triple(R.drawable.speed, round(maxSpeed), Pair("km/h", "Highest speed")),
+        Triple(R.drawable.clock, maxTime / 60, Pair("min", "Highest time")),
+        Triple(R.drawable.elevation, maxElevation, Pair("m", "Elevation")),
+    )
 
     Box(
         modifier = Modifier
@@ -147,9 +156,11 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                 .padding(top = 30.dp, bottom = 20.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = CenterHorizontally
         ) {
+            // function to take avatar picture
             Camera(model)
+
             Text(
                 user,
                 color = Color.White,
@@ -158,12 +169,6 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                     .align(CenterHorizontally)
                     .padding(top = 10.dp, bottom = 10.dp),
                 fontSize = 18.sp
-            )
-            // data for displaying
-            val goalArray = listOf(
-                Triple(R.drawable.step, targetSteps, "steps/day"),
-                Triple(R.drawable.cal, targetCals, "cals/day"),
-                Triple(R.drawable.clock, targetHours, "mins/day"),
             )
             Card(
                 modifier = Modifier
@@ -225,13 +230,7 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                val textArray = listOf(
-                    Triple(R.drawable.distance, maxDistance, Pair("m", "Distance")),
-                    Triple(R.drawable.cal, maxCalories, Pair("Cal", "Most calories")),
-                    Triple(R.drawable.speed, round(maxSpeed), Pair("km/h", "Highest speed")),
-                    Triple(R.drawable.clock, maxTime/60, Pair("min", "Highest time")),
-                    Triple(R.drawable.elevation, maxElevation, Pair("m", "Elevation")),
-                )
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -338,13 +337,15 @@ fun setNotification(mContext: Context) {
 
 @Composable
 fun Camera(model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     val mContext = LocalContext.current
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-    val data by model.getInfo().observeAsState()
 
-    if (data != null) {
-        bitmap = BitmapFactory.decodeFile(data!!.avatar)
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    // get user data from Room
+    val userData by model.getInfo().observeAsState()
+    if (userData != null) {
+        bitmap = BitmapFactory.decodeFile(userData!!.avatar)
     }
 
     //create file
@@ -365,24 +366,26 @@ fun Camera(model: ResultViewModel) {
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
             if (it) {
                 bitmap = BitmapFactory.decodeFile(currentPhotoPath)
+
+                // add picture path to Room
                 val user = UserData(
-                    data!!.name,
-                    data!!.weight,
-                    data!!.height,
-                    data!!.targetSteps,
-                    data!!.targetCals,
-                    data!!.targetHours,
-                    data!!.heartRate,
-                    data!!.totalDistance,
-                    data!!.totalCalories,
-                    data!!.totalSteps,
-                    data!!.totalHours,
+                    userData!!.name,
+                    userData!!.weight,
+                    userData!!.height,
+                    userData!!.targetSteps,
+                    userData!!.targetCals,
+                    userData!!.targetHours,
+                    userData!!.heartRate,
+                    userData!!.totalDistance,
+                    userData!!.totalCalories,
+                    userData!!.totalSteps,
+                    userData!!.totalHours,
                     currentPhotoPath,
-                    data!!.stepBeginOfDay,
-                    data!!.day
+                    userData!!.stepBeginOfDay,
+                    userData!!.day
                 )
                 model.updateInfo(user)
-            } else Log.d(TAG, "ProfilePage: photo not taken")
+            } else Log.d(tag, "ProfilePage: photo not taken")
         }
     if (bitmap == null) {
         Button(
@@ -405,7 +408,7 @@ fun Camera(model: ResultViewModel) {
             )
         }
     } else {
-        Log.d(TAG, "Camera: bitmap: $bitmap")
+        Log.d(tag, "Camera: bitmap: $bitmap")
         bitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),

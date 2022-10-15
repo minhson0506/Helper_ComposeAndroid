@@ -37,20 +37,20 @@ import retrofit2.Callback
 import retrofit2.Response
 
 fun searchOnYoutube(keywords: String, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     YoutubeApi.apiSearchInstance().search(keywords).enqueue(object : Callback<SearchResponse> {
         override fun onResponse(
             call: Call<SearchResponse>,
             response: Response<SearchResponse>,
         ) {
-            Log.d(TAG, "onResponse: ${response.isSuccessful}")
+            Log.d(tag, "onResponse: ${response.isSuccessful}")
             val result = response.body()?.items
-            Log.d(TAG, "onResponse: $result")
+            Log.d(tag, "onResponse: $result")
             model.result.postValue(result)
         }
 
         override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-            Log.d(TAG, "onFailure when get response from youtube: ")
+            Log.d(tag, "onFailure when get response from youtube: ")
         }
     })
 }
@@ -58,8 +58,8 @@ fun searchOnYoutube(keywords: String, model: ResultViewModel) {
 @ExperimentalFoundationApi
 @Composable
 fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
-    val TAG = "terveyshelppi"
-    Log.d(TAG, "YoutubeScreen: start to find video from videoid")
+    val tag = "terveyshelppi"
+    Log.d(tag, "YoutubeScreen: start to find video from videoid")
 
     var displayYoutube by remember { mutableStateOf(false) }
 
@@ -112,7 +112,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                 searchOnYoutube(input, model)
                 input = ""
                 bool = false
-                Log.d(TAG, "Greeting: ${result.toString()}")
+                Log.d(tag, "Greeting: ${result.toString()}")
             },
             modifier = Modifier
                 .padding(end = 10.dp)
@@ -198,14 +198,14 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
 
         val videoId = result?.map { it.id.videoId }
 
-        Log.d(TAG, "start to load video")
+        Log.d(tag, "start to load video")
 
         //play youtube video
         if (displayYoutube) playVideo(videoId = id) else {
             val fragment: Fragment? =
                 activity.supportFragmentManager.findFragmentById(R.id.ytPlayer)
             if (fragment != null)
-                activity.supportFragmentManager.beginTransaction().remove(fragment).commit();
+                activity.supportFragmentManager.beginTransaction().remove(fragment).commit()
         }
 
         Column(
@@ -242,12 +242,12 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                                     response: Response<TitleResponse>,
                                 ) {
                                     Log.d(
-                                        TAG,
+                                        tag,
                                         "onResponse: url get title is ${response.raw().request.url}."
                                     )
-                                    Log.d(TAG, "onResponse title: ${response.isSuccessful}")
+                                    Log.d(tag, "onResponse title: ${response.isSuccessful}")
                                     val result = response.body()?.title
-                                    Log.d(TAG, "onResponse title: $result")
+                                    Log.d(tag, "onResponse title: $result")
                                     when (i) {
                                         0 -> model.title.postValue(result)
                                         1 -> model.title1.postValue(result)
@@ -259,10 +259,10 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                                 }
 
                                 override fun onFailure(call: Call<TitleResponse>, t: Throwable) {
-                                    Log.d(TAG, "onResponse fail: url is ${t.message}")
+                                    Log.d(tag, "onResponse fail: url is ${t.message}")
                                     //Log.d(TAG, "onResponse fail: url is ${(t as HttpException).response()?.raw()?.request?.url}")
                                     Log.d(
-                                        TAG,
+                                        tag,
                                         "response onFailure when get response from youtube: "
                                     )
                                 }

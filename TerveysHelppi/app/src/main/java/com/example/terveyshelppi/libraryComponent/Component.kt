@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.ui.theme.*
 
-// redefine TopAppBar
+// TopAppBar
 @Composable
 fun TopAppBarWithBackButton(navController: NavController, id: Int) {
     TopAppBar(
@@ -41,7 +41,7 @@ fun TopAppBarWithBackButton(navController: NavController, id: Int) {
     )
 }
 
-// redefine Text
+// TextView
 @Composable
 fun TextModifiedWithId(
     id: Int,

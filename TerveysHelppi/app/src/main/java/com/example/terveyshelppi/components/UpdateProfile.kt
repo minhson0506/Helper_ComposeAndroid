@@ -27,20 +27,18 @@ import java.util.*
 
 @Composable
 fun UpdateProfile(model: ResultViewModel, navController: NavController) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     val mContext = LocalContext.current
 
-    val data by model.getInfo().observeAsState()
-    if (data != null) {
-
-        var name by remember { mutableStateOf(data!!.name) }
-        var weight by remember { mutableStateOf(data!!.weight.toString()) }
-        var height by remember { mutableStateOf(data!!.height.toString()) }
-        var steps by remember { mutableStateOf(data!!.targetSteps.toString()) }
-        var cal by remember { mutableStateOf(data!!.targetCals.toString()) }
-        var hours by remember { mutableStateOf(data!!.targetHours.toString()) }
-
-        val state by model.state.observeAsState(true)
+    // get user data from Room
+    val userData by model.getInfo().observeAsState()
+    if (userData != null) {
+        var name by remember { mutableStateOf(userData!!.name) }
+        var weight by remember { mutableStateOf(userData!!.weight.toString()) }
+        var height by remember { mutableStateOf(userData!!.height.toString()) }
+        var steps by remember { mutableStateOf(userData!!.targetSteps.toString()) }
+        var cal by remember { mutableStateOf(userData!!.targetCals.toString()) }
+        var hours by remember { mutableStateOf(userData!!.targetHours.toString()) }
 
         Box(
             modifier = Modifier
@@ -54,8 +52,10 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceEvenly) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
                 //basic info
                 Text(
                     stringResource(id = R.string.update),
@@ -180,7 +180,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
 
                 TextField(
-                    value = hours.toString(),
+                    value = hours,
                     onValueChange = { hours = it },
                     label = { Text(stringResource(id = R.string.hour)) },
                     modifier = Modifier
@@ -246,22 +246,21 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                                     steps.toInt(),
                                     cal.toInt(),
                                     hours.toInt(),
-                                    data!!.heartRate,
-                                    data!!.totalDistance,
-                                    data!!.totalCalories,
-                                    data!!.totalSteps,
-                                    data!!.totalHours,
-                                    data!!.avatar,
-                                    data!!.stepBeginOfDay,
+                                    userData!!.heartRate,
+                                    userData!!.totalDistance,
+                                    userData!!.totalCalories,
+                                    userData!!.totalSteps,
+                                    userData!!.totalHours,
+                                    userData!!.avatar,
+                                    userData!!.stepBeginOfDay,
                                     day
                                 )
-                                Log.d(TAG, "UpdateProfile: user info $user")
+                                Log.d(tag, "UpdateProfile: user info $user")
                                 model.updateInfo(user)
-                                if (state) navController.navigateUp()
+                                navController.navigateUp()
                             }
                         })
                         .align(Alignment.End)
-
                 )
             }
         }

@@ -35,7 +35,7 @@ import androidx.navigation.compose.*
 import androidx.preference.PreferenceManager
 import com.example.terveyshelppi.components.*
 import com.example.terveyshelppi.service.GattClientCallback
-import com.example.terveyshelppi.service.GetLocation
+import com.example.terveyshelppi.service.map.GetLocation
 import com.example.terveyshelppi.service.ResultViewModel
 import com.example.terveyshelppi.service.roomDB.UserData
 import com.example.terveyshelppi.service.ShowSensorData
@@ -45,7 +45,7 @@ import org.osmdroid.config.Configuration
 import java.util.*
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
-    val TAG = "terveyshelppi"
+    private val tag = "terveyshelppi"
 
     companion object {
         private lateinit var model: ResultViewModel
@@ -56,14 +56,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     private var bluetoothAdapter: BluetoothAdapter? = null
 
-
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.S)
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // init viewmodel
+        // init view model
         model = ResultViewModel(application)
 
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -72,32 +71,28 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         //step counter & temperature sensor
         sm = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sm.getSensorList(Sensor.TYPE_ALL).forEach {
-            Log.d(TAG, "sensor is ${it.name}")
+            Log.d(tag, "sensor is ${it.name}")
         }
         sTemperature = sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)
         stepSensor = sm.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
-
+        // check all permissions
         hasPermissions(bluetoothAdapter = bluetoothAdapter!!, activity = this)
 
         // check heart rate sensor and connect
-
         for (btDev in bluetoothAdapter?.bondedDevices!!) {
-            Log.d(TAG, "bluetooth device bonded is: : ${btDev.name}")
+            Log.d(tag, "bluetooth device bonded is: : ${btDev.name}")
             if (btDev.name.startsWith("Polar")) {
-                Log.d(TAG, "connected to heart rate sensor")
+                Log.d(tag, "connected to heart rate sensor")
                 val bluetoothGatt =
                     btDev.connectGatt(this, false, GattClientCallback(model = model))
-                Log.d(TAG, "connect Polar is ${bluetoothGatt.connect()}")
-                break;
+                Log.d(tag, "connect Polar is ${bluetoothGatt.connect()}")
+                break
             }
         }
 
         //init map
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-        /* while((checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-             (checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED))*/
-
 
         setContent {
             val navController = rememberNavController()
@@ -108,12 +103,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             // reset data in the beginning of the day
             ResetRoomData(model)
 
+            // save sensor data
             ShowSensorData(model, application)
 
             TerveysHelppiTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-
                     NavHost(navController, startDestination = "landingPage") {
                         composable("landingPage") {
                             LandingPage(navController = navController, model)
@@ -136,7 +131,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onSensorChanged(p0: SensorEvent) {
         if (p0.sensor == sTemperature) {
             model.updateTempValue(p0.values[0].toString())
-            Log.d(TAG, "onSensorChanged: temp ${p0.values[0]}")
+            Log.d(tag, "onSensorChanged: temp ${p0.values[0]}")
         }
         if (p0.sensor == stepSensor) {
             model.updateStepValue(
@@ -145,12 +140,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     p0.values[0],
                 )
             )
-            Log.d(TAG, "onSensorChanged: step ${p0.values[0]}")
+            Log.d(tag, "onSensorChanged: step ${p0.values[0]}")
         }
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        Log.d(TAG, "onAccuracyChanged ${p0?.name}: $p1")
+        Log.d(tag, "onAccuracyChanged ${p0?.name}: $p1")
     }
 
     override fun onResume() {
@@ -182,20 +177,19 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 }
 
+// reset data every new day
 @Composable
 fun ResetRoomData(model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
+
     val userDataFetch by model.getInfo().observeAsState(null)
-    Log.d(TAG, "ResetRoomData: GMT is ${Calendar.getInstance().timeZone}")
     if (userDataFetch != null) {
         val day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
-        Log.d(TAG, "getInfo day is $day")
-        Log.d(TAG, "getInfo in room: ${userDataFetch?.day}")
-        Log.d(TAG, "getInfo in system: ${Calendar.getInstance().get(Calendar.DAY_OF_YEAR)}")
         if (userDataFetch?.day != Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
-            Log.d(TAG, "getInfo: reset counter for beginning of the day")
-            Log.d(TAG, "ResetRoomData: $userDataFetch")
-            val user = UserData(userDataFetch!!.name,
+            Log.d(tag, "getInfo: reset counter for beginning of the day")
+            Log.d(tag, "ResetRoomData: $userDataFetch")
+            val user = UserData(
+                userDataFetch!!.name,
                 userDataFetch!!.weight,
                 userDataFetch!!.height,
                 userDataFetch!!.targetSteps,
@@ -208,7 +202,8 @@ fun ResetRoomData(model: ResultViewModel) {
                 0,
                 userDataFetch!!.avatar,
                 userDataFetch!!.totalSteps,
-                day)
+                day
+            )
             model.updateInfo(user)
             model.distance.postValue(0.0)
             model.hours.postValue(0.0)
@@ -221,9 +216,9 @@ fun hasPermissions(
     bluetoothAdapter: BluetoothAdapter,
     activity: AppCompatActivity,
 ): Boolean {
-    val TAG = "terveyshelppi"
-    if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
-        Log.d(TAG, "No Bluetooth LE capability")
+    val tag = "terveyshelppi"
+    if (!bluetoothAdapter.isEnabled) {
+        Log.d(tag, "No Bluetooth LE capability")
         return false
     } else {
         if (
@@ -232,7 +227,7 @@ fun hasPermissions(
             (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
             (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         ) {
-            Log.d(TAG, "No permission")
+            Log.d(tag, "No permission")
             activity.requestPermissions(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -247,18 +242,18 @@ fun hasPermissions(
                     (activity.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) ||
                     (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 ) {
-                    Log.d(TAG, "hasPermissions: wait to permission granted")
+                    Log.d(tag, "hasPermissions: wait to permission granted")
                 }
             } else while ((activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
                 (activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) ||
                 (activity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ) {
-                Log.d(TAG, "hasPermissions: wait to permission granted")
+                Log.d(tag, "hasPermissions: wait to permission granted")
             }
             return true
         }
 
-        Log.i(TAG, "permissions ok")
+        Log.i(tag, "permissions ok")
         return true
     }
 }
@@ -332,9 +327,11 @@ fun BottomNavigationBar(navController: NavController) {
                     )
                 },
                 label = {
-                    Text(text = item.title,
+                    Text(
+                        text = item.title,
                         color = Color.White,
-                        fontFamily = regular)
+                        fontFamily = regular
+                    )
                 },
                 alwaysShowLabel = true,
                 selected = false,
@@ -371,9 +368,9 @@ fun MainScreen(
         "daily" -> false
         "graph-heartRate" -> false
         "history" -> false
+        "update" -> false
         else -> true
     }
-
 
     Scaffold(
         bottomBar = { if (showBottomBar) BottomNavigationBar(navController) },

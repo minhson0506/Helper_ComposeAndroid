@@ -25,7 +25,5 @@ interface ExerciseDAO {
     @Query("SELECT * FROM exercisedata")
     fun getAll(): LiveData<List<ExerciseData>>
 
-//    @Query("SELECT * from walkdata where id == :id")
-//    fun getExerciseById(id: Long): LiveData<List<ExerciseData>>
 }
 

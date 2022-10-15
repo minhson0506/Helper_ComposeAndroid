@@ -22,13 +22,14 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
     // store data of searching
     val result = MutableLiveData<List<SearchResponse.Item>>(null)
 
-    //data from step sensor
+    // data from step sensor
     private val _stepValue: MutableLiveData<String> = MutableLiveData()
     val stepValue: LiveData<String> = _stepValue
     fun updateStepValue(value: String) {
         _stepValue.value = value
     }
 
+    // data from temperature sensor
     private val _tempValue: MutableLiveData<String> = MutableLiveData()
     val tempValue: LiveData<String> = _tempValue
     fun updateTempValue(value: String) {
@@ -45,15 +46,13 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
     // store data of location
     var distance = MutableLiveData<Double>(0.0)
     var speed = MutableLiveData<Double>(0.0)
-    var maxSpeed = MutableLiveData<Double>(0.0)
     val locationState = MutableLiveData(false)
-
-    var distanceRecording = MutableLiveData<Double>(0.0)
-
-    // state of recording
-    var recording = MutableLiveData<Boolean>(false)
-
+    // points for GG map
     val points = MutableLiveData(mutableListOf<LatLng>())
+
+    // state of exercising
+    var recording = MutableLiveData<Boolean>(false)
+    var distanceRecording = MutableLiveData<Double>(0.0)
 
     // store long lat
     val long = MutableLiveData<Double>(null)
@@ -70,37 +69,34 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
     val barGraph = MutableLiveData(mutableListOf<BarEntry>())
     val listBPM = MutableLiveData(mutableListOf<Int>())
 
-    // state of update profile
-    val state = MutableLiveData(true)
-
     //data to show bar graph
-    val steps = MutableLiveData(0.0)
-    val cals = MutableLiveData(0.0)
     val hours = MutableLiveData(0.0)
 
+    // state of update profile
+    val state = MutableLiveData(true)
 
     //data from roomDB
     private val roomDB = RoomDB.getInstance(application)
     private val viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Default)
 
-    //get user info
+    //get and set user info
     fun getInfo(): LiveData<UserData> = roomDB.userDao().getAll()
     fun insertUser(userData: UserData) {
-        state.postValue(false)
         coroutineScope.launch {
             roomDB.userDao().insert(userData)
-            state.postValue(true)
         }
     }
 
     fun updateInfo(userData: UserData) {
+        state.postValue(false)
         coroutineScope.launch {
             roomDB.userDao().update(userData)
+            state.postValue(true)
         }
     }
 
-    //get exercise history
+    //get and set exercise history
     fun getAllExercises(): LiveData<List<ExerciseData>> = roomDB.exerciseDao().getAll()
     fun insertExercise(exerciseData: ExerciseData) {
         coroutineScope.launch {

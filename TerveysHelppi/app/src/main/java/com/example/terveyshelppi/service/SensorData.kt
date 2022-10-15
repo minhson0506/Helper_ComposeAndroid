@@ -9,26 +9,26 @@ import com.example.terveyshelppi.service.roomDB.UserData
 @Composable
 fun ShowSensorData(model: ResultViewModel, application: Application) {
     val viewModel = ResultViewModel(application)
-
     val value by model.stepValue.observeAsState()
-    val data by viewModel.getInfo().observeAsState()
+    val userData by viewModel.getInfo().observeAsState()
 
-    if (value != null && data != null) {
+    // update steps from sensor to Room
+    if (value != null && userData != null) {
         val user = UserData(
-            data!!.name,
-            data!!.weight,
-            data!!.height,
-            data!!.targetSteps,
-            data!!.targetCals,
-            data!!.targetHours,
-            data!!.heartRate,
-            data!!.totalDistance,
-            data!!.totalCalories,
+            userData!!.name,
+            userData!!.weight,
+            userData!!.height,
+            userData!!.targetSteps,
+            userData!!.targetCals,
+            userData!!.targetHours,
+            userData!!.heartRate,
+            userData!!.totalDistance,
+            userData!!.totalCalories,
             value!!.toDouble(),
-            data!!.totalHours,
-            data!!.avatar,
-            data!!.stepBeginOfDay,
-            data!!.day
+            userData!!.totalHours,
+            userData!!.avatar,
+            userData!!.stepBeginOfDay,
+            userData!!.day
         )
         viewModel.updateInfo(user)
     }

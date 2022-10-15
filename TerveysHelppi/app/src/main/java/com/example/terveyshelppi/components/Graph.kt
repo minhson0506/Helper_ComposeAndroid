@@ -28,7 +28,7 @@ import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.utils.ColorTemplate
 
-
+// Graph to display Heart rate
 @Composable
 fun Graph(points: MutableList<Entry>, navController: NavController) {
     // get size of phone's screen
@@ -89,12 +89,13 @@ fun Graph(points: MutableList<Entry>, navController: NavController) {
     }
 }
 
+
+// bar graph to display daily activities
 @Composable
 fun GraphBarChart(points: MutableList<BarEntry>) {
     // get size of phone's screen
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
-    Log.d("terveyshelppi", "DailyActivity: start draw graph")
     // draw the graph with data
     AndroidView(
         modifier = Modifier
@@ -107,9 +108,7 @@ fun GraphBarChart(points: MutableList<BarEntry>) {
             // set data for graph
             val entries: MutableList<BarEntry> = ArrayList()
             points.forEach {
-                if (it != null) {
-                    entries.add(it)
-                }
+                entries.add(it)
             }
             val set = BarDataSet(entries, "%")
             val data = BarData(set)

@@ -30,7 +30,7 @@ import java.util.*
 
 @Composable
 fun InfoLanding(navController: NavController, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     val mContext = LocalContext.current
 
     var name by remember { mutableStateOf("") }
@@ -39,6 +39,8 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
     var targetSteps by remember { mutableStateOf("") }
     var cal by remember { mutableStateOf("") }
     var hours by remember { mutableStateOf("") }
+
+    // steps counter sensor data
     val totalStep by model.stepValue.observeAsState("")
 
     Box(
@@ -170,7 +172,7 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
                     .background(Color.White, shape = RoundedCornerShape(10))
             )
             TextModifiedStringWithPadding(string = "recommended at least 30 mins/day")
-            // checking data input and come to next screen
+            // checking data input and navigate to next screen
             Image(
                 painterResource(id = R.drawable.next),
                 "",
@@ -206,6 +208,7 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
                                 name,
                                 weight.toInt(),
                                 height.toInt(),
+                                // set goals to default value if no input
                                 if (targetSteps == "") 6000 else targetSteps.toInt(),
                                 if (cal == "") 1000 else cal.toInt(),
                                 if (hours == "") 60 else hours.toInt(),
@@ -218,7 +221,7 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
                                 if (totalStep == "") 0.0 else totalStep.toDouble(),
                                 day
                             )
-                            Log.d(TAG, "InfoLanding: user info $user")
+                            Log.d(tag, "InfoLanding: user info $user")
                             model.insertUser(user)
                             navController.navigate("main") {
                                 popUpTo("landingPage") {
@@ -229,7 +232,6 @@ fun InfoLanding(navController: NavController, model: ResultViewModel) {
                         }
                     })
                     .align(Alignment.End)
-
             )
         }
     }
