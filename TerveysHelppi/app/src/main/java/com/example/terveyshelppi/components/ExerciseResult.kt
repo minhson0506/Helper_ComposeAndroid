@@ -23,7 +23,7 @@ import com.example.terveyshelppi.libraryComponent.TextModifiedWithPaddingStart
 import com.example.terveyshelppi.libraryComponent.TextModifiedWithString
 import com.example.terveyshelppi.libraryComponent.TopAppBarWithBackButton
 import com.example.terveyshelppi.service.ResultViewModel
-import com.example.terveyshelppi.service.mapGG
+import com.example.terveyshelppi.service.map.MapGG
 import com.example.terveyshelppi.service.roomDB.ExerciseData
 import com.example.terveyshelppi.ui.theme.*
 import kotlin.math.round
@@ -31,13 +31,15 @@ import kotlin.math.round
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExerciseResult(navController: NavController, model: ResultViewModel) {
-    //fetch last exercise
+
+    //fetch last exercise from Room
     val data by model.getAllExercises().observeAsState()
     var lastItem by remember { mutableStateOf<ExerciseData?>(null) }
     if (data != null) {
         lastItem = data!![data!!.size - 1]
     }
 
+    // points to display GG map
     val points by model.points.observeAsState()
 
     Box(
@@ -64,7 +66,7 @@ fun ExerciseResult(navController: NavController, model: ResultViewModel) {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                // date for display
+                // data fot grid view
                 val textArray = listOf(
                     Triple("Total Distance", lastItem?.distance.toString(), "m"),
                     Triple("Duration", lastItem?.duration, ""),
@@ -130,8 +132,8 @@ fun ExerciseResult(navController: NavController, model: ResultViewModel) {
                     }
                 }
             }
-            // display route of map using Google Map
-            points?.let { mapGG(points = it) }
+            // display route polyline by GG map
+            points?.let { MapGG(points = it) }
         }
     }
 }

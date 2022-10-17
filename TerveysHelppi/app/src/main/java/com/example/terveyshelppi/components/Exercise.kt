@@ -34,7 +34,7 @@ import com.example.terveyshelppi.libraryComponent.TextModifiedWithString
 import com.example.terveyshelppi.service.ResultViewModel
 import com.example.terveyshelppi.service.StopWatch
 import com.example.terveyshelppi.service.map.getAddress
-import com.example.terveyshelppi.service.map.showPoint
+import com.example.terveyshelppi.service.map.ShowPointsInMap
 import com.example.terveyshelppi.service.roomDB.ExerciseData
 import com.example.terveyshelppi.ui.theme.*
 import org.osmdroid.util.GeoPoint
@@ -44,36 +44,38 @@ import kotlin.math.round
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Exercise(navController: NavController, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     val context = LocalContext.current
 
+    val stopWatch = remember { StopWatch() }
+
+    // values from Android Map
     val distance: Double by model.distanceRecording.observeAsState(0.0)
     val speed: Double by model.speed.observeAsState(0.0)
     val firstAltitude: Double by model.firstAltitude.observeAsState(0.0)
     val secondAltitude: Double by model.secondAltitude.observeAsState(0.0)
+    val long by model.long.observeAsState()
+    val lat by model.lat.observeAsState()
+
     val heartRate: Int by model.mBPM.observeAsState(0)
     val listBPM by model.listBPM.observeAsState(mutableListOf(0))
 
-    val stopWatch = remember { StopWatch() }
-
-    val long by model.long.observeAsState()
-    val lat by model.lat.observeAsState()
     var showButton by remember { mutableStateOf(1) }
 
-    val data by model.getInfo().observeAsState()
     var height by remember { mutableStateOf(0) }
     var weight by remember { mutableStateOf(0) }
     var calories by remember { mutableStateOf(0) }
     var elevation by remember { mutableStateOf(0.0) }
     var timeStart by remember { mutableStateOf("") }
 
-    // get data from Room
-    if (data != null) {
-        height = data!!.height
-        weight = data!!.weight
+    // get user data from Room
+    val userData by model.getInfo().observeAsState()
+    if (userData != null) {
+        height = userData!!.height
+        weight = userData!!.weight
     }
 
-    // calculator date for display
+    // calculator elevation and calories
     elevation = round(secondAltitude - firstAltitude)
     calories = (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
 
@@ -120,6 +122,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                         .padding(end = 20.dp)
                         .size(20.dp)
                         .clickable {
+                            // launch default music app
                             val intent = Intent("android.intent.action.MUSIC_PLAYER")
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             startActivity(context, intent, Bundle())
@@ -156,7 +159,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
             if (lat != 0.0 && long != 0.0)
                 lat?.let { long?.let { it1 -> GeoPoint(it, it1) } }?.let {
                     long?.let { it1 -> getAddress(context = context, lat!!, it1) }?.let { it2 ->
-                        showPoint(
+                        ShowPointsInMap(
                             geoPoint = it,
                             address = it2
                         )
@@ -169,7 +172,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                 backgroundColor = card,
                 elevation = 4.dp
             ) {
-                // data for display in screen
+                // data for grid view
                 val textArray = listOf(
                     Triple("Distance", round(distance), "m"),
                     Triple("Duration", stopWatch.formattedTime, ""),
@@ -178,7 +181,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     Triple("Calories", calories, "Cal"),
                     Triple("Heart rate", heartRate, "BPM"),
                 )
-                Log.d(TAG, "Exercise: speed is $speed and ${speed * 3.6}")
+                Log.d(tag, "Exercise: speed is $speed and ${speed * 3.6}")
 
                 LazyVerticalGrid(
                     cells = GridCells.Fixed(2)
@@ -210,83 +213,93 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
                     }
                 }
             }
-            if (showButton == 1) {
-                Button(
-                    onClick = {
-                        stopWatch.start()
-                        timeStart = Calendar.getInstance().time.toString()
-                        model.recording.postValue(true)
-                        showButton = 2
-                    },
-                    modifier = Modifier.padding(top = 10.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                ) {
-                    TextModifiedWithString(string = stringResource(id = R.string.start),
-                        size = 18)
-                }
-            } else if (showButton == 2) {
-                Button(
-                    onClick = {
-                        stopWatch.pause()
-                        model.recording.postValue(false)
-                        showButton = 3
-                    },
-                    modifier = Modifier.padding(top = 10.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = button2),
-                ) {
-                    TextModifiedWithString(string = stringResource(id = R.string.pause),
-                        size = 18)
-                }
-            } else {
-                Row(
-                    modifier = Modifier.padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
+
+            // check state to change buttons
+            when (showButton) {
+                1 -> {
+                    // start button
                     Button(
                         onClick = {
                             stopWatch.start()
+                            timeStart = Calendar.getInstance().time.toString()
                             model.recording.postValue(true)
                             showButton = 2
                         },
+                        modifier = Modifier.padding(top = 10.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                     ) {
-                        TextModifiedWithString(string = stringResource(id = R.string.resume),
+                        TextModifiedWithString(string = stringResource(id = R.string.start),
                             size = 18)
                     }
+                }
+                // pause button
+                2 -> {
                     Button(
                         onClick = {
-                            val averageSpeed = distance / stopWatch.getTime()
-                            val averageHeartRate = listBPM.filter { it != 0 }.average()
-
-                            val exerciseData = ExerciseData(
-                                0,
-                                timeStart,
-                                distance.toInt(),
-                                stopWatch.formattedTime,
-                                stopWatch.getTime(),
-                                if (!averageSpeed.isNaN()) averageSpeed else 0.0,
-                                calories,
-                                elevation.toInt(),
-                                if (!averageHeartRate.isNaN()) averageHeartRate else 0.0
-                            )
-                            model.insertExercise(exerciseData)
-
-                            //reset data
+                            stopWatch.pause()
                             model.recording.postValue(false)
-                            model.locationState.postValue(true)
-                            model.distanceRecording.postValue(0.0)
-                            model.speed.postValue(0.0)
-                            model.firstAltitude.postValue(0.0)
-                            model.secondAltitude.postValue(0.0)
-
-                            navController.navigate("exercise_result")
+                            showButton = 3
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF7ED67D)),
-                        modifier = Modifier.padding(start = 20.dp),
+                        modifier = Modifier.padding(top = 10.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = button2),
                     ) {
-                        TextModifiedWithString(string = stringResource(id = R.string.finish),
+                        TextModifiedWithString(string = stringResource(id = R.string.pause),
                             size = 18)
+                    }
+                }
+                else -> {
+                    // resume and finish buttons
+                    Row(
+                        modifier = Modifier.padding(top = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                stopWatch.start()
+                                model.recording.postValue(true)
+                                showButton = 2
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = button2),
+                        ) {
+                            TextModifiedWithString(string = stringResource(id = R.string.resume),
+                                size = 18)
+                        }
+                        Button(
+                            onClick = {
+                                val averageSpeed = distance / stopWatch.getTime()
+                                val averageHeartRate = listBPM.filter { it != 0 }.average()
+
+                                // insert exercise data to Room
+                                val exerciseData = ExerciseData(
+                                    0,
+                                    timeStart,
+                                    distance.toInt(),
+                                    stopWatch.formattedTime,
+                                    stopWatch.getTime(),
+                                    if (!averageSpeed.isNaN()) averageSpeed else 0.0,
+                                    calories,
+                                    elevation.toInt(),
+                                    if (!averageHeartRate.isNaN()) averageHeartRate else 0.0
+                                )
+                                model.insertExercise(exerciseData)
+
+                                //reset data
+                                model.recording.postValue(false)
+                                model.locationState.postValue(true)
+                                model.distanceRecording.postValue(0.0)
+                                model.speed.postValue(0.0)
+                                model.firstAltitude.postValue(0.0)
+                                model.secondAltitude.postValue(0.0)
+
+                                navController.navigate("exercise_result")
+                            },
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF7ED67D)),
+                            modifier = Modifier.padding(start = 20.dp),
+                        ) {
+                            TextModifiedWithString(string = stringResource(id = R.string.finish),
+                                size = 18)
+                        }
                     }
                 }
             }

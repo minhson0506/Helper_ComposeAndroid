@@ -27,17 +27,19 @@ import com.example.terveyshelppi.ui.theme.*
 
 @Composable
 fun LandingPage(navController: NavController, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
 
     var user by remember { mutableStateOf("") }
+
     // get data from Room
     val data by model.getInfo().observeAsState()
     if (data != null) {
         user = data?.name.toString()
+        //post distance data to room at landing to reset everyday
         model.distance.postValue(data?.totalDistance?.toDouble())
-        Log.d(TAG, "LandingPage: model distance at landing ${data?.totalDistance}")
+        Log.d(tag, "LandingPage: model distance at landing ${data?.totalDistance}")
     }
-    Log.d(TAG, "LandingPage: $user")
+    Log.d(tag, "LandingPage: $user")
 
     Box(
         modifier = Modifier

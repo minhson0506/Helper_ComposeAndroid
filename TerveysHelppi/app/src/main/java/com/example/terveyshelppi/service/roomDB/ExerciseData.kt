@@ -15,5 +15,4 @@ data class ExerciseData(
     val calories: Int,
     val elevation: Int,
     val heartRate: Double,
-) {
-}
+)

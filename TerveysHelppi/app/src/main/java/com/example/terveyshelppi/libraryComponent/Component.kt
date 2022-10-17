@@ -9,12 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.ui.theme.*
 
-// redefine TopAppBar
+// TopAppBar
 @Composable
 fun TopAppBarWithBackButton(navController: NavController, id: Int) {
     TopAppBar(
@@ -41,7 +42,7 @@ fun TopAppBarWithBackButton(navController: NavController, id: Int) {
     )
 }
 
-// redefine Text
+// TextView
 @Composable
 fun TextModifiedWithId(
     id: Int,
@@ -58,10 +59,15 @@ fun TextModifiedWithId(
 }
 
 @Composable
-fun TextModifiedWithString(string: String, size: Int = 14, font: FontFamily = semibold) {
+fun TextModifiedWithString(
+    string: String,
+    size: Int = 14,
+    font: FontFamily = semibold,
+    color: Color = Color.White,
+) {
     Text(
         text = string,
-        color = Color.White,
+        color = color,
         fontFamily = font,
         fontSize = size.sp
     )
@@ -73,14 +79,29 @@ fun TextModifiedWithPaddingStart(
     size: Int = 16,
     font: FontFamily = semibold,
     paddingStart: Int = 5,
+    color: Color = Color.White,
 ) {
     Text(
         text = string,
-        color = Color.White,
+        color = color,
         fontFamily = font,
         fontSize = size.sp,
         modifier = Modifier.padding(start = paddingStart.dp)
     )
+}
+
+@Composable
+fun TextModifiedWithPaddingTop(string: String?) {
+    string?.let {
+        Text(
+            text = it,
+            color = Color.White,
+            fontFamily = semibold,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 10.dp)
+        )
+    }
 }
 
 @Composable

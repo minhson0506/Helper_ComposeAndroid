@@ -21,7 +21,8 @@ import java.io.IOException
 import java.util.*
 
 fun getAddress(context: Context, lat: Double, long: Double): String {
-    var TAG = "w2_d3_LocationMap"
+    val tag = "terveyshelppi"
+
     val geocoder = Geocoder(context, Locale.getDefault())
     var address = ""
     try {
@@ -32,45 +33,43 @@ fun getAddress(context: Context, lat: Double, long: Double): String {
             geocoder.getFromLocation(lat, long, 1)?.first()?.getAddressLine(0) ?: ""
         }
     } catch (e: Error) {
-        Log.d(TAG, "getAddress: not response")
+        Log.d(tag, "getAddress: not response")
     }
     return address
 }
 
 @Composable
-fun showPoint(geoPoint: GeoPoint, address: String) {
-    val TAG = "terveyshelppi"
+fun ShowPointsInMap(geoPoint: GeoPoint, address: String) {
+    val tag = "terveyshelppi"
 
     val map = composeMap()
-    var mapInitialized by remember(map) { mutableStateOf(false) }
+    val mapInitialized by remember(map) { mutableStateOf(false) }
     if (!mapInitialized) {
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.controller.setZoom(17.0)
         map.controller.setCenter(GeoPoint(60.17, 24.95))
-        mapInitialized = true
     }
 
     val marker = Marker(map)
 
+    // get screen size to set height of map
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = Resources.getSystem().getDisplayMetrics().heightPixels / screenPixelDensity / 3
+    val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
 
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
             .height(dpValue.dp),
         factory = { map }) {
-        address ?: return@AndroidView
         try {
             it.controller.setCenter(geoPoint)
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             marker.position = geoPoint
-//            marker.showInfoWindow()
             marker.title = address
             map.overlays.clear()
             map.overlays.add(marker)
         } catch (error: IOException) {
-            Log.d(TAG, "mapGG: error is ${error.message}")
+            Log.d(tag, "mapGG: error is ${error.message}")
         }
         map.invalidate()
     }

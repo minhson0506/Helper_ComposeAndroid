@@ -35,15 +35,16 @@ import kotlin.math.round
 
 @Composable
 fun ExerciseHistory(navController: NavController, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
 
     val exerciseData by model.getAllExercises().observeAsState()
     val listDate = mutableSetOf<String>()
 
+    // get all date from exercise data
     exerciseData?.forEach {
         listDate.add(it.timeStart.slice(0..9))
     }
-    Log.d(TAG, "ExerciseHistory: list date $listDate")
+    Log.d(tag, "ExerciseHistory: list date $listDate")
 
     Box(
         modifier = Modifier
@@ -92,7 +93,7 @@ fun ExerciseHistory(navController: NavController, model: ResultViewModel) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // display exercise history
+                        // display exercise history by date
                         exerciseData?.forEach { exercise ->
                             if (exercise.timeStart.slice(0..9) == date) {
                                 Card(

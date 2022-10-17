@@ -1,4 +1,4 @@
-package com.example.terveyshelppi.service
+package com.example.terveyshelppi.service.map
 
 import android.content.res.Resources
 import android.os.Bundle
@@ -31,11 +31,12 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 @Composable
-fun mapGG(points: MutableList<LatLng>) {
-    val TAG = "terveyshelppi"
+fun MapGG(points: MutableList<LatLng>) {
+    val tag = "terveyshelppi"
 
     val mapView = rememberMapViewWithLifecycle()
 
+    // get screen size
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
     val dpValue = Resources.getSystem().displayMetrics.heightPixels / screenPixelDensity / 3
 
@@ -45,7 +46,7 @@ fun mapGG(points: MutableList<LatLng>) {
             .background(Color.White)
             .height(dpValue.dp)
     ) {
-
+        // use XML with compose
         AndroidView({ mapView }) { mapView ->
             CoroutineScope(Dispatchers.Main).launch {
                 try {
@@ -54,7 +55,7 @@ fun mapGG(points: MutableList<LatLng>) {
 
                     val polylineOptions = PolylineOptions()
                     if (points.isNotEmpty()) {
-                        Log.d(TAG, "mapGG: with point $points")
+                        Log.d(tag, "mapGG: with point $points")
                         val pickUp = points[0]
                         val destination = points[points.size - 1]
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 6f))
@@ -76,9 +77,9 @@ fun mapGG(points: MutableList<LatLng>) {
                         }
                         polylineOptions.add(destination)
                         map.addPolyline(polylineOptions)
-                    } else Log.d(TAG, "mapGG: No data point")
+                    } else Log.d(tag, "mapGG: No data point")
                 } catch (error: IOException) {
-                    Log.d(TAG, "mapGG: error is ${error.message}")
+                    Log.d(tag, "mapGG: error is ${error.message}")
                 }
             }
         }
@@ -104,7 +105,6 @@ fun rememberMapViewWithLifecycle(): MapView {
             lifecycle.removeObserver(lifecycleObserver)
         }
     }
-
     return mapView
 }
 

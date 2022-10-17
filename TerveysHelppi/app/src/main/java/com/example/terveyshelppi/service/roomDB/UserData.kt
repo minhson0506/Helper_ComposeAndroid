@@ -21,5 +21,4 @@ data class UserData(
     val day: Int,
     @PrimaryKey
     val id: Int = 0
-) {
-}
+)

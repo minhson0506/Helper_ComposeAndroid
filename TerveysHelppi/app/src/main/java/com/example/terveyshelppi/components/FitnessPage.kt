@@ -44,7 +44,7 @@ fun FitnessPage(model: ResultViewModel, activity: AppCompatActivity) {
             },
             backgroundColor = Color.Black)
         Column(modifier = Modifier.padding(top = 50.dp)) {
-            // display video from Youtube
+            // display Youtube related screen
             YoutubeScreen(model = model, activity = activity)
         }
     }

@@ -42,7 +42,7 @@ import java.util.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainPage(navController: NavController, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     val context = LocalContext.current
 
     //get time of day
@@ -65,7 +65,7 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
     exerciseData?.forEach {
         if (it.timeStart.slice(0..9) == today) list.add(it.activeTime)
     }
-    Log.d(TAG, "MainPage: list of time workout $list")
+    Log.d(tag, "MainPage: list of time workout $list")
 
     val distance: Double by model.distance.observeAsState(0.0)
     var user by remember { mutableStateOf("") }
@@ -86,7 +86,7 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
     val temp by model.tempValue.observeAsState()
     val graph by model.graph.observeAsState()
 
-    Log.d(TAG, "MainPage: temperature = $temp")
+    Log.d(tag, "MainPage: temperature = $temp")
 
     // set data from Room
     if (data != null) {
@@ -98,9 +98,9 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
         targetCals = data!!.targetCals
         targetHours = data!!.targetHours
         beginStep = data!!.stepBeginOfDay.toInt()
-        Log.d(TAG, "MainPage: today is ${Calendar.getInstance().time}")
+        Log.d(tag, "MainPage: today is ${Calendar.getInstance().time}")
         Log.d(
-            TAG,
+            tag,
             "MainPage: totalStep is $totalSteps and stepBeginOfDay is ${data!!.stepBeginOfDay}"
         )
     }
@@ -108,7 +108,7 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
     totalCalories =
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
     totalHours = list.sum().toInt()
-    Log.d(TAG, "MainPage: userinfo $data")
+    Log.d(tag, "MainPage: userinfo $data")
 
     // set data for displaying
     val textArray = listOf(
@@ -275,7 +275,7 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
                                     onClick = {
                                         if (exerciseData != null) {
                                             if (exerciseData!!.isNotEmpty()) {
-                                                Log.d(TAG,
+                                                Log.d(tag,
                                                     "MainPage: exercise 0 is ${exerciseData!![0]}")
                                                 navController.navigate(
                                                     "history")
@@ -317,7 +317,7 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
                                         .clickable {
                                             if (exerciseData != null) {
                                                 if (exerciseData!!.isNotEmpty()) {
-                                                    Log.d(TAG,
+                                                    Log.d(tag,
                                                         "MainPage: exercise 0 is ${exerciseData!![0]}")
                                                     navController.navigate(
                                                         "history")
@@ -345,7 +345,10 @@ fun MainPage(navController: NavController, model: ResultViewModel) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp),
+                        .padding(start = 20.dp, end = 20.dp, bottom = 15.dp)
+                        .clickable {
+                                   navController.navigate("update")
+                        },
                     backgroundColor = card,
                     elevation = 4.dp
                 ) {

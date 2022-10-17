@@ -39,26 +39,26 @@ import java.util.*
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DailyActivity(model: ResultViewModel, navController: NavController) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
 
     // get date of system
     val time = Calendar.getInstance().time.toString().slice(0..10)
 
+    // get exercise data
     val exerciseData by model.getAllExercises().observeAsState()
+
+    // for display today's exercises only
     val list = mutableListOf(0L)
     val listExercise = mutableListOf<ExerciseData>()
-
     exerciseData?.forEach {
         if (it.timeStart.slice(0..10) == time) {
             list.add(it.activeTime)
-        }
-        if (time == it.timeStart.slice(0..10)) {
             listExercise.add(it)
         }
     }
 
     val distance: Double by model.distance.observeAsState(0.0)
-    Log.d(TAG, "DailyActivity: model distance in Daily $distance")
+    Log.d(tag, "DailyActivity: model distance in Daily $distance")
     var totalSteps by remember { mutableStateOf(0) }
     var totalCals by remember { mutableStateOf(0) }
     var totalHours by remember { mutableStateOf(0) }
@@ -71,26 +71,25 @@ fun DailyActivity(model: ResultViewModel, navController: NavController) {
 
     var actualSteps by remember { mutableStateOf(0) }
 
-    val data by model.getInfo().observeAsState()
-
-    // get data from room
-    if (data != null) {
-        targetSteps = data!!.targetSteps.toString()
-        targetCals = data!!.targetCals.toString()
-        targetHours = data!!.targetHours.toString()
-        totalSteps = data!!.totalSteps.toInt()
-        beginSteps = data!!.stepBeginOfDay.toInt()
-        weight = data!!.weight
-        height = data!!.height
+    // get user data from room
+    val userData by model.getInfo().observeAsState()
+    if (userData != null) {
+        targetSteps = userData!!.targetSteps.toString()
+        targetCals = userData!!.targetCals.toString()
+        targetHours = userData!!.targetHours.toString()
+        totalSteps = userData!!.totalSteps.toInt()
+        beginSteps = userData!!.stepBeginOfDay.toInt()
+        weight = userData!!.weight
+        height = userData!!.height
     }
 
-    // calculator calories, hour active, step in that day
+    // calculator calories, active hours, steps in that day
     totalCals =
         (distance / 0.75 * (0.57 * weight * 2.2) / (160934.4 / (height * 0.415))).toInt()
     totalHours = list.sum().toInt()
     actualSteps = totalSteps - beginSteps
 
-    // data for display
+    // data for display in grid view
     val textArray = listOf(
         Triple(R.drawable.step, Pair(actualSteps, targetSteps), R.string.steps),
         Triple(R.drawable.cal, Pair(totalCals, targetCals), R.string.activecal),

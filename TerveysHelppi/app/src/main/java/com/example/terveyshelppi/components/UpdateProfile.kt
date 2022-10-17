@@ -20,27 +20,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
-import com.example.terveyshelppi.service.roomDB.UserData
+import com.example.terveyshelppi.libraryComponent.TextModifiedWithPadding
 import com.example.terveyshelppi.service.ResultViewModel
+import com.example.terveyshelppi.service.roomDB.UserData
 import com.example.terveyshelppi.ui.theme.*
 import java.util.*
 
 @Composable
 fun UpdateProfile(model: ResultViewModel, navController: NavController) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     val mContext = LocalContext.current
 
-    val data by model.getInfo().observeAsState()
-    if (data != null) {
-
-        var name by remember { mutableStateOf(data!!.name) }
-        var weight by remember { mutableStateOf(data!!.weight.toString()) }
-        var height by remember { mutableStateOf(data!!.height.toString()) }
-        var steps by remember { mutableStateOf(data!!.targetSteps.toString()) }
-        var cal by remember { mutableStateOf(data!!.targetCals.toString()) }
-        var hours by remember { mutableStateOf(data!!.targetHours.toString()) }
-
-        val state by model.state.observeAsState(true)
+    // get user data from Room, only display when application has user
+    val userData by model.getInfo().observeAsState()
+    if (userData != null) {
+        var name by remember { mutableStateOf(userData!!.name) }
+        var weight by remember { mutableStateOf(userData!!.weight.toString()) }
+        var height by remember { mutableStateOf(userData!!.height.toString()) }
+        var steps by remember { mutableStateOf(userData!!.targetSteps.toString()) }
+        var cal by remember { mutableStateOf(userData!!.targetCals.toString()) }
+        var hours by remember { mutableStateOf(userData!!.targetHours.toString()) }
 
         Box(
             modifier = Modifier
@@ -54,16 +53,12 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceEvenly) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
                 //basic info
-                Text(
-                    stringResource(id = R.string.update),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontFamily = semibold,
-                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
-                )
+                TextModifiedWithPadding(id = R.string.update)
                 TextField(
                     value = name,
                     onValueChange = { name = it },
@@ -120,14 +115,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
 
                 //set up goals
-                Text(
-                    stringResource(id = R.string.change),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontFamily = semibold,
-                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
-                )
-
+                TextModifiedWithPadding(id = R.string.change)
                 TextField(
                     value = steps,
                     onValueChange = { steps = it },
@@ -180,7 +168,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
 
                 TextField(
-                    value = hours.toString(),
+                    value = hours,
                     onValueChange = { hours = it },
                     label = { Text(stringResource(id = R.string.hour)) },
                     modifier = Modifier
@@ -246,22 +234,21 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                                     steps.toInt(),
                                     cal.toInt(),
                                     hours.toInt(),
-                                    data!!.heartRate,
-                                    data!!.totalDistance,
-                                    data!!.totalCalories,
-                                    data!!.totalSteps,
-                                    data!!.totalHours,
-                                    data!!.avatar,
-                                    data!!.stepBeginOfDay,
+                                    userData!!.heartRate,
+                                    userData!!.totalDistance,
+                                    userData!!.totalCalories,
+                                    userData!!.totalSteps,
+                                    userData!!.totalHours,
+                                    userData!!.avatar,
+                                    userData!!.stepBeginOfDay,
                                     day
                                 )
-                                Log.d(TAG, "UpdateProfile: user info $user")
+                                Log.d(tag, "UpdateProfile: user info $user")
                                 model.updateInfo(user)
-                                if (state) navController.navigateUp()
+                                navController.navigateUp()
                             }
                         })
                         .align(Alignment.End)
-
                 )
             }
         }

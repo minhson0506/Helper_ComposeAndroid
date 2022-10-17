@@ -1,6 +1,7 @@
-package com.example.terveyshelppi.service
+package com.example.terveyshelppi.service.map
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Location
@@ -12,75 +13,80 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import android.content.Context
 import androidx.compose.runtime.livedata.observeAsState
+import com.example.terveyshelppi.service.ResultViewModel
 import com.example.terveyshelppi.service.roomDB.UserData
 import com.google.android.libraries.maps.model.LatLng
 
+@SuppressLint("MissingPermission")
 @Composable
 fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
-    val TAG = "terveysheppi"
-    Log.d(TAG, "GetLocation: start to get location")
+    val tag = "terveysheppi"
+    Log.d(tag, "GetLocation: start to get location")
 
     var firstTime = 0
-//    val distance: Double? by model.distance.observeAsState(0.0)
-//    val speed: Double? by model.speed.observeAsState(0.0)
-//    val maxSpeed: Double? by model.maxSpeed.observeAsState(0.0)
     var preLocation: Location? = null
-//    var long by remember { mutableStateOf(0.0) }
-//    var lat by remember { mutableStateOf(0.0) }
-//    val long: Double? by model.long.observeAsState(null)
-//    val lat: Double? by model.lat.observeAsState(null)
-    val data by model.getInfo().observeAsState()
 
+    // user data from Room
+    val userData by model.getInfo().observeAsState()
 
-    var fusedLocationClient: FusedLocationProviderClient =
+    val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
-    if (ActivityCompat.checkSelfPermission(context,
-            Manifest.permission.ACCESS_FINE_LOCATION) ==
+    if (ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) ==
         PackageManager.PERMISSION_GRANTED
     ) {
         fusedLocationClient.lastLocation.addOnSuccessListener {
             preLocation = it
-            Log.d(TAG,
-                "last location latitude: ${it?.latitude} and longitude: ${it?.longitude}")
+            Log.d(
+                tag,
+                "last location latitude: ${it?.latitude} and longitude: ${it?.longitude}"
+            )
         }
     }
 
-    var locationCallback: LocationCallback = object : LocationCallback() {
+    // callback function
+    val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            locationResult ?: return
-            Log.d(TAG, "onLocationResult: $locationResult")
+            Log.d(tag, "onLocationResult: $locationResult")
             for (location in locationResult.locations) {
+                // calculator distance when user has previous location
                 if (preLocation != null) {
                     if (model.distance.value != null)
                         model.distance.postValue(location.distanceTo(preLocation) + model.distance.value!!)
                     else model.distance.postValue(location.distanceTo(preLocation).toDouble())
                     if (model.recording.value == true) {
-                        Log.d(TAG, "onLocationResult: post location when recording")
+                        Log.d(tag, "onLocationResult: post location when recording")
                         model.points.value?.add(LatLng(location.latitude, location.longitude))
                         if (model.distanceRecording.value != null)
                             model.distanceRecording.postValue(location.distanceTo(preLocation) + model.distanceRecording.value!!)
-                        else model.distanceRecording.postValue(location.distanceTo(preLocation).toDouble())
+                        else model.distanceRecording.postValue(
+                            location.distanceTo(preLocation).toDouble()
+                        )
                     }
                     preLocation = location
-                    Log.d(TAG, "onLocationResult: model distance data in LocationService $data")
-                    if (data != null) {
+                    Log.d(tag, "onLocationResult: model distance data in LocationService $userData")
+
+                    // update total distance of user to Room
+                    if (userData != null) {
                         val user = model.distance.value?.let {
                             UserData(
-                                data!!.name,
-                                data!!.weight,
-                                data!!.height,
-                                data!!.targetSteps,
-                                data!!.targetCals,
-                                data!!.targetHours,
-                                data!!.heartRate,
+                                userData!!.name,
+                                userData!!.weight,
+                                userData!!.height,
+                                userData!!.targetSteps,
+                                userData!!.targetCals,
+                                userData!!.targetHours,
+                                userData!!.heartRate,
                                 it.toInt(),
-                                data!!.totalCalories,
-                                data!!.totalSteps,
-                                data!!.totalHours,
-                                data!!.avatar,
-                                data!!.stepBeginOfDay,
-                                data!!.day
+                                userData!!.totalCalories,
+                                userData!!.totalSteps,
+                                userData!!.totalHours,
+                                userData!!.avatar,
+                                userData!!.stepBeginOfDay,
+                                userData!!.day
                             )
                         }
                         if (user != null) {
@@ -91,17 +97,16 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
                 } else {
                     preLocation = location
                 }
-                Log.d(TAG, "onLocationResult: speed is ${location.speed} and ${location.speed.toDouble()}")
-//                speed = round(location.speed).toDouble()
+                Log.d(
+                    tag,
+                    "onLocationResult: speed is ${location.speed} and ${location.speed.toDouble()}"
+                )
                 if (model.recording.value == true) model.speed.postValue(location.speed * 3.6)
                 else model.speed.postValue(0.0)
-
-//                if (location.speed.toDouble() > model.maxSpeed.value!!) model.maxSpeed.postValue(
-//                    location.speed.toDouble())
-//                Log.d(TAG, "distance is: $distance")
-//                Log.d(TAG, "speed is: $speed")
-                Log.d(TAG,
-                    "location latitude: ${location.latitude} and longitude ${location.longitude} type is ${(location.latitude) is Double}")
+                Log.d(
+                    tag,
+                    "location latitude: ${location.latitude} and longitude ${location.longitude}}"
+                )
 
                 //post location
                 model.long.postValue(location.longitude)
@@ -118,17 +123,12 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     fun startGetLocation() {
         val locationRequest = LocationRequest.create().setInterval(1000)
             .setPriority(PRIORITY_HIGH_ACCURACY)
-        fusedLocationClient.requestLocationUpdates(locationRequest,
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
             locationCallback,
-            Looper.getMainLooper())
-    }
-
-    fun stopGetLocation() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+            Looper.getMainLooper()
+        )
     }
 
     startGetLocation()
-//    if (lat != 0.0 && long != 0.0) showPoint(geoPoint = GeoPoint(lat, long),
-//        address = getAddress(context = context, lat, long))
 }
-

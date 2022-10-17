@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -27,6 +26,7 @@ import androidx.fragment.app.commit
 import coil.compose.rememberAsyncImagePainter
 import com.example.terveyshelppi.BuildConfig
 import com.example.terveyshelppi.R
+import com.example.terveyshelppi.libraryComponent.TextModifiedWithPaddingTop
 import com.example.terveyshelppi.service.ResultViewModel
 import com.example.terveyshelppi.ui.theme.*
 import com.google.android.youtube.player.YouTubeInitializationResult
@@ -37,20 +37,20 @@ import retrofit2.Callback
 import retrofit2.Response
 
 fun searchOnYoutube(keywords: String, model: ResultViewModel) {
-    val TAG = "terveyshelppi"
+    val tag = "terveyshelppi"
     YoutubeApi.apiSearchInstance().search(keywords).enqueue(object : Callback<SearchResponse> {
         override fun onResponse(
             call: Call<SearchResponse>,
             response: Response<SearchResponse>,
         ) {
-            Log.d(TAG, "onResponse: ${response.isSuccessful}")
+            Log.d(tag, "onResponse: ${response.isSuccessful}")
             val result = response.body()?.items
-            Log.d(TAG, "onResponse: $result")
+            Log.d(tag, "onResponse: $result")
             model.result.postValue(result)
         }
 
         override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-            Log.d(TAG, "onFailure when get response from youtube: ")
+            Log.d(tag, "onFailure when get response from youtube: ")
         }
     })
 }
@@ -58,8 +58,8 @@ fun searchOnYoutube(keywords: String, model: ResultViewModel) {
 @ExperimentalFoundationApi
 @Composable
 fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
-    val TAG = "terveyshelppi"
-    Log.d(TAG, "YoutubeScreen: start to find video from videoid")
+    val tag = "terveyshelppi"
+    Log.d(tag, "YoutubeScreen: start to find video from videoid")
 
     var displayYoutube by remember { mutableStateOf(false) }
 
@@ -112,7 +112,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                 searchOnYoutube(input, model)
                 input = ""
                 bool = false
-                Log.d(TAG, "Greeting: ${result.toString()}")
+                Log.d(tag, "Greeting: ${result.toString()}")
             },
             modifier = Modifier
                 .padding(end = 10.dp)
@@ -163,6 +163,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                 fontSize = 16.sp
             )
             if (shuffle) {
+                // data for suggestion
                 val items = listOf(
                     //yoga
                     SearchResponse.Item("", SearchResponse.Item.Id("", "GLy2rYHwUqY"), ""),
@@ -198,14 +199,14 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
 
         val videoId = result?.map { it.id.videoId }
 
-        Log.d(TAG, "start to load video")
+        Log.d(tag, "start to load video")
 
         //play youtube video
-        if (displayYoutube) playVideo(videoId = id) else {
+        if (displayYoutube) PlayVideo(videoId = id) else {
             val fragment: Fragment? =
                 activity.supportFragmentManager.findFragmentById(R.id.ytPlayer)
             if (fragment != null)
-                activity.supportFragmentManager.beginTransaction().remove(fragment).commit();
+                activity.supportFragmentManager.beginTransaction().remove(fragment).commit()
         }
 
         Column(
@@ -222,6 +223,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                         backgroundColor = card,
                         elevation = 4.dp
                     ) {
+                        // display thumbnail of video
                         Image(
                             painter = rememberAsyncImagePainter("http://img.youtube.com/vi/${videoId[i]}/0.jpg"),
                             contentDescription = null,
@@ -242,64 +244,38 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
                                     response: Response<TitleResponse>,
                                 ) {
                                     Log.d(
-                                        TAG,
+                                        tag,
                                         "onResponse: url get title is ${response.raw().request.url}."
                                     )
-                                    Log.d(TAG, "onResponse title: ${response.isSuccessful}")
-                                    val result = response.body()?.title
-                                    Log.d(TAG, "onResponse title: $result")
+                                    Log.d(tag, "onResponse title: ${response.isSuccessful}")
+                                    val resultResponse = response.body()?.title
+                                    Log.d(tag, "onResponse title: $resultResponse")
                                     when (i) {
-                                        0 -> model.title.postValue(result)
-                                        1 -> model.title1.postValue(result)
-                                        2 -> model.title2.postValue(result)
-                                        3 -> model.title3.postValue(result)
-                                        4 -> model.title4.postValue(result)
+                                        0 -> model.title.postValue(resultResponse)
+                                        1 -> model.title1.postValue(resultResponse)
+                                        2 -> model.title2.postValue(resultResponse)
+                                        3 -> model.title3.postValue(resultResponse)
+                                        4 -> model.title4.postValue(resultResponse)
                                     }
 
                                 }
 
                                 override fun onFailure(call: Call<TitleResponse>, t: Throwable) {
-                                    Log.d(TAG, "onResponse fail: url is ${t.message}")
+                                    Log.d(tag, "onResponse fail: url is ${t.message}")
                                     //Log.d(TAG, "onResponse fail: url is ${(t as HttpException).response()?.raw()?.request?.url}")
                                     Log.d(
-                                        TAG,
+                                        tag,
                                         "response onFailure when get response from youtube: "
                                     )
                                 }
                             })
+                        // display title of video
                         when (i) {
-                            0 -> if (title != null) Text(
-                                text = "$title",
-                                color = Color.White,
-                                fontFamily = semibold,
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 10.dp)
-                            )
-                            1 -> if (title1 != null) Text(
-                                text = "$title1", color = Color.White,
-                                fontFamily = semibold,
-                                fontSize = 14.sp, textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 10.dp)
-                            )
-                            2 -> if (title2 != null) Text(
-                                text = "$title2", color = Color.White,
-                                fontFamily = semibold,
-                                fontSize = 14.sp, textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 10.dp)
-                            )
-                            3 -> if (title3 != null) Text(
-                                text = "$title3", color = Color.White,
-                                fontFamily = semibold,
-                                fontSize = 14.sp, textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 10.dp)
-                            )
-                            4 -> if (title4 != null) Text(
-                                text = "$title4", color = Color.White,
-                                fontFamily = semibold,
-                                fontSize = 14.sp, textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 10.dp)
-                            )
+                            0 -> if (title != null) TextModifiedWithPaddingTop(string = title)
+                            1 -> if (title1 != null) TextModifiedWithPaddingTop(string = title1)
+                            2 -> if (title2 != null) TextModifiedWithPaddingTop(string = title2)
+                            3 -> if (title3 != null) TextModifiedWithPaddingTop(string = title3)
+                            4 -> if (title4 != null) TextModifiedWithPaddingTop(string = title4)
                         }
                     }
                 }
@@ -309,11 +285,11 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
 }
 
 @Composable
-fun playVideo(videoId: String) {
-    val TAG = "terveyshelppi"
+fun PlayVideo(videoId: String) {
+    val tag = "terveyshelppi"
     val context = LocalContext.current
-    val api_key = BuildConfig.YOUTUBE_API_KEY
-    Log.d(TAG, "playVideo: with id $videoId")
+    val apiKey = BuildConfig.API_KEY
+    Log.d(tag, "playVideo: with id $videoId")
 
     AndroidView(factory = {
         val fm = (context as AppCompatActivity).supportFragmentManager
@@ -322,13 +298,13 @@ fun playVideo(videoId: String) {
 
         }
         val fragment = YouTubePlayerSupportFragmentXKt().apply {
-            initialize(api_key,
+            initialize(apiKey,
                 object : YouTubePlayer.OnInitializedListener {
                     override fun onInitializationFailure(
                         provider: YouTubePlayer.Provider,
                         result: YouTubeInitializationResult,
                     ) {
-                        Log.d(TAG, "onInitializationFailure: error to play video ${result.name}")
+                        Log.d(tag, "onInitializationFailure: error to play video ${result.name}")
                     }
 
                     override fun onInitializationSuccess(
@@ -336,8 +312,7 @@ fun playVideo(videoId: String) {
                         player: YouTubePlayer,
                         wasRestored: Boolean,
                     ) {
-                        Log.d(TAG, "onInitializationSuccess: string 0")
-
+                        Log.d(tag, "onInitializationSuccess: string 0")
                         if (!wasRestored) {
                             player.loadVideo(videoId)
                         }

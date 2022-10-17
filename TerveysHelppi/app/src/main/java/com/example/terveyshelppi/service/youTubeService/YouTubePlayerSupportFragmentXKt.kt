@@ -20,11 +20,8 @@ open class YouTubePlayerSupportFragmentXKt : Fragment(), YouTubePlayer.Provider 
 
     private var e: YouTubePlayer.OnInitializedListener? = null
 
-    private val f = false
-
     private fun a() {
         if (c != null && e != null) {
-            c?.a(f)
             c?.a(this.activity, this, d, e, b)
             b = null
             e = null
