@@ -17,8 +17,6 @@ import com.github.mikephil.charting.data.Entry
 import com.google.android.libraries.maps.model.LatLng
 
 class ResultViewModel(application: Application) : AndroidViewModel(application) {
-    val TAG = "terveyshelppi"
-
     // store data of searching
     val result = MutableLiveData<List<SearchResponse.Item>>(null)
 
@@ -44,21 +42,21 @@ class ResultViewModel(application: Application) : AndroidViewModel(application) 
     val title4 = MutableLiveData<String>(null)
 
     // store data of location
-    var distance = MutableLiveData<Double>(0.0)
-    var speed = MutableLiveData<Double>(0.0)
+    var distance = MutableLiveData(0.0)
+    var speed = MutableLiveData(0.0)
     val locationState = MutableLiveData(false)
     // points for GG map
     val points = MutableLiveData(mutableListOf<LatLng>())
 
     // state of exercising
-    var recording = MutableLiveData<Boolean>(false)
-    var distanceRecording = MutableLiveData<Double>(0.0)
+    var recording = MutableLiveData(false)
+    var distanceRecording = MutableLiveData(0.0)
 
     // store long lat
     val long = MutableLiveData<Double>(null)
     val lat = MutableLiveData<Double>(null)
-    val firstAltitude = MutableLiveData<Double>(0.0)
-    val secondAltitude = MutableLiveData<Double>(0.0)
+    val firstAltitude = MutableLiveData(0.0)
+    val secondAltitude = MutableLiveData(0.0)
 
     // store heart rate
     val mBPM = MutableLiveData(0)

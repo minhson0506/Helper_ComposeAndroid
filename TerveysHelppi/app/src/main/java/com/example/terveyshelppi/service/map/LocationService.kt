@@ -29,7 +29,6 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
     // user data from Room
     val userData by model.getInfo().observeAsState()
 
-
     val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(activity)
     if (ActivityCompat.checkSelfPermission(
@@ -47,11 +46,13 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
         }
     }
 
+    // callback function
     val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
             Log.d(tag, "onLocationResult: $locationResult")
             for (location in locationResult.locations) {
+                // calculator distance when user has previous location
                 if (preLocation != null) {
                     if (model.distance.value != null)
                         model.distance.postValue(location.distanceTo(preLocation) + model.distance.value!!)
@@ -131,4 +132,3 @@ fun GetLocation(context: Context, activity: Activity, model: ResultViewModel) {
 
     startGetLocation()
 }
-

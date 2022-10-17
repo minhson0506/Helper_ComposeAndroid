@@ -42,15 +42,6 @@ class StopWatch {
         isActive = false
     }
 
-    fun reset() {
-        coroutineScope.cancel()
-        coroutineScope = CoroutineScope(Dispatchers.Main)
-        timeMillis = 0L
-        lastTimestamp = 0L
-        formattedTime = "00:00:000"
-        isActive = false
-    }
-
     private fun formatTime(timeMillis: Long): String {
         val localDateTime = LocalDateTime.ofInstant(
             Instant.ofEpochMilli(timeMillis),

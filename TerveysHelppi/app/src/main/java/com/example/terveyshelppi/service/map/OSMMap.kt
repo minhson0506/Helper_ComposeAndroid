@@ -39,7 +39,7 @@ fun getAddress(context: Context, lat: Double, long: Double): String {
 }
 
 @Composable
-fun ShowPoints(geoPoint: GeoPoint, address: String) {
+fun ShowPointsInMap(geoPoint: GeoPoint, address: String) {
     val tag = "terveyshelppi"
 
     val map = composeMap()

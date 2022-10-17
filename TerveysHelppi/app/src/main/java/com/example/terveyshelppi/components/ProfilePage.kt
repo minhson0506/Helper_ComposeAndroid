@@ -1,5 +1,6 @@
 package com.example.terveyshelppi.components
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
+import com.example.terveyshelppi.libraryComponent.TextModifiedWithString
 import com.example.terveyshelppi.service.notification.Notification
 import com.example.terveyshelppi.service.roomDB.UserData
 import com.example.terveyshelppi.service.ResultViewModel
@@ -211,12 +213,10 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                                     fontFamily = semibold,
                                     modifier = Modifier.padding(bottom = 10.dp)
                                 )
-
-                                Text(
-                                    it.third,
+                                TextModifiedWithString(
+                                    string = it.third,
                                     color = smallText,
-                                    fontSize = 14.sp,
-                                    fontFamily = regular,
+                                    font = regular
                                 )
                             }
                         }
@@ -237,9 +237,11 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
                         .padding(bottom = 20.dp)
                 ) {
                     Text(
-                        stringResource(id = R.string.pb), color = Color.White,
+                        stringResource(id = R.string.pb),
+                        color = Color.White,
                         modifier = Modifier.padding(top = 15.dp, start = 10.dp, bottom = 20.dp),
-                        fontFamily = semibold, fontSize = 16.sp
+                        fontFamily = semibold,
+                        fontSize = 16.sp
                     )
                     LazyVerticalGrid(
                         cells = GridCells.Fixed(3)
@@ -293,6 +295,7 @@ fun ProfilePage(navControler: NavController, model: ResultViewModel) {
     }
 }
 
+@SuppressLint("UnspecifiedImmutableFlag")
 fun setNotification(mContext: Context) {
     val notificationId = 1
 

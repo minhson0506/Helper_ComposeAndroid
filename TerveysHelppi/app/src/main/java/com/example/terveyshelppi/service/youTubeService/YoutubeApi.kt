@@ -12,7 +12,7 @@ object YoutubeApi {
             .create(SearchApiService::class.java)
     }
 
-    const val url = "https://www.youtube.com/"
+    private const val url = "https://www.youtube.com/"
     fun apiTitleInstance(): SearchTitleApiService {
         return Retrofit.Builder()
             .baseUrl(url)

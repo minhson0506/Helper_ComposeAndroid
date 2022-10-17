@@ -20,8 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.terveyshelppi.R
-import com.example.terveyshelppi.service.roomDB.UserData
+import com.example.terveyshelppi.libraryComponent.TextModifiedWithPadding
 import com.example.terveyshelppi.service.ResultViewModel
+import com.example.terveyshelppi.service.roomDB.UserData
 import com.example.terveyshelppi.ui.theme.*
 import java.util.*
 
@@ -30,7 +31,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
     val tag = "terveyshelppi"
     val mContext = LocalContext.current
 
-    // get user data from Room
+    // get user data from Room, only display when application has user
     val userData by model.getInfo().observeAsState()
     if (userData != null) {
         var name by remember { mutableStateOf(userData!!.name) }
@@ -57,13 +58,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 //basic info
-                Text(
-                    stringResource(id = R.string.update),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontFamily = semibold,
-                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
-                )
+                TextModifiedWithPadding(id = R.string.update)
                 TextField(
                     value = name,
                     onValueChange = { name = it },
@@ -120,14 +115,7 @@ fun UpdateProfile(model: ResultViewModel, navController: NavController) {
                 )
 
                 //set up goals
-                Text(
-                    stringResource(id = R.string.change),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontFamily = semibold,
-                    modifier = Modifier.padding(top = 30.dp, start = 30.dp)
-                )
-
+                TextModifiedWithPadding(id = R.string.change)
                 TextField(
                     value = steps,
                     onValueChange = { steps = it },

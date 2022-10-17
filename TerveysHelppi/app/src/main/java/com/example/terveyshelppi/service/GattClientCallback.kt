@@ -9,8 +9,8 @@ import com.github.mikephil.charting.data.Entry
 
 class GattClientCallback(val model: ResultViewModel) : BluetoothGattCallback() {
     private val tag = "terveyshelppi"
-    var index = 0
-    var index2 = 0
+    private var index = 0
+    private var index2 = 0
 
     @SuppressLint("MissingPermission")
     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {

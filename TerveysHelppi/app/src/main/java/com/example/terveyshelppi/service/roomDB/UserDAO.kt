@@ -14,7 +14,6 @@ interface UserDAO {
 
     @Query("SELECT * FROM userdata")
     fun getAll(): LiveData<UserData>
-
 }
 
 @Dao

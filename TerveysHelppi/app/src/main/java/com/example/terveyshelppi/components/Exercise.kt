@@ -34,7 +34,7 @@ import com.example.terveyshelppi.libraryComponent.TextModifiedWithString
 import com.example.terveyshelppi.service.ResultViewModel
 import com.example.terveyshelppi.service.StopWatch
 import com.example.terveyshelppi.service.map.getAddress
-import com.example.terveyshelppi.service.map.ShowPoints
+import com.example.terveyshelppi.service.map.ShowPointsInMap
 import com.example.terveyshelppi.service.roomDB.ExerciseData
 import com.example.terveyshelppi.ui.theme.*
 import org.osmdroid.util.GeoPoint
@@ -159,7 +159,7 @@ fun Exercise(navController: NavController, model: ResultViewModel) {
             if (lat != 0.0 && long != 0.0)
                 lat?.let { long?.let { it1 -> GeoPoint(it, it1) } }?.let {
                     long?.let { it1 -> getAddress(context = context, lat!!, it1) }?.let { it2 ->
-                        ShowPoints(
+                        ShowPointsInMap(
                             geoPoint = it,
                             address = it2
                         )
