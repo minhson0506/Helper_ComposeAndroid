@@ -288,7 +288,7 @@ fun YoutubeScreen(model: ResultViewModel, activity: AppCompatActivity) {
 fun PlayVideo(videoId: String) {
     val tag = "terveyshelppi"
     val context = LocalContext.current
-    val apiKey = BuildConfig.YOUTUBE_API_KEY
+    val apiKey = BuildConfig.API_KEY
     Log.d(tag, "playVideo: with id $videoId")
 
     AndroidView(factory = {

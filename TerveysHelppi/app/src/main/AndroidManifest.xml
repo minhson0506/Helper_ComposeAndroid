@@ -38,8 +38,6 @@
         </intent>
     </queries>
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_appicon"
@@ -76,7 +74,7 @@
             android:foregroundServiceType="location"
             tools:ignore="MissingClass" />
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="${GOOGLE_MAPS_API_KEY}"/>
+            android:value="${API_KEY}"/>
     </application>
 
 </manifest>
